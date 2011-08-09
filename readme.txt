@@ -25,6 +25,8 @@ Because all of the processing and analyzing runs on our servers and not yours, n
 
 <a href="http://www.nrelate.com" title="nrelate home page">Learn more about nrelate</a> or <a href="http://profiles.wordpress.org/users/nrelate/">View other nrelate plugins.</a>
 
+Special thanks and appreciation to <a href="http://item-9.com/">Item-9</a>, for providing the <a href="http://wordpress.org/extend/plugins/upprev-nytimes-style-next-post-jquery-animated-fly-in-button/">inspiration and original code</a> for this plugin.
+
 
 == Installation ==
 
@@ -45,7 +47,7 @@ Absolutely not.  Since the nrelate servers are doing all the hard work, your web
 
 = What are my display choices? =
 You can show related content as cool image thumbnails (choose from six image sizes), or simple text with bullets. When choosing thumbnails we will look in your post to find the first image and use that. You can also choose a default image to show when your post contains none.  In the plugin options page you can enter your default image url. If your post has no image, and you have not set a default, we will show a random one from our image library.<br>
-<a href="http://wordpress.org/extend/plugins/nrelate-related-content/screenshots/">Check out the screenshots.</a>
+<a href="http://wordpress.org/extend/plugins/nrelate-flyout/screenshots/">Check out the screenshots.</a>
 
 = Is advertising optional? =
 Yes, you always have the option to display or not display ads.
@@ -108,3 +110,4 @@ Our plugin will work on websites in the following languages: Dutch, English, Fre
 
 = 0.49.2 =
 * Initial release
+
