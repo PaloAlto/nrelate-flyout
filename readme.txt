@@ -10,7 +10,7 @@ Display related content in a cool flyout box... similarly to NYTimes.com.
 == Description ==
 Display related content from your site or blogroll, in a cool flyout box... similarly to NYTimes.com.
 
-IMPORTANT: If you are using any other nrelate plugin, please make sure you upgrade them to at least version 49.2.
+Important: If you are using any other nrelate plugin, please make sure you upgrade them to at least version 49.2.
 
 nrelate is not just another related posts plugin. Our patent-pending technology continuously analyzes your website content and displays other related posts from your website.  This ultimately leads to higher page-views for your site, and a better user experience for your visitors.
 
