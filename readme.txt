@@ -25,7 +25,7 @@ Because all of the processing and analyzing runs on our servers and not yours, n
 
 <a href="http://www.nrelate.com" title="nrelate home page">Learn more about nrelate</a> or <a href="http://profiles.wordpress.org/users/nrelate/">View other nrelate plugins.</a>
 
-Special thanks and appreciation to <a href="http://item-9.com/">Item-9</a>, for providing the <a href="http://wordpress.org/extend/plugins/upprev-nytimes-style-next-post-jquery-animated-fly-in-button/">inspiration and original code</a> for this plugin.
+Special thanks and appreciation to <a href="http://item-9.com/">Item-9</a>, for providing the <a href="http://wordpress.org/extend/plugins/upprev-nytimes-style-next-post-jquery-animated-fly-in-button/">inspiration and original code</a> for this plugin, and supporting our continued development.
 
 
 == Installation ==
@@ -110,3 +110,5 @@ Our plugin will work on websites in the following languages: Dutch, English, Fre
 
 = 0.49.2 =
 * Initial release
+
+
