@@ -17,7 +17,7 @@ nrelate is not just another related posts plugin. Our patent-pending technology 
 Installing this plugin is as simple as activating it, and you can leave the rest to nrelate.  Once activated, the nrelate servers will immediately begin analyzing your website content and associating similar articles.  Of course, we provide an options page so you can fine tune the display.
 
 nrelate's style gallery allows you to customize the look of our plugin by choosing one of our set styles, or designing your own.<br>
-<a href="http://wordpress.org/extend/plugins/nrelate-related-content/screenshots/">Check out the screenshots.</a>
+<a href="http://wordpress.org/extend/plugins/nrelate-flyout/screenshots/">Check out the screenshots.</a>
 
 Advertising is also possible with the plugin. Ads come with the same display options as the related content and are a great way to earn a little extra income from your blog.
 
