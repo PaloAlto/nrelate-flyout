@@ -5,7 +5,6 @@ Tested up to: 3.2.1
 Requires at least: 2.9
 Stable tag: 0.49.2
 
-
 Display related content in a cool flyout box... similarly to NYTimes.com.
 
 == Description ==
