@@ -143,6 +143,7 @@ if (typeof(nRelate)=='undefined') {
 					_row_counter++;
 				}
 			}
+			jQuery('#'+id+'.nrelate_pol').addClass('rotate');
 			//<--CSS: code that ads extra CSS classes like nr_even_row
 		},
 		

@@ -69,6 +69,16 @@ $nrelate_thumbnail_styles = array(
 					"info"=>__('This style is based upon the custom version developed at <a href="http://trendland.net" target="_blank">Trendland.net</a>.<br>Trendland is an online magazine that redefines trend forecasting through a rich visual journey.','nrelate'),
 				
 				),
+'pol' => array(
+					"stylesheet" => "nrelate-panels-pol.css",
+					"name"=>__('Polaroid', 'nrelate'),
+					"features"=>__('<ul>
+										<li>Turns your images into Polaroid pictures.</li>
+										<li>Rotated randomly.</li>
+									</ul>', 'nrelate'),
+					"info"=>__('Polaroid style images. Inspired by <a href="http://www.zurb.com/playground/css3-polaroids" target="_blank">this article</a>.<br>at Zurb.com.','nrelate'),
+				
+				),
 'none' => array(
 					"name"=>__('none'),
 					"features"=>__('<ul>

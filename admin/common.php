@@ -286,6 +286,87 @@ function nrelate_get_blogroll(){
 	return $tmp;
 }
 
+
+
+/**
+ * Layout conditionals
+ *
+ * Define's conditionals for automatic placement
+ * @ moved to common.php 0.49.3
+ */
+
+$nrelate_cond_tags = array(
+	(object) array(
+		"term_id" => 1,
+		"check_val" => "is_front_page",
+		"name" => "Front Page  (is_front_page)", 
+		"parent" => 0
+	),
+	(object) array(
+		"term_id" => 2,
+		"check_val" => "is_home",
+		"name" => "Main Page  (is_home)", 
+		"parent" => 0
+	),
+	(object) array(
+		"term_id" => 3,
+		"check_val" => "is_single",
+		"name" => "Single Posts  (is_single)", 
+		"parent" => 0
+	),
+	(object) array(
+		"term_id" => 4,
+		"check_val" => "is_page",
+		"name" => "Pages  (is_page)", 
+		"parent" => 0
+	),
+	(object) array(
+		"term_id" => 5,
+		"check_val" => "is_archive",
+		"name" => "All Archives  (is_archive)", 
+		"parent" => 0
+	),
+			(object) array(
+				"term_id" => 8,
+				"check_val" => "is_category",
+				"name" => "Category Archives  (is_category)", 
+				"parent" => 5
+			),
+			(object) array(
+				"term_id" => 9,
+				"check_val" => "is_tag",
+				"name" => "Tag Archives  (is_tag)", 
+				"parent" => 5
+			),
+			(object) array(
+				"term_id" => 10,
+				"check_val" => "is_author",
+				"name" => "Author Archives  (is_author)", 
+				"parent" => 5
+			),
+			(object) array(
+				"term_id" => 11,
+				"check_val" => "is_date",
+				"name" => "Date Archives  (is_date)", 
+				"parent" => 5
+			),
+	(object) array(
+		"term_id" => 6,
+		"check_val" => "is_search",
+		"name" => "Search Results  (is_search)", 
+		"parent" => 0
+	),
+	(object) array(
+		"term_id" => 7,
+		"check_val" => "is_attachment",
+		"name" => "Attachment Pages  (is_attachment)", 
+		"parent" => 0
+	)
+);
+	
+	
+	
+
 /**
  * Add nrelate dropdown help
  *
@@ -338,7 +419,8 @@ function nrelate_site_inventory(){
 	}
 
 $message = <<<EOD
-<strong>If you are having trouble with our plugin please copy the information below and email it to: support@nrelate.com</strong>
+<strong>If you are having trouble with our plugin please copy the information below and email it to: support@nrelate.com<br>
+** This is sensitive information about your website and should not be posted publicly **</strong>
 <textarea style="width:90%; height:200px;">
 URL: $url 
 WordPress Version: $wp_version

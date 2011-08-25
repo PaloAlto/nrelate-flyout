@@ -123,6 +123,18 @@ function nrelate_post_count() {
 				$thumb_found = true;
 			}
 		}
+		
+		// Thumbshots
+		// http://wordpress.org/extend/plugins/thumbshots/
+		// Since 0.49.3
+		if (!$thumb_found && class_exists('ThumbshotsPlugin')){
+			preg_match('#<img[^>]+src=[\"\']{1}(http:\/\/(www\.)?open\.thumbshots.org/image\.aspx[^\"\']*)[\"\']{1}[^>]+\/>#i', $content, $images);
+			@$imageurl = $images[1];
+			if ( $imageurl ) {
+				$content = sprintf('<p><img class="nrelate-image thumbshot-image" src="%s" alt="post thumbnail" /></p>%s', $imageurl, $content);
+				$thumb_found = true;
+			}
+		}
 
 		// WordPress Featured Image (Post Thumbnails)
 		if (!$thumb_found && function_exists('has_post_thumbnail') && has_post_thumbnail( $post->ID )) {
@@ -293,7 +305,8 @@ function nrelate_custom_feed() {
 			array(
 				'posts_per_page' => get_query_var( 'posts_per_page' ),
 				'paged' => $paged,
-				'category__not_in' => (array) $options['admin_exclude_categories']
+				'category__not_in' => (array) $options['admin_exclude_categories'],
+				'ignore_sticky_posts' => 1
 			)
 		);
 
