@@ -106,6 +106,10 @@ Our plugin will work on websites in the following languages: Dutch, English, Fre
 
 == Changelog ==
 
+= 0.49.4 =
+* Javascript change to open ads in a new tab/window
+* Bug fix for Thumbshots plugin
+
 = 0.49.3 =
 * New Polaroid style
 * Added is_home as a display option.

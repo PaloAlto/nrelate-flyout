@@ -50,12 +50,13 @@ if (typeof(nRelate)=='undefined') {
 				nr.track_enabled[2]=true;
 			
 			jQuery('.nr_'+plugin+'_link').live('click', function(event){
+				if (jQuery(this).hasClass('nr_partner')) {
+					return true;
+				}
 				event.preventDefault();
 				var src_url = window.location.href;
 				var iframe_src = "http://track.nrelate.com/tracking/";
-				if (jQuery(this).hasClass('nr_partner')) {
-					nr_type = 'ad';
-				} else if (jQuery(this).hasClass('nr_avid')) {
+				if (jQuery(this).hasClass('nr_avid')) {
 					nr_type = 'avid';
 				} else if (jQuery(this).hasClass('nr_external')) {
 					nr_type = 'external';

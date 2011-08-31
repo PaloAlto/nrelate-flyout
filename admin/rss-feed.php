@@ -128,7 +128,7 @@ function nrelate_post_count() {
 		// http://wordpress.org/extend/plugins/thumbshots/
 		// Since 0.49.3
 		if (!$thumb_found && class_exists('ThumbshotsPlugin')){
-			preg_match('#<img[^>]+src=[\"\']{1}(http:\/\/(www\.)?open\.thumbshots.org/image\.aspx[^\"\']*)[\"\']{1}[^>]+\/>#i', $content, $images);
+			preg_match('#<img[^>]+src=[\"\']{1}(http:\/\/(www\.)?(open\.thumbshots.org/image\.aspx|robothumb\.com/src)[^\"\']*)[\"\']{1}[^>]+\/>#i', $content, $images);
 			@$imageurl = $images[1];
 			if ( $imageurl ) {
 				$content = sprintf('<p><img class="nrelate-image thumbshot-image" src="%s" alt="post thumbnail" /></p>%s', $imageurl, $content);
