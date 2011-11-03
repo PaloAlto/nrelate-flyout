@@ -114,7 +114,11 @@ jQuery(document).ready(function($){
 		$('#flyout_imagestyle').val( $(this).parents('div:first').find('input:first').val() );
 	});
 
-	$('.nrelate_fo_preview_button').click(function(event){
+	$('.nrelate-text-style-prev').click(function(){
+		$('#flyout_textstyle').val( $(this).parents('div:first').find('input:first').val() );
+	});
+	
+	$('.nrelate_preview_button').click(function(event){
 		event.preventDefault();
 		
 		if ($('#flyout_thumbnail').val() == 'Thumbnails') {

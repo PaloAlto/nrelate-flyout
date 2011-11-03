@@ -10,7 +10,8 @@ function nrelate_main_section() { ?>
 
 <div id="nrelate-dashboard" class="wrap nrelate-page" style="margin: 10px 15px 0 5px">
 
-<?php echo '<img src="'. NRELATE_ADMIN_IMAGES .'/nrelate-logo.png" alt="nrelate Logo" style="float:left; margin: 0 20px 0 0;" />';
+<?php	do_action ( 'nrelate_page_before_h2');
+		echo '<img src="'. NRELATE_ADMIN_IMAGES .'/nrelate-logo.png" alt="nrelate Logo" style="float:left; margin: 0 20px 0 0;" />';
 		echo '<h2 class="nrelate-title">';
 		_e('nrelate Dashboard','nrelate' );
 		nrelate_tos( NRELATE_PLUGIN_DIR );
@@ -87,7 +88,16 @@ function nrelate_main_section() { ?>
 						<p><?php _e('Use the button below to have nrelate reindex your website.')?></p>
 						<?php if(isset($_POST['reindex'])) { nrelate_reindex(); } ?>
 						<form action="" method="post">
-							<input type="submit" class="reindex" name="reindex" value="Re-Index Website" />
+							<input id="nrelate_reindex_button" type="submit" class="reindex <?php echo NRELATE_API_ONLINE ? '' : 'disabled'; ?>" name="reindex" value="Re-Index Website" <?php echo NRELATE_API_ONLINE ? '' : 'disabled="disabled" title="Sorry nrelate\'s api server is not available. Please try again later"'; ?>/>
+							<script type="text/javascript">
+							//<![CDATA[
+							jQuery(function($){
+								if( $('#indexresponse').html().indexOf("nRelate plugin is ready to go") == -1) {
+									$("#nrelate_reindex_button").addClass('disabled').attr('disabled', 'disabled');
+								}
+							});
+							//]]>
+							</script>
 						</form>
 						<p><strong><?php _e('IMPORTANT: All nrelate content will be temporarily removed from your website while we reindex.<br/><center>Only use when neccessary</center>','nrelate')?></strong></p>
 					</div><!-- .inside -->
@@ -114,9 +124,8 @@ function nrelate_main_section() { ?>
 					<div class="info" id="extra_message"><?php 
 						// Call to nrelate server (sends home url)
 						// Nrelate server returns any message to be displayed in the nrelate dashboard
-						$body=array(
-							'DOMAIN'=>NRELATE_BLOG_ROOT
-						);
+						$body=array( 'DOMAIN'=>NRELATE_BLOG_ROOT );
+
 						$url = 'http://api.nrelate.com/common_wp/'.NRELATE_LATEST_ADMIN_VERSION.'/wordpressnotify_adminmessage.php';
 						
 						$request=new WP_Http;

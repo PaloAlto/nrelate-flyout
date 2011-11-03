@@ -17,7 +17,7 @@ function nr_fo_message_set(){
 	$show_thumbnails = $flyout_options['flyout_thumbnail'];
 	$thumbnailurl = $flyout_options['flyout_default_image'];
 	// Flyout ad options
-	$adcodeopt = @$flyout_options['flyout_display_ad'];
+	$adcodeopt = isset($flyout_options['flyout_display_ad']) ? $flyout_options['flyout_display_ad'] : null;
 	$msg = '';
 	// Thumbnail
 	if ($show_thumbnails == 'Thumbnails') {

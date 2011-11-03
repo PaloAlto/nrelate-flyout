@@ -15,8 +15,6 @@ if (typeof(nRelate)=='undefined') {
 		domready_bound : false,
 		//array of functions to be called on DOMReady event
 		domready_list : [],
-		//var that holds whether or not mp should increment
-		increment : 0,
 		//var that determines if flyout stuff should show or not
 		flyout_show : true,
 		//flag that indicates the current browser is IE
@@ -53,7 +51,6 @@ if (typeof(nRelate)=='undefined') {
 				if (jQuery(this).hasClass('nr_partner')) {
 					return true;
 				}
-				event.preventDefault();
 				var src_url = window.location.href;
 				var iframe_src = "http://track.nrelate.com/tracking/";
 				if (jQuery(this).hasClass('nr_avid')) {
@@ -68,8 +65,9 @@ if (typeof(nRelate)=='undefined') {
 					nr.load_link = true;
 					nr.clicked_link = jQuery(this).attr('href');
 				}
-				
-				jQuery('<iframe id="nr_clickthrough_frame_'+Math.ceil(100*Math.random())+'" height="0" width="0" style="border-width: 0px; display:none;" src="'+iframe_src+'" onload="javascript:nRelate.loadFrame();"></iframe>').appendTo('body');
+				on_load_function = event.ctrlKey ? "void(0)" : "nRelate.loadFrame()";
+				jQuery('<iframe id="nr_clickthrough_frame_'+Math.ceil(100*Math.random())+'" src="'+iframe_src+'" onload="javascript:'+on_load_function+';"></iframe>').appendTo('body');
+				return ( event.ctrlKey ? true : false );
 			});
 		},
 
@@ -80,7 +78,7 @@ if (typeof(nRelate)=='undefined') {
 				setTimeout(function(){ r(id); },0); return;
 			}
 			
-			var sel = '#' + id + ' a.nr_panel';
+			var sel = '#' + id + ' a';
 			
 			if ( jQuery(sel + ':first').length == 0 ) return;
 			

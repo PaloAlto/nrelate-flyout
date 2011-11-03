@@ -25,7 +25,7 @@ function nr_admin_message_set(){
 	$admin_options = get_option('nrelate_admin_options');
 	
 	// get admin email address
-	$admin_email = @$admin_options['admin_email_address'];
+	$admin_email = isset($admin_options['admin_email_address']) ? $admin_options['admin_email_address'] : null;
 	
 	// Communication
 	if ($admin_email == null) {
@@ -44,17 +44,17 @@ add_action ('nrelate_admin_messages','nr_admin_message_set');
  * Check active theme and provide messages to user that might be helpful.
  */
 function nr_theme_compat() {
+	$msg = '';
 	
 	// Theme Capability for either Related OR Popular
 	if (defined('NRELATE_RELATED_ACTIVE') || defined('NRELATE_POPULAR_ACTIVE')) {
 		$theme_data = current_theme_info();	
 		
 		// Woothemes
-		if (strlen(strstr($theme_data->author,'woothemes'))>0) { $msg = $msg . '<li><div class="warning">' . sprintf('<strong>Woothemes</strong> are supported, but may require %sconfiguration%s.', '<a href="http://nrelate.com/theblog/theme-capatibility/woothemes/" target="_blank">', '</a>') . '</div></li>'; }
+		if (strlen(strstr($theme_data->author,'woothemes'))>0) { $msg = $msg . '<li><div class="warning">' . sprintf('<strong>Woothemes</strong> are supported, but may require %sconfiguration%s.', '<a href="http://nrelate.com/theblog/theme-compatibility/woothemes/" target="_blank">', '</a>') . '</div></li>'; }
 	}
 
 echo $msg;
-	
 }
 add_action ('nrelate_admin_messages','nr_theme_compat');
 
@@ -81,6 +81,8 @@ function nr_plugin_compat() {
 		//WP Minify
 		if (is_plugin_active('wp-minify/wp-minify.php')) { $msg = $msg . '<li><div class="warning">' . sprintf('<strong>WP Minify</strong> is supported, but may require %sconfiguration%s.', '<a href="http://nrelate.com/theblog/plugin-compatibility/wp-minify/" target="_blank">', '</a>') . '</div></li>'; }
 		
+		// JS & CSS Script Optimizer
+		if ( is_plugin_active('js-css-script-optimizer/js-css-script-optimizer.php') ) { $msg = $msg . '<li><div class="warning">' . sprintf('<strong>JS & CSS Script Optimizer</strong> is supported, but may require %sconfiguration%s.', '<a href="http://nrelate.com/theblog/plugin-compatibility/js-css-script-optimizer/" target="_blank">', '</a>') . '</div></li>'; }
 		
 	}
 	

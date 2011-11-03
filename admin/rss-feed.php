@@ -129,7 +129,7 @@ function nrelate_post_count() {
 		// Since 0.49.3
 		if (!$thumb_found && class_exists('ThumbshotsPlugin')){
 			preg_match('#<img[^>]+src=[\"\']{1}(http:\/\/(www\.)?(open\.thumbshots.org/image\.aspx|robothumb\.com/src)[^\"\']*)[\"\']{1}[^>]+\/>#i', $content, $images);
-			@$imageurl = $images[1];
+			$imageurl = isset($images[1]) ? $images[1] : null;
 			if ( $imageurl ) {
 				$content = sprintf('<p><img class="nrelate-image thumbshot-image" src="%s" alt="post thumbnail" /></p>%s', $imageurl, $content);
 				$thumb_found = true;
@@ -173,7 +173,7 @@ function nrelate_post_count() {
 		// If no images are found yet, grab the first image in the post.
 		if (!$thumb_found) {
 			preg_match('#<img[^>]+src=[\"\']{1}(http:\/\/.*\.(gif|png|jpg|jpeg|tif|tiff|bmp){1})[\"\']{1}[^>]+\/>#i', $content, $images);
-			@$imageurl = $images[1];
+			$imageurl = isset($images[1]) ? $images[1] : null;
 			if ( $imageurl = nrelate_get_img_url($imageurl) ) {
 				$content = sprintf('<p><img class="nrelate-image auto-content-image" src="%s" alt="post thumbnail" /></p>%s', $imageurl, $content);
 				$thumb_found = true;
@@ -272,6 +272,10 @@ function nrelate_debug() {
 	echo '</pre>';
 }
 
+function nrelate_noindex() {
+	echo "\t<xhtml:meta xmlns:xhtml=\"http://www.w3.org/1999/xhtml\" name=\"robots\" content=\"noindex\" />\n";
+}
+
 /**
  * MAIN NRELATE FEED
  * Serve a custom full-text feed. Thwarts FeedBurner plugins
@@ -301,12 +305,17 @@ function nrelate_custom_feed() {
 		}
 
 		// Query the posts. Defaults to 50, but we can override
+		
+		// Sticky post backwards compatibility
+		global $wp_version;
+		$ignore_sticky = ($wp_version >= '3.1' ? 'ignore_sticky_posts' : 'caller_get_posts');
+		
 		query_posts(
 			array(
 				'posts_per_page' => get_query_var( 'posts_per_page' ),
 				'paged' => $paged,
-				'category__not_in' => (array) $options['admin_exclude_categories'],
-				'ignore_sticky_posts' => 1
+				'category__not_in' => isset($options['admin_exclude_categories']) ? $options['admin_exclude_categories'] : array(),
+				$ignore_sticky => 1
 			)
 		);
 
@@ -390,6 +399,10 @@ function nrelate_custom_feed() {
 		//Show separate categories and tags in feed
 		add_filter('the_category_rss', 'nrelate_cats_tags_rss', 0);
 
+		// Prevent search engine indexing
+		header("X-Robots-Tag: noindex", true);
+		add_action('rss2_head', 'nrelate_noindex');
+		
 		// Use WP's feed template
 		do_feed_rss2( false );
 		exit();

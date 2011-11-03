@@ -10,26 +10,28 @@
  * @subpackage Functions
  */
 
- /**
- * Define Admin constants
- */
-		define( 'NRELATE_COMMON_LOADED', true );
-		define( 'NRELATE_WEBSITE_FORUM_URL', 'http://nrelate.com/forum/' );
-		define( 'NRELATE_WEBSITE_AD_SIGNUP', 'https://partners.nrelate.com/register/');
-		define( 'NRELATE_ADMIN_IMAGES', NRELATE_ADMIN_URL . '/images' );
-		
-		define( 'NRELATE_MIN_WP', '2.9' );
-		define( 'NRELATE_MIN_PHP', '5.0' );
-	
+define( 'NRELATE_COMMON_LOADED', true );
+
 /**
  * nrelate admin menu hook
  *
+ * add hook to top of page
+ * add hook to footer
+ *
  * Since v0.49.0
+ * Footer added v0.50.0
  */
 function nrelate_admin_menu() {
 
 	if ( isset( $_GET['page'] ) && ( substr($_GET['page'], 0, 7) == 'nrelate' ) ) { 
+		// Initial page hook
 		do_action ('nrelate_admin_page');
+		
+		// Footer hook
+		function nrelate_admin_menu_footer() {
+			do_action ('nrelate_admin_page_footer');
+		}
+		add_action('admin_footer','nrelate_admin_menu_footer');
 	}
 }
 add_action('admin_menu','nrelate_admin_menu');
@@ -48,15 +50,7 @@ function nrelate_save_settings() {
 			
 			$msg = __('nrelate settings updated');
 			
-			// Flush Total Cache or Super Cache on settings ave
-			// @cred: http://wordpress.org/extend/plugins/wordpress-seo/
-			if ( function_exists('w3tc_pgcache_flush') ) {
-				w3tc_pgcache_flush();
-				$msg .= __(' &amp; W3 Total Cache Page Cache flushed');
-			} else if (function_exists('wp_cache_clear_cache() ')) {
-				wp_cache_clear_cache();
-				$msg .= __(' &amp; WP Super Cache flushed');
-			}
+			$msg = apply_filters( 'nrelate_flush_cache', $msg );
 			
 			echo '<div class="updated"><p><strong>'.$msg.'.</strong></p></div>';
 			
@@ -67,6 +61,34 @@ function nrelate_save_settings() {
 }
 add_action('nrelate_admin_page','nrelate_save_settings');
 
+
+/**
+ * Clean third party plugins cache
+ *
+ * Since v0.50.0
+ */
+function nrelate_flush_w3tc_cache( $msg = '' ) {
+	// Flush Total Cache
+	// @cred: http://wordpress.org/extend/plugins/wordpress-seo/
+	if ( function_exists('w3tc_pgcache_flush') ) {
+		w3tc_pgcache_flush();
+		$msg .= __(' &amp; W3 Total Cache Page Cache flushed');
+	}
+	return $msg;
+}
+add_filter('nrelate_flush_cache', 'nrelate_flush_w3tc_cache');
+
+
+function nrelate_flush_wpsc_cache( $msg = '' ) {
+	// Flush Super Cache
+	// @cred: http://wordpress.org/extend/plugins/wordpress-seo/
+	if (function_exists('wp_cache_clear_cache')) {
+		wp_cache_clear_cache();
+		$msg .= __(' &amp; WP Super Cache flushed');
+	}
+	return $msg;
+}
+add_filter('nrelate_flush_cache', 'nrelate_flush_wpsc_cache');
 
 
 /**
@@ -80,7 +102,7 @@ add_action('nrelate_admin_page','nrelate_save_settings');
  * return values = 
  * 		<0: all are uninstalled 0: all deactivated, 1: at least one activated
  */
-function nrelate_products($product,$version,$admin_version,$status){
+function nrelate_products($product,$version,$admin_version,$status, $plugin_file=false){
 	$nrelate_products = get_option('nrelate_products');
 	if($status==-1){
 		unset($nrelate_products[$product]);
@@ -89,6 +111,14 @@ function nrelate_products($product,$version,$admin_version,$status){
 		$nrelate_products[$product]["status"]=$status;
 		$nrelate_products[$product]["version"]=$version;
 		$nrelate_products[$product]["admin_version"]=$admin_version;
+		$nrelate_products[$product]["time_stamp"]=time();		
+		if ($plugin_file) {
+			$nrelate_products[$product]["plugin_file"]=$plugin_file;
+		}
+		if ($status) {
+			// Flush cache if activating plugin
+			apply_filters( 'nrelate_flush_cache', '' );
+		}
 	}
 	update_option('nrelate_products', $nrelate_products);
 	if(count($nrelate_products)==0)
@@ -99,7 +129,9 @@ function nrelate_products($product,$version,$admin_version,$status){
 	}
 	return 0;
 }
-			
+
+
+
 
 /**
  * System check
@@ -131,21 +163,16 @@ function nrelate_system_check(){
 /**
  * Show Terms of Service in Thickbox
  */
-function nrelate_tos($pluginpath) {
+function nrelate_tos($dummy='') {
 
-	if (file_exists( $pluginpath . '/terms-of-service.html')) {
-			$tos =  file_get_contents( $pluginpath . '/terms-of-service.html');
-			
-		$output = '
-		<div id="nrelate-tos" style="display:none">
-			<div id="nrelate-terms">' . $tos . '</div>
-		</div>
-		<a class="thickbox button add-new-h2" title = "nrelate Terms Of Service" href="#TB_inline?height=385&amp;width=640&amp;inlineId=nrelate-tos">Terms Of Service</a>';
-		echo $output;
+	$tos =  file_get_contents( NRELATE_CSS_URL.'terms-of-service.html');
 		
-	} else {
-		return;
-	}
+	$output = '
+	<div id="nrelate-tos" style="display:none">
+		<div id="nrelate-terms">' . $tos . '</div>
+	</div>
+	<a class="thickbox button add-new-h2" title = "nrelate Terms Of Service" href="#TB_inline?height=385&amp;width=640&amp;inlineId=nrelate-tos">Terms Of Service</a>';
+	echo $output;
 }
 
 
@@ -153,13 +180,12 @@ function nrelate_tos($pluginpath) {
  * Setup Dashboard menu and menu page
  */
 function nrelate_setup_dashboard() {
-		require_once NRELATE_ADMIN_DIR . '/nrelate-admin-settings.php';
-		require_once NRELATE_ADMIN_DIR . '/nrelate-main-menu.php';
-		require_once NRELATE_ADMIN_DIR . '/admin-messages.php';
-		global $dashboardpage,$mainsectionpage;
-		$mainsectionpage = add_menu_page(__('Dashboard','nrelate'), __('nrelate','nrelate'), 'manage_options', 'nrelate-main', 'nrelate_main_section', NRELATE_ADMIN_IMAGES . '/menu-logo.png');
-		$dashboardpage = add_submenu_page('nrelate-main', __('Dashboard','nrelate'), __('Dashboard','nrelate'), 'manage_options', 'nrelate-main', 'nrelate_main_section');
-
+	require_once NRELATE_ADMIN_DIR . '/nrelate-admin-settings.php';
+	require_once NRELATE_ADMIN_DIR . '/nrelate-main-menu.php';
+	require_once NRELATE_ADMIN_DIR . '/admin-messages.php';
+	global $dashboardpage,$mainsectionpage;
+	$mainsectionpage = add_menu_page(__('Dashboard','nrelate'), __('nrelate','nrelate'), 'manage_options', 'nrelate-main', 'nrelate_main_section', NRELATE_ADMIN_IMAGES . '/menu-logo.png');
+	$dashboardpage = add_submenu_page('nrelate-main', __('Dashboard','nrelate'), __('Dashboard','nrelate'), 'manage_options', 'nrelate-main', 'nrelate_main_section');
 };
 add_action('admin_menu', 'nrelate_setup_dashboard');
  
@@ -171,6 +197,7 @@ add_action('admin_menu', 'nrelate_setup_dashboard');
  */
 function nrelate_load_admin_scripts() {
 	wp_enqueue_script('nrelate_admin_js', NRELATE_ADMIN_URL.'/nrelate_admin_jsfunctions'. ( NRELATE_JS_DEBUG ? '' : '.min') .'.js', array('jquery'));
+	wp_enqueue_script('qtip', NRELATE_ADMIN_URL.'/qtip/jquery.qtip.min.js', array('jquery'));
 	wp_enqueue_script('thickbox'); //used for help videos
 }
 add_action('nrelate_admin_page','nrelate_load_admin_scripts');
@@ -182,11 +209,15 @@ add_action('nrelate_admin_page','nrelate_load_admin_scripts');
  * @since 0.47.3
  */
 function nrelate_load_admin_styles() {
-	wp_register_style( 'nrelate-admin', NRELATE_ADMIN_URL . '/nrelate-admin.css' );
-	wp_enqueue_style('nrelate-admin');
+	wp_enqueue_style( 'nrelate-admin', NRELATE_ADMIN_URL . '/nrelate-admin.css' );
+	wp_enqueue_style( 'qtip-style', NRELATE_ADMIN_URL . '/qtip/jquery.qtip.min.css');
 	wp_enqueue_style('thickbox');
 }
 add_action('nrelate_admin_page','nrelate_load_admin_styles');
+
+
+
+
 
 
 
@@ -246,10 +277,11 @@ function nrelate_reindex() {
  * Since v0.45.0
  */
 function nrelate_index_check() {
-	echo '<li class="nolist"><div id="indexcheck" class="info"></div></li>
-		<script type="text/javascript">
-			checkindex(\''.NRELATE_ADMIN_URL.'\',\''.NRELATE_BLOG_ROOT.'\',\''.NRELATE_LATEST_ADMIN_VERSION.'\');
-		</script>';
+	$request=new WP_Http;
+	$result=$request->request("http://api.nrelate.com/common_wp/".NRELATE_LATEST_ADMIN_VERSION."/indexcheck.php?domain=".NRELATE_BLOG_ROOT."&getrequest=0",array("timeout"=>5));
+	if (!is_wp_error($result)){
+		echo '<li class="nolist"><div id="indexcheck" class="info">'.$result['body'].'</div></li>';
+	}
 }
 
 /**
@@ -285,8 +317,6 @@ function nrelate_get_blogroll(){
 	}
 	return $tmp;
 }
-
-
 
 /**
  * Layout conditionals
@@ -361,11 +391,14 @@ $nrelate_cond_tags = array(
 		"check_val" => "is_attachment",
 		"name" => "Attachment Pages  (is_attachment)", 
 		"parent" => 0
+	),
+	(object) array(
+		"term_id" => 12,
+		"check_val" => "is_404",
+		"name" => "404 Page  (is_404)", 
+		"parent" => 0
 	)
 );
-	
-	
-	
 
 /**
  * Add nrelate dropdown help
@@ -435,6 +468,10 @@ EOD;
 
 return $message;
 }
+
+
+
+
 
 
 

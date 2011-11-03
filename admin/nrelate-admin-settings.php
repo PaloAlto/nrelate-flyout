@@ -67,7 +67,7 @@ function section_text_nr_comm() {
 // CHECKBOX - Admin email address
 function setting_admin_email() {
 	$options = get_option('nrelate_admin_options');
-	$checked = @$options['admin_email_address']=='on' ? ' checked="checked" ' : '';
+	$checked = (isset($options['admin_email_address']) && $options['admin_email_address']=='on') ? ' checked="checked" ' : '';
 	echo "<input ".$checked." name='nrelate_admin_options[admin_email_address]' type='checkbox' />";
 }
 
@@ -178,7 +178,7 @@ class nrelate_Walker_Category_Checklist extends Walker {
 		$class =  $css_classes ? "class='{$css_classes}'" : '';
 		
 		// Supports WP v2.9
-		$output .= "\n<li id='{$taxonomy}-{$category->term_id}'$class>" . '<label class="selectit"><input value="' . $category->$value_field . '" type="checkbox" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $category->term_id . '"' . checked( in_array( $category->$value_field, $selected_cats ), true, false ) . ' /> ' . esc_html( apply_filters('the_category', $category->name )) . '</label>';
+		$output .= "\n<li id='{$taxonomy}-{$category->term_id}'$class>" . '<label class="selectit"><input value="' . $category->$value_field . '" type="checkbox" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $category->term_id . '"' . checked( in_array( $category->$value_field, $selected_cats ), true, false ) . ' /> ' . esc_html( apply_filters('the_category', $category->name )) . nrelate_tooltip("_{$category->$value_field}") . '</label>';
 	
 	}
 }
@@ -192,13 +192,24 @@ function nrelate_check_options_change($new_value) {
 	$old_value = (array) get_option('nrelate_admin_options');
 	$reindex = false;
 	
-	if( @$new_value['admin_exclude_categories'] !== @$old_value['admin_exclude_categories'] ) {
-		$reindex = true;
-	}
+	$ignore_fields = array( 'admin_email_address' ); // Fields from dashboard we DON'T want to trigger reindex
 	
-	if( @$new_value['admin_custom_field'] !== @$old_value['admin_custom_field'] ) {
-		$reindex = true;
-	}	
+	$fields_to_check = array_merge( array_keys( (array)$old_value ), array_keys( (array)$new_value ) );
+	$fields_to_check = array_unique( $fields_to_check );
+	
+	foreach ( $fields_to_check as $field ) {
+		if ( in_array($field, $ignore_fields) ) continue;
+		
+		if ( isset($new_value[$field]) != isset($old_value[$field]) ) {
+			$reindex = true;
+			break;
+		}
+		
+		if ( isset($new_value[$field]) && $new_value[$field] !== $old_value[$field] ) {
+			$reindex = true;
+			break;
+		}
+	}
 	
 	if ( $reindex ) {
 		nrelate_reindex();	
@@ -226,7 +237,7 @@ function nrelate_admin_do_page() { ?>
 						<?php settings_fields('nrelate_admin_options'); ?>
 						<?php do_settings_sections(__FILE__);?>
 						<p class="submit">
-							<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes','nrelate'); ?>" />
+							<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes','nrelate'); ?>" <?php echo NRELATE_API_ONLINE ? '' : 'disabled="disabled" title="Sorry nrelate\'s api server is not available. Please try again later"'; ?> />
 						</p>
 					</form>
 				</ul><!-- .inside -->
@@ -246,7 +257,7 @@ function update_nrelate_admin_data(){
 	// Get nrelate_admin options from wordpress database
 	$option = get_option('nrelate_admin_options');
 	$nr_user_email = get_option('admin_email');
-	$send_email = @$option['admin_email_address'];
+	$send_email = isset($option['admin_email_address']) ? $option['admin_email_address'] : null;
 	$custom_field = $option['admin_custom_field'];
 
 	switch ($send_email){

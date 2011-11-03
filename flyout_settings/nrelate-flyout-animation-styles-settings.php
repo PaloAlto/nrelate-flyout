@@ -102,7 +102,7 @@ function flyout_anim_slideout_styles() {
 <?php
 	} ?>
 		<div style="clear:both;"></div>
-    <input type="hidden" name="nrelate_flyout_anim_options_styles[flyout_anim_fade_style]" value="<?php echo htmlentities(@$options['flyout_anim_fade_style']); ?>" />
+    <input type="hidden" name="nrelate_flyout_anim_options_styles[flyout_anim_fade_style]" value="<?php echo htmlentities(isset($options['flyout_anim_fade_style']) ? $options['flyout_anim_fade_style'] : ''); ?>" />
   <?php
   echo '</div>';
 }
@@ -131,7 +131,7 @@ function flyout_anim_fade_styles() {
 <?php
 	} ?>
 		<div style="clear:both;"></div>
-    <input type="hidden" name="nrelate_flyout_anim_options_styles[flyout_anim_slideout_style]" value="<?php echo htmlentities(@$options['flyout_anim_slideout_style']); ?>" />
+    <input type="hidden" name="nrelate_flyout_anim_options_styles[flyout_anim_slideout_style]" value="<?php echo htmlentities(isset($options['flyout_anim_slideout_style']) ? $options['flyout_anim_slideout_style'] : ''); ?>" />
   <?php
   echo '</div>';
 }
@@ -145,9 +145,9 @@ function nrelate_flyout_anim_styles_do_page() { ?>
 	<?php nrelate_flyout_settings_header(); ?>
     <script type="text/javascript">
 		//<![CDATA[
-		var nr_fo_anim_plugin_settings_url = '<?php echo NRELATE_FLYOUT_ANIM_SETTINGS_URL; ?>';
+		var nr_fo_anim_plugin_settings_url = '<?php echo NRELATE_FLYOUT_SETTINGS_URL; ?>';
 		var nr_plugin_domain = '<?php echo NRELATE_BLOG_ROOT; ?>';
-		var nr_fo_anim_plugin_version = '<?php echo NRELATE_FLYOUT_ANIM_PLUGIN_VERSION ?>';
+		var nr_fo_anim_plugin_version = '<?php echo NRELATE_FLYOUT_PLUGIN_VERSION ?>';
 		//]]>
     </script>
 		<form name="settings" action="options.php" method="post" enctype="multipart/form-action">
@@ -159,30 +159,30 @@ function nrelate_flyout_anim_styles_do_page() { ?>
 		}
     ?>
     <div class="nrelate-hidden">
-      <input type="hidden" id="flyout_anim_number_of_posts" value="<?php echo @$options['flyout_anim_number_of_posts']; ?>" />
-      <input type="hidden" id="flyout_anim_title" value="<?php echo @$options['flyout_anim_title']; ?>" />
+      <input type="hidden" id="flyout_anim_number_of_posts" value="<?php echo isset($options['flyout_anim_number_of_posts']) ? $options['flyout_anim_number_of_posts'] : ''; ?>" />
+      <input type="hidden" id="flyout_anim_title" value="<?php echo isset($options['flyout_anim_title']) ? $options['flyout_anim_title'] : ''; ?>" />
       <input type="checkbox" id="flyout_anim_show_post_title" <?php echo empty($options['flyout_anim_show_post_title']) ? '' : 'checked="checked"'; ?> value="on" />
-      <input type="hidden" id="flyout_anim_max_chars_per_line" value="<?php echo @$options['flyout_anim_max_chars_per_line']; ?>" />
+      <input type="hidden" id="flyout_anim_max_chars_per_line" value="<?php echo isset($options['flyout_anim_max_chars_per_line']) ? $options['flyout_anim_max_chars_per_line'] : ''; ?>" />
       <input type="checkbox" id="flyout_anim_show_post_excerpt" <?php echo empty($options['flyout_anim_show_post_excerpt']) ? '' : 'checked="checked"'; ?> value="on" />
-      <input type="hidden" id="flyout_anim_max_chars_post_excerpt" value="<?php echo @$options['flyout_anim_max_chars_post_excerpt']; ?>" />
+      <input type="hidden" id="flyout_anim_max_chars_post_excerpt" value="<?php echo isset($options['flyout_anim_max_chars_post_excerpt']) ? $options['flyout_anim_max_chars_post_excerpt'] : ''; ?>" />
       <input type="checkbox" id="show_ad" <?php echo empty($options['flyout_anim_display_ad']) ? '' : 'checked="checked"'; ?> value="on" />
-      <input type="hidden" id="flyout_anim_number_of_ads" value="<?php echo $options['flyout_anim_number_of_ads']; ?>" />
-      <input type="hidden" id="flyout_anim_ad_placement" value="<?php echo $options['flyout_anim_ad_placement']; ?>" />
+      <input type="hidden" id="flyout_anim_number_of_ads" value="<?php echo isset($options['flyout_anim_number_of_ads']) ? $options['flyout_anim_number_of_ads'] : ''; ?>" />
+      <input type="hidden" id="flyout_anim_ad_placement" value="<?php echo isset($options['flyout_anim_ad_placement']) ? $options['flyout_anim_ad_placement'] : ''; ?>" />
       <input type="checkbox" id="show_logo" <?php echo empty($options['flyout_anim_display_logo']) ? '' : 'checked="checked"'; ?> value="on" />
-      <input type="hidden" id="flyout_anim_fly" value="<?php echo $options['flyout_anim_fly']; ?>" />
+      <input type="hidden" id="flyout_anim_fly" value="<?php echo isset($options['flyout_anim_fly']) ? $options['flyout_anim_fly'] : ''; ?>" />
       <input type="hidden" id="flyout_anim_fade_style" value="<?php echo empty($style_options['flyout_anim_fade_style']) ? 'nyt' : $style_options['flyout_anim_fade_style']; ?>" />
       <input type="hidden" id="flyout_anim_slideout_style" value="<?php echo empty($style_options['flyout_anim_slideout_style']) ? 'nyt' : $style_options['flyout_anim_slideout_style']; ?>" />
-      <input type="hidden" id="flyout_anim_default_image" value="<?php echo $options['flyout_anim_default_image']; ?>" />
-      <input type="hidden" id="flyout_anim_max_age_num" value="<?php echo $options['flyout_anim_max_age_num']; ?>" />
-      <input type="hidden" id="flyout_anim_max_age_frame" value="<?php echo $options['flyout_anim_max_age_frame']; ?>" />
-      <input type="checkbox" class="nrelate-thumb-size" value="<?php echo $options['flyout_anim_fly_size']; ?>" checked="checked" />
+      <input type="hidden" id="flyout_anim_default_image" value="<?php echo isset($options['flyout_anim_default_image']) ? $options['flyout_anim_default_image'] : ''; ?>" />
+      <input type="hidden" id="flyout_anim_max_age_num" value="<?php echo isset($options['flyout_anim_max_age_num']) ? $options['flyout_anim_max_age_num'] : ''; ?>" />
+      <input type="hidden" id="flyout_anim_max_age_frame" value="<?php echo isset($options['flyout_anim_max_age_frame']) ? $options['flyout_anim_max_age_frame'] : ''; ?>" />
+      <input type="checkbox" class="nrelate-thumb-size" value="<?php echo isset($options['flyout_anim_fly_size']) ? $options['flyout_anim_fly_size'] : ''; ?>" checked="checked" />
       <input type="checkbox" id="ad_animation" value="on" <?php echo empty($options['flyout_anim_ad_animation']) ? '' : ' checked="checked" '; ?> />
     </div>
 		<?php settings_fields('nrelate_flyout_anim_options_styles'); ?>
 		<?php do_settings_sections(__FILE__);?>
     <!--
 		<br>
-    <button type="button" class="nrelate_fo_preview_button button-primary" onClick="return nrelate_flyout_anim_popup_preview('<?php echo NRELATE_FLYOUT_ANIM_SETTINGS_URL ?>','<?php echo NRELATE_BLOG_ROOT; ?>','<?php echo NRELATE_FLYOUT_ANIM_PLUGIN_VERSION ?>');"> <?php _e('Preview','nrelate'); ?> </button>
+    <button type="button" class="nrelate_fo_preview_button button-primary" onClick="return nrelate_flyout_anim_popup_preview('<?php echo NRELATE_FLYOUT_SETTINGS_URL; ?>','<?php echo NRELATE_BLOG_ROOT; ?>','<?php echo NRELATE_FLYOUT_PLUGIN_VERSION; ?>');"> <?php _e('Preview','nrelate'); ?> </button>
     -->
 		<p class="submit">
 			<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes','nrelate'); ?>" />

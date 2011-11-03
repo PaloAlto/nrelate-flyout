@@ -22,7 +22,7 @@ function options_init_nr_fo_styles(){
 	// Main Section
 	add_settings_section('style_section', __('Style Settings for&nbsp;','nrelate') . $type, 'section_text_nr_fo_style', __FILE__);
 	add_settings_field('flyout_style', '', 'setting_flyout_style_type',__FILE__,'style_section');
-	add_settings_field('flyout_save_preview','', 'flyout_save_preview', __FILE__, 'main_section');
+	add_settings_field('nrelate_save_preview','', 'nrelate_save_preview', __FILE__, 'main_section');
 }
 add_action('admin_init', 'options_init_nr_fo_styles' );
 
@@ -86,7 +86,7 @@ function flyout_thumbnail_styles() {
 				<input id="nrelate_style_<?php echo $style_code; ?>" <?php echo $checked; ?> type="radio" name="nrelate_flyout_options_styles[flyout_thumbnails_style]" value="<?php echo $style_code; ?>" /><br />
 				<?php echo $style_name; ?><br />
 			</label>
-			<a href="#" class="nrelate_fo_preview_button nrelate-thumbnail-style-prev" title="Preview this style">
+			<a href="#" class="nrelate_preview_button nrelate-thumbnail-style-prev" title="Preview this style">
 				<img class="style-image" src="<?php echo NRELATE_ADMIN_IMAGES; ?>/thumbnail_style_<?php echo $style_code; ?>.png"  alt="<?php echo $style_code; ?>" />
 			</a>
 			<div id="info-style-<?php echo $style_code;?>" class="style-features-info">
@@ -103,7 +103,7 @@ function flyout_thumbnail_styles() {
 <?php
 	} ?>
 		<div style="clear:both;"></div>
-    <input type="hidden" name="nrelate_flyout_options_styles[flyout_text_style]" value="<?php echo htmlentities(@$options['flyout_text_style']); ?>" />
+    <input type="hidden" name="nrelate_flyout_options_styles[flyout_text_style]" value="<?php echo htmlentities(isset($options['flyout_text_style']) ? $options['flyout_text_style'] : ''); ?>" />
   <?php
   echo '</div>';
 }
@@ -121,11 +121,9 @@ function flyout_text_styles() {
 				<input id="nrelate_style_<?php echo $style_code; ?>" <?php echo $checked; ?> type="radio" name="nrelate_flyout_options_styles[flyout_text_style]" value="<?php echo $style_code; ?>" /><br />
 				<?php echo $style_name; ?><br />
 			</label>
-      <?php if ($style_code!='none') { ?>
-			<a href="#" class="nrelate_fo_preview_button nrelate-thumbnail-style-prev" title="Preview this style">
-				<img class="style-image" src="<?php echo NRELATE_FLYOUT_STYLE_THUMBNAILS_URL; ?>/text_style_<?php echo $style_code; ?>.png"  alt="<?php echo $style_code; ?>" />
+			<a href="#" class="nrelate_preview_button nrelate-text-style-prev" title="Preview this style">
+				<img class="style-image" src="<?php echo NRELATE_ADMIN_IMAGES; ?>/text_style_<?php echo $style_code; ?>.png"  alt="<?php echo $style_code; ?>" />
 			</a>
-      <?php } ?>
 			<div id="info-style-<?php echo $style_code;?>" class="style-features-info">
 				<div class="style-features"><?php echo $nrelate_text_style['features']; ?></div>
 				<div class="style-info"><p><?php echo $nrelate_text_style['info']; ?></p></div>
@@ -136,7 +134,7 @@ function flyout_text_styles() {
 
 
   	<div style="clear:both;"></div>
-    <input type="hidden" name="nrelate_flyout_options_styles[flyout_thumbnails_style]" value="<?php echo htmlentities(@$options['flyout_thumbnails_style']); ?>" />
+    <input type="hidden" name="nrelate_flyout_options_styles[flyout_thumbnails_style]" value="<?php echo htmlentities(isset($options['flyout_thumbnails_style']) ? $options['flyout_thumbnails_style'] : ''); ?>" />
 	<?php
 	echo '</div>';
 }
@@ -164,34 +162,28 @@ function nrelate_flyout_styles_do_page() { ?>
 		}
     ?>
     <div class="nrelate-hidden">
-      <input type="hidden" id="flyout_number_of_posts" value="<?php echo @$options['flyout_number_of_posts']; ?>" />
-      <input type="hidden" id="flyout_title" value="<?php echo @$options['flyout_title']; ?>" />
+      <input type="hidden" id="flyout_number_of_posts" value="<?php echo isset($options['flyout_number_of_posts']) ? $options['flyout_number_of_posts'] : ''; ?>" />
+      <input type="hidden" id="flyout_title" value="<?php echo isset($options['flyout_title']) ? $options['flyout_title'] : ''; ?>" />
       <input type="checkbox" id="flyout_show_post_title" <?php echo empty($options['flyout_show_post_title']) ? '' : 'checked="checked"'; ?> value="on" />
-      <input type="hidden" id="flyout_max_chars_per_line" value="<?php echo @$options['flyout_max_chars_per_line']; ?>" />
+      <input type="hidden" id="flyout_max_chars_per_line" value="<?php echo isset($options['flyout_max_chars_per_line']) ? $options['flyout_max_chars_per_line'] : ''; ?>" />
       <input type="checkbox" id="flyout_show_post_excerpt" <?php echo empty($options['flyout_show_post_excerpt']) ? '' : 'checked="checked"'; ?> value="on" />
-      <input type="hidden" id="flyout_max_chars_post_excerpt" value="<?php echo @$options['flyout_max_chars_post_excerpt']; ?>" />
+      <input type="hidden" id="flyout_max_chars_post_excerpt" value="<?php echo isset($options['flyout_max_chars_post_excerpt']) ? $options['flyout_max_chars_post_excerpt'] : ''; ?>" />
       <input type="checkbox" id="show_ad" <?php echo empty($options['flyout_display_ad']) ? '' : 'checked="checked"'; ?> value="on" />
-      <input type="hidden" id="flyout_number_of_ads" value="<?php echo $options['flyout_number_of_ads']; ?>" />
-      <input type="hidden" id="flyout_ad_placement" value="<?php echo $options['flyout_ad_placement']; ?>" />
+      <input type="hidden" id="flyout_number_of_ads" value="<?php echo isset($options['flyout_number_of_ads']) ? $options['flyout_number_of_ads'] : ''; ?>" />
+      <input type="hidden" id="flyout_ad_placement" value="<?php echo isset($options['flyout_ad_placement']) ? $options['flyout_ad_placement'] : '' ; ?>" />
       <input type="checkbox" id="show_logo" <?php echo empty($options['flyout_display_logo']) ? '' : 'checked="checked"'; ?> value="on" />
-      <input type="hidden" id="flyout_thumbnail" value="<?php echo $options['flyout_thumbnail']; ?>" />
+      <input type="hidden" id="flyout_thumbnail" value="<?php echo isset($options['flyout_thumbnail']) ? $options['flyout_thumbnail'] : ''; ?>" />
       <input type="hidden" id="flyout_textstyle" value="<?php echo empty($style_options['flyout_text_style']) ? 'default' : $style_options['flyout_text_style']; ?>" />
       <input type="hidden" id="flyout_imagestyle" value="<?php echo empty($style_options['flyout_thumbnails_style']) ? 'default' : $style_options['flyout_thumbnails_style']; ?>" />
-      <input type="hidden" id="flyout_default_image" value="<?php echo $options['flyout_default_image']; ?>" />
-      <input type="hidden" id="flyout_max_age_num" value="<?php echo $options['flyout_max_age_num']; ?>" />
-      <input type="hidden" id="flyout_max_age_frame" value="<?php echo $options['flyout_max_age_frame']; ?>" />
-      <input type="checkbox" class="nrelate-thumb-size" value="<?php echo $options['flyout_thumbnail_size']; ?>" checked="checked" />
+      <input type="hidden" id="flyout_default_image" value="<?php echo isset($options['flyout_default_image']) ? $options['flyout_default_image'] : ''; ?>" />
+      <input type="hidden" id="flyout_max_age_num" value="<?php echo isset($options['flyout_max_age_num']) ? $options['flyout_max_age_num'] : ''; ?>" />
+      <input type="hidden" id="flyout_max_age_frame" value="<?php echo isset($options['flyout_max_age_frame']) ? $options['flyout_max_age_frame'] : ''; ?>" />
+      <input type="checkbox" class="nrelate-thumb-size" value="<?php echo isset($options['flyout_thumbnail_size']) ? $options['flyout_thumbnail_size'] : ''; ?>" checked="checked" />
       <input type="checkbox" id="ad_animation" value="on" <?php echo empty($options['flyout_ad_animation']) ? '' : ' checked="checked" '; ?> />
     </div>
 		<?php settings_fields('nrelate_flyout_options_styles'); ?>
 		<?php do_settings_sections(__FILE__);?>
-    <!--
-		<br>
-    <button type="button" class="nrelate_fo_preview_button button-primary" onClick="return nrelate_flyout_popup_preview('<?php echo NRELATE_FLYOUT_SETTINGS_URL ?>','<?php echo NRELATE_BLOG_ROOT; ?>','<?php echo NRELATE_FLYOUT_PLUGIN_VERSION ?>');"> <?php _e('Preview','nrelate'); ?> </button>
-    -->
-		<p class="submit">
-			<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes','nrelate'); ?>" />
-		</p>
+	    <?php nrelate_save();?>
 		</form>
 
 	</div>

@@ -10,7 +10,7 @@
  
  
 
-global $nr_fo_std_options, $nr_fo_layout_options, $nr_fo_anim_options;
+global $nr_fo_std_options, $nr_fo_ad_options, $nr_fo_layout_options, $nr_fo_anim_options;
 
 // Default Options
 // ALL options must be listed
@@ -20,8 +20,6 @@ $nr_fo_std_options = array(
 		"flyout_bar" => "Low",
 		"flyout_max_age_num" => "10",
 		"flyout_max_age_frame" => "Year(s)",
-		"flyout_display_ad" => false,
-		"flyout_ad_animation" => "on",
 		"flyout_animation" => "Slideout",
 		"flyout_loc" => "Right",
 		"flyout_anim_width" => "360",
@@ -38,12 +36,18 @@ $nr_fo_std_options = array(
 		"flyout_number_of_posts" => 1,
 		"flyout_offset"=>2,
 		"flyout_offset_element"=>"#comments",
-		"flyout_ad_placement" => "Last",
 		"flyout_where_to_show" => array( "is_single" ),
-		"flyout_number_of_ads" => 1,
 		"flyout_nonjs" => 0,
 		"flyout_from_bot" => "0",
 		"flyout_from_bot_type" => "px"
+	);
+
+$nr_fo_ad_options = array(
+		"flyout_display_ad" => false,
+		"flyout_ad_animation" => "on",
+		"flyout_validate_ad" => NULL,
+		"flyout_number_of_ads" => 1,
+		"flyout_ad_placement" => "Last"
 	);
 		
 $nr_fo_layout_options = array(		
@@ -65,6 +69,7 @@ $nr_fo_anim_options = array(
 add_action('admin_init','nr_fo_upgrade');
 function nr_fo_upgrade() {
 	$flyout_settings = get_option('nrelate_flyout_options');
+	$flyout_ad_settings = get_option('nrelate_flyout_options_ads');
 	$flyout_layout_settings = get_option('nrelate_flyout_options_styles');
 	$flyout_anim_settings = get_option('nrelate_flyout_anim_options_styles');
 	$current_version = $flyout_settings['flyout_version'];
@@ -74,16 +79,26 @@ function nr_fo_upgrade() {
 	
 		nrelate_system_check(); // run system check
 		
-		global $nr_fo_std_options, $nr_fo_layout_options, $nr_fo_anim_options, $nr_fo_old_checkbox_options;
-
+		global $nr_fo_std_options, $nr_fo_ad_options, $nr_fo_layout_options, $nr_fo_anim_options, $nr_fo_old_checkbox_options;
+			
+			
+			// move all ad settings code from flyout settings to advertising settings: v0.50.0
+			nrelate_upgrade_option('nrelate_flyout_options', 'flyout_display_ad', 'nrelate_flyout_options_ads', 'flyout_display_ad');
+			nrelate_upgrade_option('nrelate_flyout_options', 'flyout_number_of_ads', 'nrelate_flyout_options_ads', 'flyout_number_of_ads');
+			nrelate_upgrade_option('nrelate_flyout_options', 'flyout_ad_placement', 'nrelate_flyout_options_ads', 'flyout_ad_placement');
+			nrelate_upgrade_option('nrelate_flyout_options', 'flyout_ad_animation', 'nrelate_flyout_options_ads', 'flyout_ad_animation');
+			
 			// re-get the latest since we just made changes
 			$flyout_settings = get_option('nrelate_flyout_options');
+			$flyout_ad_settings = get_option('nrelate_flyout_options_ads');
 
 			// STD OPTIONS: Update new options if they don't exist
 			$flyout_settings = wp_parse_args( $flyout_settings, $nr_fo_std_options );
+			$flyout_ad_settings = wp_parse_args( $flyout_ad_settings, $nr_fo_ad_options );
 			
 			// now update again
 			update_option('nrelate_flyout_options', $flyout_settings);
+			update_option('nrelate_flyout_options_ads', $flyout_ad_settings);
 			
 			// LAYOUT OPTIONS
 			$flyout_layout_settings = wp_parse_args( $flyout_layout_settings, $nr_fo_layout_options );
@@ -97,6 +112,24 @@ function nr_fo_upgrade() {
 			$flyout_settings = get_option('nrelate_flyout_options');
 			$flyout_settings['flyout_version'] = NRELATE_FLYOUT_PLUGIN_VERSION;
 			update_option('nrelate_flyout_options', $flyout_settings);
+			
+			// Ping nrelate servers about the upgrade
+			$body=array(
+				'DOMAIN'=>NRELATE_BLOG_ROOT,
+				'VERSION'=>NRELATE_FLYOUT_PLUGIN_VERSION,
+				'KEY'=>get_option('nrelate_key'),
+				'PLUGIN'=>"flyout"
+			);
+			$url = 'http://api.nrelate.com/common_wp/'.NRELATE_LATEST_ADMIN_VERSION.'/versionupdate.php';
+			$request=new WP_Http;
+			$result=$request->request($url,array('method'=>'POST','body'=>$body,'blocking'=>false));
+					
+			// Calculate plugin file path
+			$dir = substr( realpath(dirname(__FILE__) . '/..'), strlen(WP_PLUGIN_DIR) );
+			$file = key( get_plugins( $dir ) );
+			$plugin_file = substr($dir, 1) . '/' . $file;
+			// Update the WP database with the new version number and additional info about this plugin
+			nrelate_products("flyout",NRELATE_FLYOUT_PLUGIN_VERSION,NRELATE_FLYOUT_ADMIN_VERSION,1, $plugin_file);
 	}
 }
 
@@ -117,15 +150,22 @@ function nr_fo_upgrade() {
 function nr_fo_add_defaults() {
 
 	nrelate_system_check(); // run system check
-	nrelate_products("flyout",NRELATE_FLYOUT_PLUGIN_VERSION,NRELATE_FLYOUT_ADMIN_VERSION,1); // add this product to the nrelate_products array
 	
-	global $nr_fo_std_options, $nr_fo_layout_options, $nr_fo_anim_options;
+	// Calculate plugin file path
+	$dir = substr( realpath(dirname(__FILE__) . '/..'), strlen(WP_PLUGIN_DIR) );
+	$file = key( get_plugins( $dir ) );
+	$plugin_file = substr($dir, 1) . '/' . $file;
+
+	nrelate_products("flyout",NRELATE_FLYOUT_PLUGIN_VERSION,NRELATE_FLYOUT_ADMIN_VERSION,1, $plugin_file); // add this product to the nrelate_products array
+	
+	global $nr_fo_std_options, $nr_fo_ad_options, $nr_fo_layout_options, $nr_fo_anim_options;
 
 	$tmp = get_option('nrelate_flyout_options');
 	// If flyout_reset value is on or if nrelate_flyout_options was never created, insert default values
     if(($tmp['flyout_reset']=='on')||(!is_array($tmp))) {
 		
 		update_option('nrelate_flyout_options', $nr_fo_std_options);
+		update_option('nrelate_flyout_options_ads', $nr_fo_ad_options);		
 		update_option('nrelate_flyout_options_styles', $nr_fo_layout_options);
 		update_option('nrelate_flyout_anim_options_styles', $nr_fo_anim_options);
 		
@@ -222,6 +262,8 @@ function nr_fo_add_defaults() {
 		
 		$body=array(
 			'DOMAIN'=>NRELATE_BLOG_ROOT,
+			'VERSION'=>NRELATE_FLYOUT_PLUGIN_VERSION,
+			'KEY'=>get_option('nrelate_key'),
 			'NUM'=>$noflyoutposts,
 			'R_BAR'=>$r_bar,
 			'HDR'=>$r_title,
@@ -239,14 +281,14 @@ function nr_fo_add_defaults() {
 			'OFFSET'=>$flyout_offset,
 			'ELEMENT'=>$flyout_offset_element,
 			'ADNUM'=>$r_number_of_ads,
-			'ADLOC'=>$r_ad_placement,
+			'ADPLACE'=>$r_ad_placement,
 			'NONJS'=>$r_nonjs,
 			'FROMBOT'=>$flyout_from_bot,
 			'FROMBOTTYPE'=>urlencode($flyout_from_bot_type),
 			'WIDTH'=>$r_anim_width,
 			'WIDTHTYPE'=>urlencode($r_anim_width_type)
 		);
-		$url = 'http://api.nrelate.com/fow_wp/'.NRELATE_FLYOUT_PLUGIN_VERSION.'/processWPflyout.php';
+		$url = 'http://api.nrelate.com/fow_wp/'.NRELATE_FLYOUT_PLUGIN_VERSION.'/processWPflyoutAll.php';
 		
 		$request=new WP_Http;
 		$result=$request->request($url,array('method'=>'POST','body'=>$body,'blocking'=>false));
@@ -350,6 +392,7 @@ function nr_fo_uninstall(){
 	
 	// Delete nrelate flyout options from user's wordpress db
 	delete_option('nrelate_flyout_options');
+	delete_option('nrelate_flyout_options_ads');
 	delete_option('nrelate_flyout_options_styles');
 	delete_option('nrelate_flyout_anim_options_styles');
 	
