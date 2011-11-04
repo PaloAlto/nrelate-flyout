@@ -3,7 +3,7 @@ Contributors: nrelate, slipfire, sbruner
 Tags: related posts, related content, related, pages, post, posts, fly-out, flyout, slider, fade, thumbnails, animated, animation, box, featured, jquery, new york times, NYTimes, nrelate
 Tested up to: 3.2.1
 Requires at least: 2.9
-Stable tag: 0.50.0
+Stable tag: 0.50.1
 
 
 Display related content in a cool flyout box... similarly to NYTimes.com.
@@ -99,27 +99,33 @@ Our plugin will work on websites in the following languages: Dutch, English, Fre
 10. "Trendland" style
 11. "Polaroid" style
 12. "Text" style
-13. "Engadget" style
-14. Advertising mixed into content
-15. Hovering on an advertisement
+13. Advertising mixed into content
+14. Hovering on an advertisement
 
 
 == Changelog ==
+
+= 0.50.1 =
+* Fixed file_get_contents error.
 
 = 0.50.0 =
 * The most efficient version yet. Tons of functions are now common to all nrelate plugins!
 * New Engadget style!
 * 404 Page support!
-* Better explanation of advertising opportunities for publishers.
+* Better explaination of advertising opportunities for publishers.
 * Add more CSS classes to Text.
 * nrelate product check notice.
 * nrelate product array now holds the timestamp.
 * Fix bug with Text stylesheet handle is incorrect.
-* Eliminated reindexing trigger for non-index option changes.
+* Elimnated reindexing trigger for non-index option changes.
 * Fixed some PHP warning errors.
 * Ad animation fix. Animation now on a per plugin basis.
 * JS & CSS Script Optimizer compatibility warning message
 * load css and jquery only when required.
+* Fix nrelate_title_url not getting post ID.
+* Fixed issue with WP Super Cache flush not working properly.
+* Flush cache on plugin activation.
+* Avoid feed search engine indexation.
 
 = 0.49.4 =
 * Javascript change to open ads in a new tab/window
