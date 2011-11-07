@@ -99,8 +99,9 @@ Our plugin will work on websites in the following languages: Dutch, English, Fre
 10. "Trendland" style
 11. "Polaroid" style
 12. "Text" style
-13. Advertising mixed into content
-14. Hovering on an advertisement
+13. "Engadget" style
+14. Advertising mixed into content
+15. Hovering on an advertisement
 
 
 == Changelog ==
