@@ -52,7 +52,7 @@ if (typeof(nRelate)=='undefined') {
 					return true;
 				}
 				var src_url = window.location.href;
-				var iframe_src = "http://track.nrelate.com/tracking/";
+				var iframe_src = "http://t.nrelate.com/tracking/";
 				if (jQuery(this).hasClass('nr_avid')) {
 					nr_type = 'avid';
 				} else if (jQuery(this).hasClass('nr_external')) {
