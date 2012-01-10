@@ -126,7 +126,11 @@ function flyout_text_styles() {
 			</a>
 			<div id="info-style-<?php echo $style_code;?>" class="style-features-info">
 				<div class="style-features"><?php echo $nrelate_text_style['features']; ?></div>
-				<div class="style-info"><p><?php echo $nrelate_text_style['info']; ?></p></div>
+				<div class="style-info"><p><?php echo $nrelate_text_style['info']; ?></p>
+					<?php if ($style_code!='none') { ?>
+							<a href="<?php echo NRELATE_CSS_URL . 'nrelate-text-' . $style_code .'.css';?>?keepThis=true&TB_iframe=true&height=450&width=500" title="CSS for <strong><?php echo $style_name; ?></strong> Style" class="thickbox">View Stylesheet</a>
+						<?php } ?>
+				</div>
 			</div>				
 		</div>
 <?php
