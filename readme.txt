@@ -82,6 +82,9 @@ Our plugin creates an additional nrelate specific RSS feed.  We use this feed so
 = What is in the nrelate specific RSS feed and how is it used? =
 The nrelate specific RSS feed is very similar to your standard RSS feed if you set it to full feed.  Since we had some users that had their feed to just show a summary and others that used Feedburner, we set this up.  The nrelate specific feed can only be accessed by using a random key that is generated upon install.  To make sure this feed is not used for other purposes, we hired WordPress lead developer and security expert, Mark Jaquith, to build it for us.
 
+= How does nrelate know when new content is published? =
+When you activate an nrelate plugin, our Pinghost is automatically added to your list of Update Services, so we are automatically notified when you publish a new post. This allows us to index your new content quickly. You can learn more about the WordPress Update Services at the <a href="http://codex.wordpress.org/Update_Services">WordPress Codex</a>.
+
 = My website is not in English, will nrelate work? =
 Our plugin will work on websites in the following languages: Dutch, English, French, German, Indonesian, Italian, Polish, Portuguese, Russian, Spanish, Swedish and Turkish.  If you do not see your language on the list or you think that we could improve the relevancy of our plugin in your language, please <a href="http://nrelate.com/forum/">contact us</a> and we will work with you to configure the plugin accordingly.
 
@@ -99,12 +102,19 @@ Our plugin will work on websites in the following languages: Dutch, English, Fre
 10. "Trendland" style
 11. "Polaroid" style
 12. "Text" style
-13. "Engadget" style
-14. Advertising mixed into content
-15. Hovering on an advertisement
+13. Advertising mixed into content
+14. Hovering on an advertisement
 
 
 == Changelog ==
+
+= 0.50.2 =
+* Removed the_excerpt filter since we only who on is_single.
+* Fixed clickthrough iframe bug.
+* Include/Exclude Post types in data pool.
+* Post Type added to nrelate custom feed.
+* Change wp_print_styles to wp_enqueue_scripts for WordPress 3.3 compatibility.
+* Changed get_permalink($post->ID) to get_permalink($wp_query->post->ID), so we can accurately pull the correct url.
 
 = 0.50.1 =
 * Fixed file_get_contents error.

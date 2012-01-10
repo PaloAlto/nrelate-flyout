@@ -5,6 +5,38 @@
  * @package nrelate
  * @subpackage Functions
  */
+ 
+  /**
+ * Retrieve Post ID, formatted for use in feeds.
+ *
+ * @credit WordPress /includes/rss-feed.php
+ *
+ * Since 0.50.2
+ */
+function nrelate_get_the_post_ID() {
+	global $post;
+	$post_id = $post->ID;
+	
+	$the_post_id = "<postID><![CDATA[" . $post_id . "]]></postID>\n";
+
+	return $the_post_id;
+}
+
+ /**
+ * Retrieve Post Type, formatted for use in feeds.
+ *
+ * @credit WordPress /includes/rss-feed.php
+ *
+ * Since 0.50.2
+ */
+function nrelate_get_the_post_type_rss() {
+	global $post;
+	$post_type = get_post_type( $post );
+	
+	$the_post_type = "\t\t<postType><![CDATA[" . @html_entity_decode( $post_type, ENT_COMPAT, get_option('blog_charset') ) . "]]></postType>\n";
+
+	return $the_post_type;
+}
 
 
  /**
@@ -23,6 +55,7 @@ function nrelate_get_the_category_rss() {
 
 	if ( !empty($categories) ) foreach ( (array) $categories as $category ) {
 		$cat_names[] = sanitize_term_field('name', $category->name, $category->term_id, 'category', $filter);
+		//$cat_names[] = $category->cat_ID; 
 	}
 
 	$cat_names = array_unique($cat_names);
@@ -61,14 +94,17 @@ function nrelate_get_the_tags_rss() {
 }
 
  /**
- * Display Categories and Tags in feed
+ * Display Post ID, Post Type, Categories and Tags in feed
  *
  * @cred WordPress /includes/rss-feed.php
  *
  * Since 0.44.0
+ * Update 0.50.2
  */
 
-function nrelate_cats_tags_rss() {
+function nrelate_cdata() {
+	echo nrelate_get_the_post_ID();
+	echo nrelate_get_the_post_type_rss();
 	echo nrelate_get_the_category_rss();
 	echo nrelate_get_the_tags_rss();
 }
@@ -252,12 +288,14 @@ function nrelate_debug() {
 	if (function_exists('nrelate_related')) {
 		$options += get_option('nrelate_related_options', array());
 		$options += get_option('nrelate_related_options_styles', array());
+		$options += get_option('nrelate_related_options_ads', array());
 	}
 
 	//Get most popular options
 	if (function_exists('nrelate_popular')) {
 		$options += get_option('nrelate_popular_options', array());
 		$options += get_option('nrelate_popular_options_styles', array());
+		$options += get_option('nrelate_popular_options_ads', array());
 	}
 	
 	//Get most popular options
@@ -265,6 +303,7 @@ function nrelate_debug() {
 		$options += get_option('nrelate_flyout_options', array());
 		$options += get_option('nrelate_flyout_options_styles', array());
 		$options += get_option('nrelate_flyout_box_options_styles', array());
+		$options += get_option('nrelate_flyout_options_ads', array());
 	}
 
 	echo '<pre>';
@@ -288,13 +327,21 @@ function nrelate_custom_feed() {
 			nrelate_debug();
 			exit();
 		}
-		
+
+		// Posts per page		
 		if ( isset( $_GET['posts_per_page'] ) )
 			set_query_var( 'posts_per_page', $_GET['posts_per_page'] );
 		else
 			set_query_var( 'posts_per_page', 50 );
+			
+		// Specific Posts
+		if(isset($_GET['p'])){
+			$p = $_GET['p'];
+		}else{
+			$p = null;
+		}
 
-		// Exclude categories
+		// Get Admin options
 		$options = get_option('nrelate_admin_options');
 
 		// Fix for pagination
@@ -304,8 +351,6 @@ function nrelate_custom_feed() {
 			$paged = 1;
 		}
 
-		// Query the posts. Defaults to 50, but we can override
-		
 		// Sticky post backwards compatibility
 		global $wp_version;
 		$ignore_sticky = ($wp_version >= '3.1' ? 'ignore_sticky_posts' : 'caller_get_posts');
@@ -313,9 +358,11 @@ function nrelate_custom_feed() {
 		query_posts(
 			array(
 				'posts_per_page' => get_query_var( 'posts_per_page' ),
+				'p' => $p,
 				'paged' => $paged,
 				'category__not_in' => isset($options['admin_exclude_categories']) ? $options['admin_exclude_categories'] : array(),
-				$ignore_sticky => 1
+				$ignore_sticky => 1,
+				'post_type' => isset($options['admin_include_post_types']) ? $options['admin_include_post_types'] : array()
 			)
 		);
 
@@ -396,8 +443,8 @@ function nrelate_custom_feed() {
 		// Add post count
 		add_action ('rss2_head', 'nrelate_post_count');
 
-		//Show separate categories and tags in feed
-		add_filter('the_category_rss', 'nrelate_cats_tags_rss', 0);
+		//Show nrelate custom CDATA
+		add_filter('the_category_rss', 'nrelate_cdata', 0);
 
 		// Prevent search engine indexing
 		header("X-Robots-Tag: noindex", true);

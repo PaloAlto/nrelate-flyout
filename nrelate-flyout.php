@@ -4,7 +4,7 @@ Plugin Name: nrelate Flyout
 Plugin URI: http://www.nrelate.com
 Description: Easily allow related posts to flyout from the sides of your website. Click on <a href="admin.php?page=nrelate-flyout">nrelate &rarr; Flyout</a> to configure your settings.
 Author: <a href="http://www.nrelate.com">nrelate</a> and <a href="http://www.slipfire.com">SlipFire</a>
-Version: 0.50.1
+Version: 0.50.2
 Author URI: http://nrelate.com/
 
 /*
@@ -35,7 +35,7 @@ Author URI: http://nrelate.com/
 /**
  * Define Plugin constants
  */
-define( 'NRELATE_FLYOUT_PLUGIN_VERSION', '0.50.1' );
+define( 'NRELATE_FLYOUT_PLUGIN_VERSION', '0.50.2' );
 define( 'NRELATE_FLYOUT_ADMIN_SETTINGS_PAGE', 'nrelate-flyout' );
 define( 'NRELATE_FLYOUT_ADMIN_VERSION', '0.04.0' );
 define( 'NRELATE_FLYOUT_NAME' , __('Flyout','nrelate'));
@@ -199,7 +199,7 @@ function nrelate_flyout_styles() {
 		wp_enqueue_style( 'nrelate-style-'. $anim_style_type . "-" . str_replace(".","-",NRELATE_FLYOUT_ADMIN_VERSION) );
 	}
 }
-add_action('wp_print_styles', 'nrelate_flyout_styles');
+add_action('wp_enqueue_scripts', 'nrelate_flyout_styles');
 
 /*
  * Check if nrelate is loading (frontend only)
@@ -256,7 +256,8 @@ function nrelate_flyout_inject($content) {
 	return $content;
 }
 add_filter( 'the_content', 'nrelate_flyout_inject', 10 );
-add_filter( 'the_excerpt', 'nrelate_flyout_inject', 10 );
+//Since we only show on is_single, we can remove the_excerpt filter
+//add_filter( 'the_excerpt', 'nrelate_flyout_inject', 10 );
 
 
 /**
@@ -301,7 +302,6 @@ function nrelate_flyout() {
 	if ( nrelate_flyout_is_loading() )  {	
 		$nr_fo_counter++;
 		$nrelate_flyout_options = get_option('nrelate_flyout_options');
-		$nrelate_flyout_options_ads = get_option('nrelate_flyout_options_ads');
 		$fo_style_options = get_option('nrelate_flyout_options_styles');
 		$fo_style_code = 'nrelate_' . (($nrelate_flyout_options['flyout_thumbnail']=='Thumbnails') ? $fo_style_options['flyout_thumbnails_style'] : $fo_style_options['flyout_text_style']);
 		
@@ -325,6 +325,7 @@ function nrelate_flyout() {
 		    
 			$animation_fix = '<style type="text/css">.nrelate_flyout .nr_sponsored{ left:0px !important; }</style>';
 			
+			$nrelate_flyout_options_ads = get_option('nrelate_flyout_options_ads');
 			if (!empty($nrelate_flyout_options_ads['flyout_ad_animation'])) {
 				$animation_fix = '';
 			}
@@ -353,22 +354,14 @@ function nrelate_flyout() {
 		    //This call makes the js for flyout
 			$flyout_js_str=nrelate_flyout_makejs();
 		}
-		if(!defined('NRELATE_HOME')){
+		if (!defined('NRELATE_HOME')) {
 			define('NRELATE_HOME', true);
 			$domain = addslashes(NRELATE_BLOG_ROOT);
-			
-			$script = <<< EOD
-				$animation_fix
-				<script type="text/javascript">
-				/*<![CDATA[*/
-					nRelate.domain = "{$domain}";
-				/*]]>*/
-				</script>
-				$flyout_animation
-EOD;
-			
-			echo $script;
+			$nr_domain_init = "nRelate.domain = \"{$domain}\";";
+		} else {
+			$nr_domain_init = '';
 		}
+		
 		if($nonjs){
 			$request = new WP_Http;
 		    $args=array("timeout"=>5);
@@ -376,7 +369,7 @@ EOD;
 		    if( !is_wp_error( $response ) ){
 			    if($response['response']['code']==200 && $response['response']['message']=='OK'){
 				    $nr_fo_nonjsbody=$response['body'];
-			   		$nr_fo_nonjsfix='<script type="text/javascript">nRelate.fixHeight("nrelate_flyout_'.$nr_fo_counter.'"); ';
+			   		$nr_fo_nonjsfix='<script type="text/javascript">'.$nr_domain_init.'nRelate.fixHeight("nrelate_flyout_'.$nr_fo_counter.'"); ';
 			   		$nr_fo_nonjsfix.='nRelate.adAnimation("nrelate_flyout_'.$nr_fo_counter.'"); ';
 					$nr_fo_nonjsfix.='nRelate.tracking("fo"); ';
 					$nr_fo_nonjsfix.=$flyout_js_str.'</script>';
@@ -391,7 +384,8 @@ EOD;
 			$nr_fo_js_str= <<<EOD
 	<script type="text/javascript">
 	/*<![CDATA[*/
-		$flyout_js_str 
+		$flyout_js_str
+		$nr_domain_init
 		var entity_decoded_nr_url = jQuery('<div/>').html("$nr_url").text();
 		nRelate.getNrelatePosts(entity_decoded_nr_url);
 	/*]]>*/
@@ -400,6 +394,7 @@ EOD;
 		}
 		$markup = <<<EOD
 $animation_fix
+$flyout_animation
 <div class="nr_clear"></div>
 	<div id="nrelate_flyout_{$nr_fo_counter}" class="nrelate nrelate_flyout nr_$flyout_type_position nr_animate_type_$flyout_animation_type $fo_anim_style_code $fo_style_code $nr_fo_width_class">$nr_fo_nonjsbody</div>
 	<!--[if IE 6]>

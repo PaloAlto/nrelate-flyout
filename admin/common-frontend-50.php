@@ -77,23 +77,24 @@ function nrelate_should_inject($plugin='') {
  * Get page Title and URL
  *
  * @since 0.50.0
+ * @0.50.2 updated to wp_query
  */
 function nrelate_title_url () {
-	global $post;
+	global $wp_query;
 
 	// If page is_404 use the url as the title
 	if ( is_404() ) {
 		$post_title = urlencode( str_replace('-', ' ', get_query_var('name')) );
-		$post_urlencoded = urlencode( "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] );
+		$post_urlencoded = urlencode( "http://" . $_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"] ) ;
 	} else {
-		$post_title = urlencode( get_the_title($post->ID) );
-		$post_urlencoded = urlencode( get_permalink($post->ID) );
+		$post_title =  urlencode ( get_the_title($wp_query->post->ID) );
+		$post_urlencoded = urlencode( get_permalink($wp_query->post->ID) );
 	}
 
 $arr = array("post_title" => $post_title, "post_urlencoded" => $post_urlencoded);
 
+
 return $arr;
 }
-
 
 ?>

@@ -8,6 +8,42 @@
  * @subpackage Functions
  */
 
+
+ /**
+ * nrelate service status
+ *
+ */
+function nr_service_status() {
+
+	// Get RSS Feed(s)
+	include_once(ABSPATH . WPINC . '/feed.php');
+
+	// Get a SimplePie feed object from the specified feed source.
+	$rss = fetch_feed('http://status.nrelate.com/feed/');
+	if (!is_wp_error( $rss ) ) : // Checks that the object is created correctly 
+	// Get the latest item. 
+	$maxitems = $rss->get_item_quantity(1); 
+
+	// Build an array of all the items, starting with element 0 (first element).
+	$rss_items = $rss->get_items(0, $maxitems); 
+	endif;
+	?>
+
+	<?php if ($maxitems == 0) printf('%s This is embarassing. nrelate status is down.  We\'re hard at working getting it fixed. %s','<p>','</p>');
+			else
+			// Loop through each feed item and display each item as a hyperlink.
+			foreach ( $rss_items as $item ) : ?>
+				<li>
+					<div class="info" id="servicecheck">
+						<?php _e ('Service Status:','nrelate');?>
+						<?php echo $item->get_title(); ?>&nbsp;&nbsp;
+						<a href='<?php echo $item->get_permalink(); ?>'title='<?php echo $item->get_description (); ?>'>
+						<?php echo $item->get_date('M j G:i T'); ?></a>
+					</div>
+				</li>
+	<?php endforeach;
+}
+
  
  
  /**
@@ -52,6 +88,9 @@ function nr_theme_compat() {
 		
 		// Woothemes
 		if (strlen(strstr($theme_data->author,'woothemes'))>0) { $msg = $msg . '<li><div class="warning">' . sprintf('<strong>Woothemes</strong> are supported, but may require %sconfiguration%s.', '<a href="http://nrelate.com/theblog/theme-compatibility/woothemes/" target="_blank">', '</a>') . '</div></li>'; }
+
+		// Genesis
+		if (function_exists('genesis')) { $msg = $msg . '<li><div class="warning">' . sprintf('<strong>Genesis</strong> themes are supported, but may require %sconfiguration%s.', '<a href="http://nrelate.com/theblog/theme-compatibility/genesis/" target="_blank">', '</a>') . '</div></li>'; }
 	}
 
 echo $msg;

@@ -66,7 +66,7 @@ if (typeof(nRelate)=='undefined') {
 					nr.clicked_link = jQuery(this).attr('href');
 				}
 				on_load_function = event.ctrlKey ? "void(0)" : "nRelate.loadFrame()";
-				jQuery('<iframe id="nr_clickthrough_frame_'+Math.ceil(100*Math.random())+'" src="'+iframe_src+'" onload="javascript:'+on_load_function+';"></iframe>').appendTo('body');
+				jQuery('<iframe id="nr_clickthrough_frame_'+Math.ceil(100*Math.random())+'" height="0" width="0" style="border-width: 0px; display:none;" src="'+iframe_src+'" onload="javascript:'+on_load_function+'"></iframe>').appendTo('body');
 				return ( event.ctrlKey ? true : false );
 			});
 		},

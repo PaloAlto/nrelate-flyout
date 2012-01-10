@@ -16,7 +16,7 @@ function options_admin_init_nr(){
 	
 	// Ad Section
 	add_settings_section('ad_section', __('Advertising','nrelate'), 'section_text_nr_ad', __FILE__);
-	add_settings_field('admin_validate_ad', __('This is your ad ID.','nrelate').'<br>(<a href="' . NRELATE_WEBSITE_AD_SIGNUP .'" target="_blank">'.__('Sign up to earn money.','nrelate') . '</a>)', 'setting_admin_validate_ad', __FILE__, 'ad_section');	
+	add_settings_field('admin_validate_ad', __('Partner ID','nrelate').'<br>(<a href="' . NRELATE_WEBSITE_AD_SIGNUP .'" target="_blank">'.__('Sign up to earn money.','nrelate') . '</a>)', 'setting_admin_validate_ad', __FILE__, 'ad_section');	
 
 	// Communication Section
 	add_settings_section('comm_section', __('Communication','nrelate'), 'section_text_nr_comm', __FILE__);
@@ -29,6 +29,10 @@ function options_admin_init_nr(){
 	// Exclude categories
 	add_settings_section('excludecat_section', __('Exclude Categories','nrelate'), 'section_text_nr_excludecat', __FILE__);
 	add_settings_field('admin_exclude_categories', __('Categories:','nrelate'), 'setting_admin_exclude_categories',__FILE__,'excludecat_section');
+	
+	// Include custom post types
+	add_settings_section('includecpt_section', __('Include Custom Post Types','nrelate'), 'section_text_nr_includecpt', __FILE__);
+	add_settings_field('admin_include_cpt', __('Post Types:','nrelate'), 'setting_admin_include_cpt',__FILE__,'includecpt_section');
 
 }
 add_action('admin_init', 'options_admin_init_nr' );
@@ -183,6 +187,62 @@ class nrelate_Walker_Category_Checklist extends Walker {
 	}
 }
 
+///////////////////////////
+//   Include Custom Post Types Settings
+//////////////////////////
+
+// Section HTML: customfield
+function section_text_nr_includecpt() {
+	_e('<p id="include-cpt">Select the Post Types you want to <b>include</b> in ALL nrelate products.</p>', 'nrelate');
+}
+
+// CHECKBOX LIST - Name: nrelate_admin_options[admin_exclude_categories]
+function setting_admin_include_cpt() {
+	$options = get_option('nrelate_admin_options');
+	
+	$selected = isset( $options['admin_include_post_types'] ) ? $options['admin_include_post_types'] : array( 'post' );
+	
+	$post_types = get_post_types( 
+		array(
+			'public'=>true, 
+			//'publicly_queryable'=>true,
+			//'capability_type'=> array('post','page'),
+			'show_ui'=>true
+		), 'object' 
+	);
+	
+	echo "<div id='nrelate-include-cpts' class='cptdiv'><ul id='posttypeschecklist' class='list:posttypes categorychecklist form-no-clear'>";
+	
+	foreach ( $post_types as $id => $post_type ) {
+		$checked = in_array( $id, $selected ) ? "checked='checked'" : "";
+		echo "<li id='post-type-{$id}'><label class='selectit'><input type='checkbox' value='{$id}' name='nrelate_admin_options[admin_include_post_types][]' {$checked} id='in-post-type-{$id}' /> {$post_type->name}</label></li>";
+	}
+	
+	echo '</ul></div>';
+
+
+$javascript_cpt = <<< JAVA_SCRIPT
+jQuery(document).ready(function(){
+	var nrel_include_cpts_changed = false;
+	
+	jQuery('#nrelate-include-cpts :checkbox').change(function(){
+		var me= jQuery(this);
+		if (!nrel_include_cpts_changed) {
+			if (confirm("Any changes to this section will cause a site reindex. Are you sure you want to continue?\u000AIf Yes, press OK and then SAVE CHANGES."))
+			{
+				nrel_include_cpts_changed = true;
+			} 
+			else 
+			{
+				me.attr('checked', !me.is(':checked'));
+			}
+		}
+	});								
+});
+JAVA_SCRIPT;
+
+	echo "<script type='text/javascript'>{$javascript_cpt}</script>";
+}
 
 /*
 *	Executes when nrelate_admin_options changes so it can call nrelate_reindex()

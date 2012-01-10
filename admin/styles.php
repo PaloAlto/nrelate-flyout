@@ -41,7 +41,7 @@ $nrelate_thumbnail_styles = array(
 										<li>Hover Effects.</li>
 										<li>Stylized thumbnail dividing line.</li>
 									</ul>', 'nrelate'),
-					"info"=>__('This style is based upon the related thumbnail widget from <a href="http://linkwithin.com" target="_blank">Linkwithin.com</a>. LinkWithin is a blog widget that appears under each post','nrelate'),
+					"info"=>__('This style is based upon the related thumbnail widget from <a href="http://linkwithin.com" target="_blank">Linkwithin.com</a>. LinkWithin is a blog widget that appears under each post.','nrelate'),
 				
 				
 				),
@@ -66,7 +66,20 @@ $nrelate_thumbnail_styles = array(
 										<li>Text over thumbnail.</li>
 										<li>Semi-transparent text background.</li>
 									</ul>', 'nrelate'),
-					"info"=>__('This style is based upon the custom version developed at <a href="http://trendland.net" target="_blank">Trendland.net</a>.<br>Trendland is an online magazine that redefines trend forecasting through a rich visual journey.','nrelate'),
+					"info"=>__('This style is based upon the custom version developed at <a href="http://trendland.net" target="_blank">Trendland.net</a>. Trendland is an online magazine that redefines trend forecasting through a rich visual journey.','nrelate'),
+				
+				),
+'toon' => array(
+					"stylesheet" => "nrelate-panels-toonbarn.css",
+					"name"=>__('ToonBarn', 'nrelate'),
+					"features"=>__('<ul>
+										<li>Hover effects.</li>
+										<li>Border.</li>
+										<li>Left aligned text.</li>
+										<li>Text over thumbnail.</li>
+										<li>Semi-transparent text background.</li>
+									</ul>', 'nrelate'),
+					"info"=>__('** Best with Thumbnail size of 100px or more ** This style is based upon the custom version developed at <a href="http://toonbarn.com" target="_blank">ToonBarn.com</a>. ToonBarn is the ultimate hang out for cartoon fans.','nrelate'),
 				
 				),
 'pol' => array(
@@ -75,8 +88,9 @@ $nrelate_thumbnail_styles = array(
 					"features"=>__('<ul>
 										<li>Turns your images into Polaroid pictures.</li>
 										<li>Rotated randomly.</li>
+										<li>**Only works well in modern browsers.</li>
 									</ul>', 'nrelate'),
-					"info"=>__('Polaroid style images. Inspired by <a href="http://www.zurb.com/playground/css3-polaroids" target="_blank">this article</a>.<br>at Zurb.com.','nrelate'),
+					"info"=>__('Polaroid style images. Inspired by <a href="http://www.zurb.com/playground/css3-polaroids" target="_blank">this article</a> at Zurb.com.','nrelate'),
 				
 				),
 'none' => array(

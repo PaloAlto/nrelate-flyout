@@ -116,12 +116,16 @@ function nrelate_main_section() { ?>
 					<ul class="inside">
 					
 					<!-- Show index status -->
-					<?php nrelate_index_check();?>			
+					<?php nrelate_index_check();?>	
+					
+					<!-- Show service status -->
+					<?php nr_service_status();?>		
 					
 					<!-- Hook for admin messages from all nrelate plugins -->
 					<?php do_action('nrelate_admin_messages');?>
 					<li>
-					<div class="info" id="extra_message"><?php 
+					<div class="info" id="extra_message">
+						<?php 
 						// Call to nrelate server (sends home url)
 						// Nrelate server returns any message to be displayed in the nrelate dashboard
 						$body=array( 'DOMAIN'=>NRELATE_BLOG_ROOT );

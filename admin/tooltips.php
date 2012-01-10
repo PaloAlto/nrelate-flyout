@@ -33,8 +33,14 @@ $nrelate_tooltips = array(
 	"_show_post_excerpt" => __("You can also display an excerpt of your post by selecting this setting. This setting is highly recommended to be used along with the Huffington Post style (located in the Style Gallery). Be sure to set a maximum excerpt length or else you may stretch out the plugin on the page.","nrelate"),
 	
 	"_max_chars_post_excerpt" => __("Set the maximum word length of the post excerpt. It's usually fine to set this at 20.","nrelate"),
-	
-	"_is_404" => __("Requires <a href='#loc_manual'>manual installation</a> in your theme's 404.php file. You may also use the <a href='widgets.php'>nrelate widget</a>, if your 404 page is widgetized.","nrelate")
+
+	"_where_to_show" => __("This setting allows you to control which pages nrelate will display on. Even if you <a href='http://nrelate.com/theblog/2011/12/22/manually-adding-nrelate-code-to-your-wordpress-template/' target='_blank'>manually</a> add our code to  your theme template, you still need to check the appropriate boxes here.","nrelate"),
+
+	"_loc_top" => __("nrelate will automatically display <em>before</em> your post content. If you want to control where nrelate displays, you should uncheck this box, and <em>'Bottom of post (Automatic)'</em> and <a href='http://nrelate.com/theblog/2011/12/22/manually-adding-nrelate-code-to-your-wordpress-template/'>follow these instructions on manually adding our code.</a>.","nrelate"),
+
+	"_loc_bottom" => __("nrelate will automatically display <em>after</em> your post content. If you want to control where nrelate displays, you should uncheck this box, and <em>'Top of post (Automatic)'</em> and <a href='http://nrelate.com/theblog/2011/12/22/manually-adding-nrelate-code-to-your-wordpress-template/' target='_blank'>follow these instructions on manually adding our code.</a>.","nrelate"),
+
+	"_is_404" => __("Requires <a href='#loc_manual'>manual installation</a> in your theme's 404.php file. You may also use the <a href='widgets.php' target='_blank'>nrelate widget</a>, if your 404 page is widgetized.","nrelate")
 
 	);
 					
