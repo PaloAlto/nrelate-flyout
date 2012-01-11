@@ -115,6 +115,7 @@ Our plugin will work on websites in the following languages: Dutch, English, Fre
 * Post Type added to nrelate custom feed.
 * Change wp_print_styles to wp_enqueue_scripts for WordPress 3.3 compatibility.
 * Changed get_permalink($post->ID) to get_permalink($wp_query->post->ID), so we can accurately pull the correct url.
+* Remove two div's that are not needed anymore.
 
 = 0.50.1 =
 * Fixed file_get_contents error.

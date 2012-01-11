@@ -395,7 +395,6 @@ EOD;
 		$markup = <<<EOD
 $animation_fix
 $flyout_animation
-<div class="nr_clear"></div>
 	<div id="nrelate_flyout_{$nr_fo_counter}" class="nrelate nrelate_flyout nr_$flyout_type_position nr_animate_type_$flyout_animation_type $fo_anim_style_code $fo_style_code $nr_fo_width_class">$nr_fo_nonjsbody</div>
 	<!--[if IE 6]>
 		<script type="text/javascript">jQuery('.$fo_style_code').removeClass('$fo_style_code');</script>
@@ -403,7 +402,6 @@ $flyout_animation
 	$nr_fo_nonjsfix
 	$nr_fo_js_str
     <div id='nrelate_flyout_open' class='$fo_anim_style_code nr_$flyout_type_position'></div>
-	<div class="nr_clear"></div>
 EOD;
 
 echo $markup;
