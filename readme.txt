@@ -110,6 +110,7 @@ Our plugin will work on websites in the following languages: Dutch, English, Fre
 
 = 0.50.4 =
 * Fixed bug with Flyout injection.
+* Fixed error with nrelate debug.
 
 = 0.50.3 =
 * Fixed bug on nrelate dashboard and TOS.
