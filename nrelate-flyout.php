@@ -4,7 +4,7 @@ Plugin Name: nrelate Flyout
 Plugin URI: http://www.nrelate.com
 Description: Easily allow related posts to flyout from the sides of your website. Click on <a href="admin.php?page=nrelate-flyout">nrelate &rarr; Flyout</a> to configure your settings.
 Author: <a href="http://www.nrelate.com">nrelate</a> and <a href="http://www.slipfire.com">SlipFire</a>
-Version: 0.50.4
+Version: 0.50.5
 Author URI: http://nrelate.com/
 
 /*
@@ -35,7 +35,7 @@ Author URI: http://nrelate.com/
 /**
  * Define Plugin constants
  */
-define( 'NRELATE_FLYOUT_PLUGIN_VERSION', '0.50.4' );
+define( 'NRELATE_FLYOUT_PLUGIN_VERSION', '0.50.5' );
 define( 'NRELATE_FLYOUT_ADMIN_SETTINGS_PAGE', 'nrelate-flyout' );
 define( 'NRELATE_FLYOUT_ADMIN_VERSION', '0.04.0' );
 define( 'NRELATE_FLYOUT_NAME' , __('Flyout','nrelate'));
@@ -280,10 +280,10 @@ add_filter( 'the_content', 'nrelate_flyout_wrap_post', 10 );
  * @since 0.47.3
  */
 function nrelate_flyout_should_inject_filter($should_inject) {
-	global $nr_fo_counter;
+	global $nr_fo_counter, $wp_current_filter;
 	
 	// Force one instance on single pages
-	if ( $should_inject && is_single() && $nr_fo_counter == 0) {
+	if ( is_single() && $nr_fo_counter == 0 && array_intersect($wp_current_filter, array('wp_footer', 'the_content')) ) {
 		return true;
 	}
 	

@@ -53,7 +53,6 @@ $flyout_js_str= <<<EOD
 	function nr_fo_set_closed_cookie(value,domain) { 
 		var NameOfCookie="nr_fo_closed";
 		var ExpireDate = new Date ();
-		// Expiration date set to 2 hours. Must give at least 2 hours until view gets incremented for this url per user.
 		ExpireDate.setTime(ExpireDate.getTime() + (7*24*60*60*1000));
 		document.cookie = NameOfCookie + "=" + value + "; expires=" + ExpireDate.toGMTString()+"; path=/" + "; domain="+domain ;
 	}
