@@ -114,6 +114,7 @@ Our plugin will work on websites in the following languages: Dutch, English, Fre
 = 0.50.3 =
 * Fixed bug on nrelate dashboard and TOS.
 * Remove two div's that are not needed anymore.
+* Fixed error with nrelate debug.
 
 = 0.50.2 =
 * Removed the_excerpt filter since we only who on is_single.
