@@ -282,30 +282,30 @@ function nrelate_execute_shortcode($content) {
  */
 function nrelate_debug() {
 	
-	$options = get_option('nrelate_admin_options', array());
+	$options = print_r(get_option('nrelate_admin_options'),true);
 	
 	//Get related options
 	if (function_exists('nrelate_related')) {
-		$options += get_option('nrelate_related_options', array());
-		$options += get_option('nrelate_related_options_styles', array());
-		$options += get_option('nrelate_related_options_ads', array());
+		$options .= print_r(get_option('nrelate_related_options'),true);
+		$options .= print_r(get_option('nrelate_related_options_styles'),true);
+		$options .= print_r(get_option('nrelate_related_options_ads'),true);
 	}
 
 	//Get most popular options
 	if (function_exists('nrelate_popular')) {
-		$options += get_option('nrelate_popular_options', array());
-		$options += get_option('nrelate_popular_options_styles', array());
-		$options += get_option('nrelate_popular_options_ads', array());
+		$options .= print_r(get_option('nrelate_popular_options'),true);
+		$options .= print_r(get_option('nrelate_popular_options_styles'), true);
+		$options .= print_r(get_option('nrelate_popular_options_ads'), true);
 	}
 	
-	//Get most popular options
+	//Get flyout options
 	if (function_exists('nrelate_flyout')) {
-		$options += get_option('nrelate_flyout_options', array());
-		$options += get_option('nrelate_flyout_options_styles', array());
-		$options += get_option('nrelate_flyout_box_options_styles', array());
-		$options += get_option('nrelate_flyout_options_ads', array());
+		$options .= print_r(get_option('nrelate_flyout_options'),true);
+		$options .= print_r(get_option('nrelate_flyout_options_styles'),true);
+		$options .= print_r(get_option('nrelate_flyout_box_options_styles') ,true);
+		$options .= print_r(get_option('nrelate_flyout_options_ads'),true);
 	}
-
+	
 	echo '<pre>';
 	print_r($options);
 	echo '</pre>';

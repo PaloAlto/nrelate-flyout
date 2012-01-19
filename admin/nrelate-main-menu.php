@@ -14,7 +14,7 @@ function nrelate_main_section() { ?>
 		echo '<img src="'. NRELATE_ADMIN_IMAGES .'/nrelate-logo.png" alt="nrelate Logo" style="float:left; margin: 0 20px 0 0;" />';
 		echo '<h2 class="nrelate-title">';
 		_e('nrelate Dashboard','nrelate' );
-		nrelate_tos( NRELATE_PLUGIN_DIR );
+		?><a class="thickbox button add-new-h2" title="nrelate Terms Of Service" href="admin-ajax.php?action=get_nrelate_tos&amp;height=385&amp;width=640">Terms Of Service</a><?php
 		echo '</h2>';?>
 
 <div class="metabox-holder has-right-sidebar" id="poststuff">

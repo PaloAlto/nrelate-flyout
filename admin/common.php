@@ -168,17 +168,13 @@ function nrelate_tos($dummy='') {
 	$request = new WP_Http;
 	$args=array("timeout"=>0);
 	$response = $request->request( NRELATE_CSS_URL.'terms-of-service.html',$args);
-	if ($response['response']['code']==200 && $response['response']['message']=='OK') {
+	if (!is_wp_error($response) && $response['response']['code']==200 && $response['response']['message']=='OK') {
 		$tos = $response['body'];
 	} else {
 		$tos = sprintf(__('Please <a href="%s" target="_blank">click here</a> to read our Terms of Service on our website.', 'nrelate'), NRELATE_CSS_URL.'terms-of-service.html');
 	}
 		
-	$output = '
-	<div id="nrelate-tos" style="display:none">
-		<div id="nrelate-terms">' . $tos . '</div>
-	</div>
-	<a class="thickbox button add-new-h2" title = "nrelate Terms Of Service" href="#TB_inline?height=385&amp;width=640&amp;inlineId=nrelate-tos">Terms Of Service</a>';
+	$output = '<div id="nrelate-tos" style="display:none"><div id="nrelate-terms">' . $tos . '</div></div><a class="thickbox button add-new-h2" title = "nrelate Terms Of Service" href="#TB_inline?height=385&amp;width=640&amp;inlineId=nrelate-tos">Terms Of Service</a>';
 	echo $output;
 }
 

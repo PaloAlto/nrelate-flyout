@@ -21,19 +21,19 @@ function get_nrelate_tos() {
 	$request = new WP_Http;
 	$args=array("timeout"=>0);
 	$response = $request->request( NRELATE_CSS_URL.'terms-of-service.html',$args);
-	if ($response['response']['code']==200 && $response['response']['message']=='OK') {
+	if (!is_wp_error($response) && $response['response']['code']==200 && $response['response']['message']=='OK') {
 		$tos = $response['body'];
 	} else {
 		$tos = sprintf(__('Please <a href="%s" target="_blank">click here</a> to read our Terms of Service on our website.', 'nrelate'), NRELATE_CSS_URL.'terms-of-service.html');
 	}
 		
-	$output = '
-	<div id="nrelate-tos" style="display:none">
-		<div id="nrelate-terms">' . $tos . '</div>
-	</div>
-	<a class="thickbox button add-new-h2" title = "nrelate Terms Of Service" href="#TB_inline?height=385&amp;width=640&amp;inlineId=nrelate-tos">Terms Of Service</a>';
+	$output = '<div id="nrelate-tos"><div id="nrelate-terms">' . $tos . '</div></div>';
 	echo $output;
+	
+	die();
 }
+add_action('wp_ajax_get_nrelate_tos', 'get_nrelate_tos');
+
 
 /** nrelate server check
  *
@@ -279,7 +279,7 @@ function nrelate_plugin_page_header($name, $description) { ?>
 	<img src="<?php echo NRELATE_ADMIN_IMAGES ?>/nrelate-logo.png" alt="nrelate Logo" style="float:left; margin: 0 20px 0 0" />
 	<h2 class="nrelate-title">
 		<?php echo $name //show plugin name ?>
-		<?php get_nrelate_tos() //display tos ?>
+		<a class="thickbox button add-new-h2" title="nrelate Terms Of Service" href="admin-ajax.php?action=get_nrelate_tos&amp;height=385&amp;width=640">Terms Of Service</a>
 		<p><?php echo $description //show plugin description ?></p>
 	</h2>
 <?php

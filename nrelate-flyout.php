@@ -4,7 +4,7 @@ Plugin Name: nrelate Flyout
 Plugin URI: http://www.nrelate.com
 Description: Easily allow related posts to flyout from the sides of your website. Click on <a href="admin.php?page=nrelate-flyout">nrelate &rarr; Flyout</a> to configure your settings.
 Author: <a href="http://www.nrelate.com">nrelate</a> and <a href="http://www.slipfire.com">SlipFire</a>
-Version: 0.50.2
+Version: 0.50.4
 Author URI: http://nrelate.com/
 
 /*
@@ -35,7 +35,7 @@ Author URI: http://nrelate.com/
 /**
  * Define Plugin constants
  */
-define( 'NRELATE_FLYOUT_PLUGIN_VERSION', '0.50.2' );
+define( 'NRELATE_FLYOUT_PLUGIN_VERSION', '0.50.4' );
 define( 'NRELATE_FLYOUT_ADMIN_SETTINGS_PAGE', 'nrelate-flyout' );
 define( 'NRELATE_FLYOUT_ADMIN_VERSION', '0.04.0' );
 define( 'NRELATE_FLYOUT_NAME' , __('Flyout','nrelate'));
@@ -233,29 +233,42 @@ function nrelate_flyout_is_loading() {
 
 
 /**
- * Inject flyout posts into the content
+ * Inject flyout posts into the footer
  *
- * Stops injection into themes that use get_the_excerpt in their meta description
- *
- * @since 0.1
+ * @since 0.50.4
  */
 function nrelate_flyout_inject($content) {
 	global $post;
 	
 	if ( nrelate_should_inject('flyout') ) {
 
-		$content_bottom = nrelate_flyout(true);
-
-		$original = $content;
-
-		$content  = "<div id='nr_fo_top_of_post'></div>";
-		$content .= $original;
-		$content .= "<div id='nr_fo_bot_of_post'></div> ".$content_bottom;
+		return $content . nrelate_flyout(true);
+		
 	}
 	
 	return $content;
 }
-add_filter( 'the_content', 'nrelate_flyout_inject', 10 );
+add_filter( 'wp_footer', 'nrelate_flyout_inject', 10 );
+
+/**
+ * Inject top and bottom post indicators to calculate flyout position
+ *
+ * @since 0.50.3
+ */
+function nrelate_flyout_wrap_post($content) {
+	global $post;
+	
+	if ( nrelate_should_inject('flyout') ) {
+		$original = $content;
+
+		$content  = "<div id='nr_fo_top_of_post'></div>";
+		$content .= $original;
+		$content .= "<div id='nr_fo_bot_of_post'></div> ";
+	}
+	
+	return $content;
+}
+add_filter( 'the_content', 'nrelate_flyout_wrap_post', 10 );
 //Since we only show on is_single, we can remove the_excerpt filter
 //add_filter( 'the_excerpt', 'nrelate_flyout_inject', 10 );
 
@@ -270,7 +283,7 @@ function nrelate_flyout_should_inject_filter($should_inject) {
 	global $nr_fo_counter;
 	
 	// Force one instance on single pages
-	if ( is_single() && $nr_fo_counter == 0) {
+	if ( $should_inject && is_single() && $nr_fo_counter == 0) {
 		return true;
 	}
 	
