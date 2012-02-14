@@ -248,7 +248,7 @@ JAVA_SCRIPT;
 *	Executes when nrelate_admin_options changes so it can call nrelate_reindex()
 *	if one of the changes requires complete site re-indexation
 */
-function nrelate_check_options_change($new_value) {
+function nrelate_admin_check_options_change($new_value) {
 	$old_value = (array) get_option('nrelate_admin_options');
 	$reindex = false;
 	
@@ -278,7 +278,7 @@ function nrelate_check_options_change($new_value) {
 	return $new_value;
 }
 
-add_filter('pre_update_option_nrelate_admin_options', 'nrelate_check_options_change');
+add_filter('pre_update_option_nrelate_admin_options', 'nrelate_admin_check_options_change');
 
 
 /****************************************************************
@@ -356,8 +356,12 @@ function update_nrelate_admin_data(){
 	);
 	$url = 'http://api.nrelate.com/common_wp/'.NRELATE_LATEST_ADMIN_VERSION.'/processWPadmin.php';
 	
-	$request=new WP_Http;
-	$result=$request->request($url,array('method'=>'POST','body'=>$body,'blocking'=>false));
+	$result = wp_remote_post($url, array(
+		'method'=>'POST',
+		'body'=>$body,
+		'blocking'=>false
+    	)
+	);
 }
 
 

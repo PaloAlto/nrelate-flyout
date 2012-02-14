@@ -132,8 +132,11 @@ function nrelate_main_section() { ?>
 
 						$url = 'http://api.nrelate.com/common_wp/'.NRELATE_LATEST_ADMIN_VERSION.'/wordpressnotify_adminmessage.php';
 						
-						$request=new WP_Http;
-						$result=$request->request($url,array('method'=>'POST','body'=>$body));
+						$result = wp_remote_post($url, array(
+							'method'=>'POST',
+							'body'=>$body
+					    	)
+						);
 						
 						echo !is_wp_error($result) ? $result['body'] : null ;?>
 					</div><!-- #extra_message -->

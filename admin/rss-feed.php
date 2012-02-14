@@ -48,20 +48,21 @@ function nrelate_get_the_post_type_rss() {
  */
 function nrelate_get_the_category_rss() {
 	$categories = get_the_category();
-	$the_cats = '';
-	$cat_names = array();
-
+	
 	$filter = 'rss';
 
-	if ( !empty($categories) ) foreach ( (array) $categories as $category ) {
-		$cat_names[] = sanitize_term_field('name', $category->name, $category->term_id, 'category', $filter);
-		//$cat_names[] = $category->cat_ID; 
+	$cat_names = array();
+	if ( !empty($categories) ) {
+		foreach ( (array) $categories as $category ) {
+			$cat_names[ $category->term_id ] = sanitize_term_field('name', $category->name, $category->term_id, 'category', $filter);
+		}
 	}
 
 	$cat_names = array_unique($cat_names);
-
-	foreach ( $cat_names as $cat_name ) {
-		$the_cats .= "\t\t<category><![CDATA[" . @html_entity_decode( $cat_name, ENT_COMPAT, get_option('blog_charset') ) . "]]></category>\n";
+	
+	$the_cats = '';
+	foreach ( $cat_names as $cat_id => $cat_name ) {
+		$the_cats .= "\t\t<category><![CDATA[" . @html_entity_decode( $cat_name, ENT_COMPAT, get_option('blog_charset') ) . "]]></category><categoryID>" . $cat_id . "</categoryID>\n";
 	}
 
 	return $the_cats;
@@ -76,18 +77,21 @@ function nrelate_get_the_category_rss() {
  */
 function nrelate_get_the_tags_rss() {
 	$tags = get_the_tags();
-	$the_tags = '';
-	$cat_names = array();
+	$tag_names = array();
 
 	$filter = 'rss';
 
-	if ( !empty($tags) ) foreach ( (array) $tags as $tag ) {
-		$cat_names[] = sanitize_term_field('name', $tag->name, $tag->term_id, 'post_tag', $filter);
+	if ( !empty($tags) ) {
+		foreach ( (array) $tags as $tag ) {
+			$tag_names[$tag->term_id] = sanitize_term_field('name', $tag->name, $tag->term_id, 'post_tag', $filter);
+		}
 	}
-	$cat_names = array_unique($cat_names);
-
-	foreach ( $cat_names as $cat_name ) {
-		$the_tags .= "\t\t<tag><![CDATA[" . @html_entity_decode( $cat_name, ENT_COMPAT, get_option('blog_charset') ) . "]]></tag>\n";
+	
+	$tag_names = array_unique($tag_names);
+	
+	$the_tags = '';
+	foreach ( $tag_names as $tag_id => $tag_name ) {
+		$the_tags .= "\t\t<tag><![CDATA[" . @html_entity_decode( $tag_name, ENT_COMPAT, get_option('blog_charset') ) . "]]></tag><tagID>" . $tag_id . "</tagID>\n";
 	}
 
 	return $the_tags;
@@ -164,7 +168,7 @@ function nrelate_post_count() {
 		// http://wordpress.org/extend/plugins/thumbshots/
 		// Since 0.49.3
 		if (!$thumb_found && class_exists('ThumbshotsPlugin')){
-			preg_match('#<img[^>]+src=[\"\']{1}(http:\/\/(www\.)?(open\.thumbshots.org/image\.aspx|robothumb\.com/src)[^\"\']*)[\"\']{1}[^>]+\/>#i', $content, $images);
+			preg_match('#<img[^>]+src=[\"\']{1}(http:\/\/(www\.)?(open\.thumbshots.org/image\.aspx|robothumb\.com/src)[^\"\']*)[\"\']{1}[^>]+>#i', $content, $images);
 			$imageurl = isset($images[1]) ? $images[1] : null;
 			if ( $imageurl ) {
 				$content = sprintf('<p><img class="nrelate-image thumbshot-image" src="%s" alt="post thumbnail" /></p>%s', $imageurl, $content);
@@ -208,7 +212,7 @@ function nrelate_post_count() {
 		
 		// If no images are found yet, grab the first image in the post.
 		if (!$thumb_found) {
-			preg_match('#<img[^>]+src=[\"\']{1}(http:\/\/.*\.(gif|png|jpg|jpeg|tif|tiff|bmp){1})[\"\']{1}[^>]+\/>#i', $content, $images);
+			preg_match('#<img[^>]+src=[\"\']{1}(http:\/\/.*\.(gif|png|jpg|jpeg|tif|tiff|bmp){1})[\"\']{1}[^>]+>#i', $content, $images);
 			$imageurl = isset($images[1]) ? $images[1] : null;
 			if ( $imageurl = nrelate_get_img_url($imageurl) ) {
 				$content = sprintf('<p><img class="nrelate-image auto-content-image" src="%s" alt="post thumbnail" /></p>%s', $imageurl, $content);
@@ -269,6 +273,16 @@ function nrelate_remove_script($content) {
 }
 
 /**
+ * Parse oEmbed objects in our feed
+ *
+ */
+function nrelate_parse_oembed($content) {
+	global $wp_embed;
+	return $wp_embed->autoembed( $content );
+}
+
+
+ /**
  * Execute Shortcodes in our feed
  *
  */
@@ -282,7 +296,18 @@ function nrelate_execute_shortcode($content) {
  */
 function nrelate_debug() {
 	
-	$options = print_r(get_option('nrelate_admin_options'),true);
+	$admin_options = get_option('nrelate_admin_options');
+	
+	// Make category exclusion human-readable
+	if ( isset( $admin_options['admin_exclude_categories'] ) ) {
+		$readable_cats = array();
+		foreach ( (array) $admin_options['admin_exclude_categories'] as $cat_id  ) {
+			$readable_cats[ $cat_id ] = get_cat_name( $cat_id );
+		}
+		$admin_options['admin_exclude_categories'] = $readable_cats;
+	}
+	
+	$options = print_r($admin_options,true);
 	
 	//Get related options
 	if (function_exists('nrelate_related')) {
@@ -355,16 +380,22 @@ function nrelate_custom_feed() {
 		global $wp_version;
 		$ignore_sticky = ($wp_version >= '3.1' ? 'ignore_sticky_posts' : 'caller_get_posts');
 		
-		query_posts(
-			array(
-				'posts_per_page' => get_query_var( 'posts_per_page' ),
-				'p' => $p,
-				'paged' => $paged,
-				'category__not_in' => isset($options['admin_exclude_categories']) ? $options['admin_exclude_categories'] : array(),
-				$ignore_sticky => 1,
-				'post_type' => isset($options['admin_include_post_types']) ? $options['admin_include_post_types'] : array()
-			)
+		$query_posts_args = array(
+			'posts_per_page' => get_query_var( 'posts_per_page' ),
+			'p' => $p,
+			'paged' => $paged,
+			$ignore_sticky => 1,
+			'post_type' => isset($options['admin_include_post_types']) ? $options['admin_include_post_types'] : array()
 		);
+		
+		if ( isset($options['admin_exclude_categories']) ) {
+			foreach( $options['admin_exclude_categories'] as &$cat ) {
+				$cat *= -1;
+			}
+			$query_posts_args['cat'] = implode(',', $options['admin_exclude_categories']);
+		}
+		
+		query_posts($query_posts_args);
 
 		// WP Super Cache: disable
 		if ( function_exists('add_cacheaction') ) { define('DONOTCACHEPAGE', true); }
@@ -419,7 +450,11 @@ function nrelate_custom_feed() {
 		// Execute Shortcodes
 		add_filter('the_excerpt_rss', 'nrelate_execute_shortcode', 5);
         add_filter('the_content_feed', 'nrelate_execute_shortcode', 5);
-
+		
+		// Support oEmbed objects
+		add_filter('the_excerpt_rss', 'nrelate_parse_oembed', 7);
+        add_filter('the_content_feed', 'nrelate_parse_oembed', 7);
+		
         // Remove Javascript
 		add_filter('the_excerpt_rss', 'nrelate_remove_script', 10);
         add_filter('the_content_feed', 'nrelate_remove_script', 10);

@@ -121,8 +121,8 @@ function nr_fo_upgrade() {
 				'PLUGIN'=>"flyout"
 			);
 			$url = 'http://api.nrelate.com/common_wp/'.NRELATE_LATEST_ADMIN_VERSION.'/versionupdate.php';
-			$request=new WP_Http;
-			$result=$request->request($url,array('method'=>'POST','body'=>$body,'blocking'=>false));
+
+			$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false));
 					
 			// Calculate plugin file path
 			$dir = substr( realpath(dirname(__FILE__) . '/..'), strlen(WP_PLUGIN_DIR) );
@@ -290,8 +290,7 @@ function nr_fo_add_defaults() {
 		);
 		$url = 'http://api.nrelate.com/fow_wp/'.NRELATE_FLYOUT_PLUGIN_VERSION.'/processWPflyoutAll.php';
 		
-		$request=new WP_Http;
-		$result=$request->request($url,array('method'=>'POST','body'=>$body,'blocking'=>false));
+		$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false));
 	}
 
 	// RSS mode is sent again just incase if the user already had nrelate_flyout_options in their wordpress db
@@ -340,8 +339,7 @@ EOD;
 	);
 	$url = 'http://api.nrelate.com/common_wp/'.NRELATE_FLYOUT_ADMIN_VERSION.'/wordpressnotify_activation.php';
 	
-	$request=new WP_Http;
-	$result=$request->request($url,array('method'=>'POST','body'=>$body,'blocking'=>false));
+	$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false));
 
 }
  
@@ -382,9 +380,8 @@ function nr_fo_deactivate(){
 		'RSSURL'=>$rssurl
 	);
 	$url = 'http://api.nrelate.com/common_wp/'.NRELATE_FLYOUT_ADMIN_VERSION.'/wordpressnotify_activation.php';
-	
-	$request=new WP_Http;
-	$result=$request->request($url,array('method'=>'POST','body'=>$body,'blocking'=>false));
+
+	$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false));
 }
 
 // Uninstallation hook callback
@@ -439,9 +436,8 @@ function nr_fo_uninstall(){
 		'RSSURL'=>$rssurl
 	);
 	$url = 'http://api.nrelate.com/common_wp/'.NRELATE_FLYOUT_ADMIN_VERSION.'/wordpressnotify_activation.php';
-	
-	$request=new WP_Http;
-	$result=$request->request($url,array('method'=>'POST','body'=>$body,'blocking'=>false));
+
+	$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false));
 }
 
 ?>

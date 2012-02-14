@@ -18,9 +18,9 @@ define( 'NRELATE_COMMON_50_LOADED', true );
  */
 function get_nrelate_tos() {
 	
-	$request = new WP_Http;
 	$args=array("timeout"=>0);
-	$response = $request->request( NRELATE_CSS_URL.'terms-of-service.html',$args);
+	$response = wp_remote_post(NRELATE_CSS_URL.'terms-of-service.html',$args);
+
 	if (!is_wp_error($response) && $response['response']['code']==200 && $response['response']['message']=='OK') {
 		$tos = $response['body'];
 	} else {
@@ -42,8 +42,8 @@ add_action('wp_ajax_get_nrelate_tos', 'get_nrelate_tos');
 function nrelate_api_check() {
 
 	function nrelate_ping_api() {
-		$request=new WP_Http;
-		$result=$request->request("http://api.nrelate.com/common_wp/".NRELATE_LATEST_ADMIN_VERSION."/servercheck.php",array('method'=>'GET'));
+		$result = wp_remote_get("http://api.nrelate.com/common_wp/".NRELATE_LATEST_ADMIN_VERSION."/servercheck.php");
+		
 		define( 'NRELATE_API_ONLINE', !is_wp_error($result) );
 			
 		if (!NRELATE_API_ONLINE){

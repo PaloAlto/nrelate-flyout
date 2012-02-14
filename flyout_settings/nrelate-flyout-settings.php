@@ -389,8 +389,8 @@ function setting_flyout_default_image(){
 		);
 		$url = 'http://api.nrelate.com/common_wp/'.NRELATE_FLYOUT_ADMIN_VERSION.'/thumbimagecheck.php';
 		
-		$request=new WP_Http;
-		$result=$request->request($url,array('method'=>'POST','body'=>$body));
+		$result=wp_remote_post($url,array('body'=>$body));
+
 		$imageurl_cached=!is_wp_error($result) ? $result['body'] : null;
 		if ($imageurl_cached) {
 			echo "Current default image: &nbsp &nbsp";
@@ -629,8 +629,7 @@ function update_nrelate_data_fo(){
 	);
 	$url = 'http://api.nrelate.com/fow_wp/'.NRELATE_FLYOUT_PLUGIN_VERSION.'/processWPflyout.php';
 	
-	$request=new WP_Http;
-	$result=$request->request($url,array('method'=>'POST','body'=>$body,'blocking'=>false));
+	$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false));
 }
 
 
