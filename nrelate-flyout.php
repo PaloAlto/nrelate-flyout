@@ -4,7 +4,7 @@ Plugin Name: nrelate Flyout
 Plugin URI: http://www.nrelate.com
 Description: Easily allow related posts to flyout from the sides of your website. Click on <a href="admin.php?page=nrelate-flyout">nrelate &rarr; Flyout</a> to configure your settings.
 Author: <a href="http://www.nrelate.com">nrelate</a> and <a href="http://www.slipfire.com">SlipFire</a>
-Version: 0.50.6
+Version: 0.51.0
 Author URI: http://nrelate.com/
 
 /*
@@ -35,13 +35,13 @@ Author URI: http://nrelate.com/
 /**
  * Define Plugin constants
  */
-define( 'NRELATE_FLYOUT_PLUGIN_VERSION', '0.50.6' );
+define( 'NRELATE_FLYOUT_PLUGIN_VERSION', '0.51.0' );
 define( 'NRELATE_FLYOUT_ADMIN_SETTINGS_PAGE', 'nrelate-flyout' );
-define( 'NRELATE_FLYOUT_ADMIN_VERSION', '0.04.0' );
+define( 'NRELATE_FLYOUT_ADMIN_VERSION', '0.05.0' );
 define( 'NRELATE_FLYOUT_NAME' , __('Flyout','nrelate'));
 define( 'NRELATE_FLYOUT_DESCRIPTION' , sprintf( __('Display related content in a cool flyout box... similarly to NYTimes.com.','nrelate')));
 
-if(!defined('NRELATE_CSS_URL')) { define( 'NRELATE_CSS_URL', 'http://static.nrelate.com/common_wp/' . NRELATE_FLYOUT_ADMIN_VERSION . '/' ); }
+if(!defined('NRELATE_CSS_URL')) { define( 'NRELATE_CSS_URL', 'http://api.nrelate.com/common_wp/' . NRELATE_FLYOUT_ADMIN_VERSION . '/' ); }
 if(!defined('NRELATE_BLOG_ROOT')) { define( 'NRELATE_BLOG_ROOT', urlencode(str_replace(array('http://','https://'), '', get_bloginfo( 'url' )))); }
 if(!defined('NRELATE_JS_DEBUG')) { define( 'NRELATE_JS_DEBUG', isset($_REQUEST['nrelate_debug']) ? true : false ); }
 
@@ -55,6 +55,7 @@ if (!defined( 'NRELATE_PLUGIN_DIR')) { define( 'NRELATE_PLUGIN_DIR', WP_PLUGIN_D
 if (!defined('NRELATE_ADMIN_DIR')) { define( 'NRELATE_ADMIN_DIR', NRELATE_PLUGIN_DIR .'/admin'); }
 if (!defined('NRELATE_ADMIN_URL')) { define( 'NRELATE_ADMIN_URL', WP_PLUGIN_URL . '/' . NRELATE_PLUGIN_NAME .'/admin'); }
 if (!defined('NRELATE_API_URL')) { define ('NRELATE_API_URL', is_ssl() ? 'https://api.nrelate.com' : 'http://api.nrelate.com'); }
+if (!defined('NRELATE_EXTENSIONS')) { define ('NRELATE_EXTENSIONS', NRELATE_ADMIN_DIR . '/extensions' ); }
 
 // Plugin specific
 define( 'NRELATE_FLYOUT_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -146,24 +147,33 @@ require_once ( 'nrelate-abstraction-frontend.php' );
 function nrelate_flyout_styles() {
 	if ( nrelate_flyout_is_loading() ) {
 	
-		//Identify style type and stylesheet
+		global $nrelate_thumbnail_styles, $nrelate_thumbnail_styles_separate, $nrelate_text_styles, $nrelate_text_styles_separate, $fo_styleclass, $fo_layout;
 		$options = get_option('nrelate_flyout_options');
 		$style_options = get_option('nrelate_flyout_options_styles');
-			if ($options['flyout_thumbnail']=='Thumbnails') {
-				//Thumbnails mode
-				if ('none'==$style_options['flyout_thumbnails_style']) return;
-				$style_type = $style_options['flyout_thumbnails_style'];
-				$stylesheet = 'nrelate-panels-' . $style_type .'.min.css';
-				
-				// Load IE6 style
-				nrelate_ie6_thumbnail_style();
-				
-			} else {
-			//Text mode
-				if ('none'==$style_options['flyout_text_style']) return;
-				$style_type = 'text' . $style_options['flyout_text_style'];
-				$stylesheet = 'nrelate-text-'.$style_options['flyout_text_style'].'.min.css';
-			}
+		$ad_options = get_option('nrelate_flyout_options_ads');
+
+		// Are we loading separate ads?
+		if ($ad_options['flyout_ad_placement']=='Separate') {
+			$style_suffix = '_separate';
+		} else {
+			$style_suffix = '';
+		}
+
+		// Thumbnails or Text?
+		if ($options['flyout_thumbnail']=='Thumbnails') {
+			$style_type = 'flyout_thumbnails_style' . $style_suffix;
+				// If we choose NONE as the style, then return.
+				if ('none'==$style_options[$style_type]) return;
+			$style_array = 'nrelate_thumbnail_styles' . $style_suffix;
+			
+			// Load IE6 thumbnail style
+			nrelate_ie6_thumbnail_style();
+		} else {
+			$style_type = 'flyout_text_style' . $style_suffix;
+				// If we choose NONE as the style, then return.
+				if ('none'==$style_options[$style_type]) return;
+			$style_array = 'nrelate_text_styles' . $style_suffix;
+		}
 			
 			
 		//Identify Animation type and stylesheet
@@ -183,17 +193,25 @@ function nrelate_flyout_styles() {
 				$anim_stylesheet = 'nrelate-'.$anim_style_type .'.min.css';
 			}
 		
-		$fo_css_url = NRELATE_CSS_URL . $stylesheet;
-		// For local development
-		//$fo_css_url = NRELATE_FLYOUT_PLUGIN_URL . '/' . $stylesheet;
+		// Get style name (i.e. Default)
+		$style_name = $style_options [$style_type];
+				
+		// Get the style sheet and class from STYLES.PHP
+		$style_array_convert = ${$style_array};
+		$stylesheet = $style_array_convert[$style_name]['stylesheet'];
+		$fo_styleclass = $style_array_convert[$style_name]['styleclass'];
+		$fo_layout = $style_array_convert[$style_name]['layout'];
+
+		// Get full stylesheet url
+		$fo_css_url = NRELATE_CSS_URL . $stylesheet . '.min.css';
 		
 		$fo_anim_css_url = NRELATE_CSS_URL . $anim_stylesheet;
 		// For local development
 		//$fo_anim_css_url= NRELATE_FLYOUT_PLUGIN_URL . '/' . $anim_stylesheet;
 		
 		// Load content style
-		wp_register_style('nrelate-style-'. $style_type . "-" . str_replace(".","-",NRELATE_FLYOUT_ADMIN_VERSION), $fo_css_url, false, null );
-		wp_enqueue_style( 'nrelate-style-'. $style_type . "-" . str_replace(".","-",NRELATE_FLYOUT_ADMIN_VERSION) );
+		wp_register_style('nrelate-style-'. $style_name . "-" . str_replace(".","-",NRELATE_FLYOUT_ADMIN_VERSION), $fo_css_url, false, null );
+		wp_enqueue_style( 'nrelate-style-'. $style_name . "-" . str_replace(".","-",NRELATE_FLYOUT_ADMIN_VERSION) );
 		
 		// Load animation style
 		wp_register_style('nrelate-style-'. $anim_style_type . "-" . str_replace(".","-",NRELATE_FLYOUT_ADMIN_VERSION), $fo_anim_css_url, false, null );
@@ -225,9 +243,22 @@ function nrelate_flyout_is_loading() {
             }
         }
     }*/
-	if(is_single())
-		$is_loading=true;
-		
+	if(is_single()){
+
+		// Load Mobile Detect
+		if (!interface_exists('Mobile_Detect')) {
+			require_once ( NRELATE_EXTENSIONS . '/Mobile_Detect/Mobile_Detect.php');
+			$detect = new Mobile_Detect();
+		}
+
+		if ($detect->isMobile()) {
+			$is_loading=false;
+		} else {
+			$is_loading=true;			
+		}
+
+	}
+	
 	return apply_filters( 'nrelate_flyout_is_loading', $is_loading);
 }
 
@@ -309,7 +340,7 @@ $nr_fo_counter = 0;
 
 
 function nrelate_flyout() {
-	global $post, $nr_fo_counter;
+	global $post, $nr_fo_counter, $fo_styleclass, $fo_layout;
 	
 	$animation_fix = $nr_fo_nonjsbody = $nr_fo_nonjsfix = $nr_fo_js_str = $flyout_js_str= '';
 	
@@ -317,8 +348,8 @@ function nrelate_flyout() {
 		$nr_fo_counter++;
 		$nrelate_flyout_options = get_option('nrelate_flyout_options');
 		$fo_style_options = get_option('nrelate_flyout_options_styles');
-		$fo_style_code = 'nrelate_' . (($nrelate_flyout_options['flyout_thumbnail']=='Thumbnails') ? $fo_style_options['flyout_thumbnails_style'] : $fo_style_options['flyout_text_style']);
-		
+		$fo_style_code = 'nrelate_' . $fo_styleclass;
+				
 		$fo_anim_style_options = get_option('nrelate_flyout_anim_options_styles');
 		//$fo_anim_style_code = 'nrelate_animate_style_' . (($nrelate_flyout_options['flyout_animation']=='Slideout') ? $fo_anim_style_options['flyout_anim_slideout_style'] : $fo_anim_style_options['flyout_anim_fade_style']); // use for two styles
 		$fo_anim_style_code = 'nrelate_animate_style_' . $fo_anim_style_options['flyout_anim_slideout_style'];
@@ -377,7 +408,7 @@ function nrelate_flyout() {
 		}
 		
 		if($nonjs){
-		    $args=array("timeout"=>5);
+		    $args=array("timeout"=>2);
 			$response=wp_remote_get($nr_url."&nonjs=1",$args);
 
 		    if( !is_wp_error( $response ) ){
@@ -409,7 +440,7 @@ EOD;
 		$markup = <<<EOD
 $animation_fix
 $flyout_animation
-	<div id="nrelate_flyout_{$nr_fo_counter}" class="nrelate nrelate_flyout nr_$flyout_type_position nr_animate_type_$flyout_animation_type $fo_anim_style_code $fo_style_code $nr_fo_width_class">$nr_fo_nonjsbody</div>
+	<div id="nrelate_flyout_{$nr_fo_counter}" class="nrelate nrelate_flyout nr_$flyout_type_position nr_animate_type_$flyout_animation_type $fo_anim_style_code $fo_style_code nr_$fo_layout $nr_fo_width_class">$nr_fo_nonjsbody</div>
 	<!--[if IE 6]>
 		<script type="text/javascript">jQuery('.$fo_style_code').removeClass('$fo_style_code');</script>
 	<![endif]-->

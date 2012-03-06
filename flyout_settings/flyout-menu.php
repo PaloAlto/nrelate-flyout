@@ -77,13 +77,26 @@ function nrelate_flyout_settings_page() {
  */
 function nrelate_flyout_tabs($current = 0) { 
 
+	// Animation type
 	$options = get_option('nrelate_flyout_options');
 	$anitype = $options['flyout_animation'];
-	
-	$options = get_option('nrelate_flyout_options');
-	$flytype = $options['flyout_thumbnail'];
 
-    $tabs = array( 'general' =>  __(' General','nrelate'), 'advertising' => __(' Advertising','nrelate'), 'styles' => $flytype . __(' Gallery','nrelate'), 'anim-styles' => __('Animation Styles','nrelate') ); 	
+	// Text or Thumbnails?	
+	$options = get_option('nrelate_flyout_options');
+	$styletype = $options['flyout_thumbnail'];
+		
+	// What type of ads?
+	$flyout_ad_type = get_option('nrelate_flyout_options_ads');
+	
+	// If Ads == Separate, then overwrite $styletype
+	if ($flyout_ad_type['flyout_ad_placement']=="Separate"){
+		$styletype = $styletype . " | " . _('Ads');
+	}
+	
+	
+	
+
+    $tabs = array( 'general' =>  __(' General','nrelate'), 'advertising' => __(' Advertising','nrelate'), 'styles' => $styletype . __(' Gallery','nrelate'), 'anim-styles' => __('Animation Styles','nrelate') ); 	
     $links = array();
 	
 		if ( $current == 0 ) {

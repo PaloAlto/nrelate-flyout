@@ -389,7 +389,7 @@ function setting_flyout_default_image(){
 		);
 		$url = 'http://api.nrelate.com/common_wp/'.NRELATE_FLYOUT_ADMIN_VERSION.'/thumbimagecheck.php';
 		
-		$result=wp_remote_post($url,array('body'=>$body));
+		$result=wp_remote_post($url,array('body'=>$body, 'timeout'=>10));
 
 		$imageurl_cached=!is_wp_error($result) ? $result['body'] : null;
 		if ($imageurl_cached) {
@@ -462,6 +462,7 @@ function nrelate_flyout_do_page() {
       <input type="checkbox" id="show_ad" <?php echo empty($ad_options['flyout_display_ad']) ? '' : 'checked="checked"'; ?> value="on" />
       <input type="hidden" id="flyout_number_of_ads" value="<?php echo isset($ad_options['flyout_number_of_ads']) ? $ad_options['flyout_number_of_ads'] : ''; ?>" />
       <input type="hidden" id="flyout_ad_placement" value="<?php echo isset($ad_options['flyout_ad_placement']) ? $ad_options['flyout_ad_placement'] : ''; ?>" />
+      <input type="hidden" id="flyout_ad_title" value="<?php echo isset($ad_options['flyout_ad_title']) ? $ad_options['flyout_ad_title'] : ''; ?>" />
       <input type="checkbox" id="ad_animation" value="on" <?php echo empty($ad_options['flyout_ad_animation']) ? '' : ' checked="checked" '; ?> />
       <input type="hidden" id="flyout_imagestyle" value="<?php echo $style_options['flyout_thumbnails_style']; ?>" />
       <input type="hidden" id="flyout_textstyle" value="<?php echo $style_options['flyout_text_style']; ?>" />
@@ -629,7 +630,7 @@ function update_nrelate_data_fo(){
 	);
 	$url = 'http://api.nrelate.com/fow_wp/'.NRELATE_FLYOUT_PLUGIN_VERSION.'/processWPflyout.php';
 	
-	$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false));
+	$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false, 'timeout'=>15));
 }
 
 

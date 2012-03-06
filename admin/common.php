@@ -165,7 +165,7 @@ function nrelate_system_check(){
  */
 function nrelate_tos($dummy='') {
 
-	$args=array("timeout"=>0);
+	$args=array("timeout"=>2);
 	$result = wp_remote_post(NRELATE_CSS_URL.'terms-of-service.html',$args);
 
 	if (!is_wp_error($response) && $response['response']['code']==200 && $response['response']['message']=='OK') {
@@ -273,7 +273,8 @@ function nrelate_reindex() {
 	$result = wp_remote_post($url, array(
 		'method'=>'POST',
 		'body'=>$body,
-		'blocking'=>false
+		'blocking'=>false,
+		'timeout'=>15
     	)
 	);
 }
@@ -285,7 +286,7 @@ function nrelate_reindex() {
  */
 function nrelate_index_check() {
 
-	$result = wp_remote_get("http://api.nrelate.com/common_wp/".NRELATE_LATEST_ADMIN_VERSION."/indexcheck.php?domain=".NRELATE_BLOG_ROOT."&getrequest=0",array("timeout"=>5));
+	$result = wp_remote_get("http://api.nrelate.com/common_wp/".NRELATE_LATEST_ADMIN_VERSION."/indexcheck.php?domain=".NRELATE_BLOG_ROOT."&getrequest=0",array("timeout"=>10));
 
 	if (!is_wp_error($result)){
 		echo '<li class="nolist"><div id="indexcheck" class="info">'.$result['body'].'</div></li>';

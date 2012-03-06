@@ -21,13 +21,8 @@ function nrelate_flyout_popup_preview(NRELATE_FLYOUT_SETTINGS_URL,wp_root_nr, NR
 	nr_imageurl = document.getElementById("flyout_default_image").value;
 	nr_age_num = document.getElementById("flyout_max_age_num").value;
 	nr_age_frame = document.getElementById("flyout_max_age_frame").value;
+	nr_thumbsize = document.getElementById("flyout_thumbnail_size").value;
 	nr_r_title = escape(nr_r_title);
-	// Convert max age time frame to minutes
-	
-	if(jQuery('.nrelate-thumb-size:checked').length>0)
-		nr_thumbsize = jQuery('.nrelate-thumb-size:checked').val();
-	else
-		nr_thumbsize  = 80;
 	
 	switch (nr_age_frame){
 		case 'Hour(s)':

@@ -9,16 +9,26 @@
  */
 
 
- /**
- * nrelate service status
- *
- */
+  /* = nrelate service status
+ -----------------------------------------------
+  * Remove the feed cache so we get the most updated information.
+  * Get most recent post from status.nrelate.com.
+  * Reset the feed cache to it's default state.
+  */
 function nr_service_status() {
 
-	// Get RSS Feed(s)
+	// Get WP feed.php
 	include_once(ABSPATH . WPINC . '/feed.php');
 
-	// Get a SimplePie feed object from the specified feed source.
+	// Remove feed cache so we can get the most updated information.
+	function nr_filter_handler( $seconds ) {
+		if (is_admin()) {
+			return 0;
+		}
+	}
+	add_filter( 'wp_feed_cache_transient_lifetime' , 'nr_filter_handler' );
+
+	// Get a SimplePie feed object.
 	$rss = fetch_feed('http://status.nrelate.com/feed/');
 	if (!is_wp_error( $rss ) ) : // Checks that the object is created correctly 
 	// Get the latest item. 
@@ -29,7 +39,7 @@ function nr_service_status() {
 	endif;
 	?>
 
-	<?php if ($maxitems == 0) printf('%s This is embarassing. nrelate status is down.  We\'re hard at working getting it fixed. %s','<p>','</p>');
+	<?php if ($maxitems == 0) printf('%s This is embarassing. The "nrelate status" site is down.  We\'re hard at working getting it fixed. %s','<li><div class="warning">','</div></li>');
 			else
 			// Loop through each feed item and display each item as a hyperlink.
 			foreach ( $rss_items as $item ) : ?>
@@ -37,11 +47,14 @@ function nr_service_status() {
 					<div class="info" id="servicecheck">
 						<?php _e ('Service Status:','nrelate');?>
 						<?php echo $item->get_title(); ?>&nbsp;&nbsp;
-						<a href='<?php echo $item->get_permalink(); ?>'title='<?php echo $item->get_description (); ?>'>
+						<a href='<?php echo $item->get_permalink(); ?>' title='<?php echo substr($item->get_description(), 0, 200); ?>...'>
 						<?php echo $item->get_date('M j G:i T'); ?></a>
 					</div>
 				</li>
 	<?php endforeach;
+
+	// Reset feed cache to default
+	remove_filter( 'wp_feed_cache_transient_lifetime' , 'nr_filter_handler' );
 }
 
  

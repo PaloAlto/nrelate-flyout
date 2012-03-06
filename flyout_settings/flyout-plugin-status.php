@@ -47,12 +47,15 @@ $nr_fo_ad_options = array(
 		"flyout_ad_animation" => "on",
 		"flyout_validate_ad" => NULL,
 		"flyout_number_of_ads" => 1,
-		"flyout_ad_placement" => "Last"
+		"flyout_ad_placement" => "Last",
+		"flyout_ad_title" => "More from the Web -"
 	);
 		
 $nr_fo_layout_options = array(		
 		"flyout_thumbnails_style" => "huf",
-		"flyout_text_style" => "default"
+		"flyout_thumbnails_style_separate" => "huf-2row",
+		"flyout_text_style" => "default",
+		"flyout_text_style_separate" => "default-text-2col"
 );
 
 $nr_fo_anim_options = array(		
@@ -91,21 +94,19 @@ function nr_fo_upgrade() {
 			// re-get the latest since we just made changes
 			$flyout_settings = get_option('nrelate_flyout_options');
 			$flyout_ad_settings = get_option('nrelate_flyout_options_ads');
+			$flyout_layout_settings = get_option('nrelate_flyout_options_styles');
+			$flyout_anim_settings = get_option('nrelate_flyout_anim_options_styles');
 
-			// STD OPTIONS: Update new options if they don't exist
+			// Update new options if they don't exist
 			$flyout_settings = wp_parse_args( $flyout_settings, $nr_fo_std_options );
 			$flyout_ad_settings = wp_parse_args( $flyout_ad_settings, $nr_fo_ad_options );
+			$flyout_layout_settings = wp_parse_args( $flyout_layout_settings, $nr_fo_layout_options );
+			$flyout_anim_settings = wp_parse_args( $flyout_anim_settings, $nr_fo_anim_options );
 			
 			// now update again
 			update_option('nrelate_flyout_options', $flyout_settings);
 			update_option('nrelate_flyout_options_ads', $flyout_ad_settings);
-			
-			// LAYOUT OPTIONS
-			$flyout_layout_settings = wp_parse_args( $flyout_layout_settings, $nr_fo_layout_options );
 			update_option('nrelate_flyout_options_styles', $flyout_layout_settings);
-			
-			// ANIMATION STYLE OPTIONS
-			$flyout_anim_settings = wp_parse_args( $flyout_anim_settings, $nr_fo_anim_options );
 			update_option('nrelate_flyout_anim_options_styles', $flyout_anim_settings);
 			
 			// Update version number in DB
@@ -122,7 +123,7 @@ function nr_fo_upgrade() {
 			);
 			$url = 'http://api.nrelate.com/common_wp/'.NRELATE_LATEST_ADMIN_VERSION.'/versionupdate.php';
 
-			$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false));
+			$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false, 'timeout'=>15));
 					
 			// Calculate plugin file path
 			$dir = substr( realpath(dirname(__FILE__) . '/..'), strlen(WP_PLUGIN_DIR) );
@@ -192,6 +193,7 @@ function nr_fo_add_defaults() {
 		$flyout_offset_element="#comments";
 		$r_number_of_ads = 1;
 		$r_ad_placement = "Last";
+		$r_ad_title = "More from the Web -";
 		$r_nonjs = 0;
 		$flyout_from_bot=0;
 		$flyout_from_bot_type="px";
@@ -282,6 +284,7 @@ function nr_fo_add_defaults() {
 			'ELEMENT'=>$flyout_offset_element,
 			'ADNUM'=>$r_number_of_ads,
 			'ADPLACE'=>$r_ad_placement,
+			'ADTITLE'=>$r_ad_title,
 			'NONJS'=>$r_nonjs,
 			'FROMBOT'=>$flyout_from_bot,
 			'FROMBOTTYPE'=>urlencode($flyout_from_bot_type),
@@ -290,7 +293,7 @@ function nr_fo_add_defaults() {
 		);
 		$url = 'http://api.nrelate.com/fow_wp/'.NRELATE_FLYOUT_PLUGIN_VERSION.'/processWPflyoutAll.php';
 		
-		$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false));
+		$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false, 'timeout'=>15));
 	}
 
 	// RSS mode is sent again just incase if the user already had nrelate_flyout_options in their wordpress db
@@ -339,7 +342,7 @@ EOD;
 	);
 	$url = 'http://api.nrelate.com/common_wp/'.NRELATE_FLYOUT_ADMIN_VERSION.'/wordpressnotify_activation.php';
 	
-	$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false));
+	$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false, 'timeout'=>15));
 
 }
  
@@ -381,7 +384,7 @@ function nr_fo_deactivate(){
 	);
 	$url = 'http://api.nrelate.com/common_wp/'.NRELATE_FLYOUT_ADMIN_VERSION.'/wordpressnotify_activation.php';
 
-	$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false));
+	$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false, 'timeout'=>15));
 }
 
 // Uninstallation hook callback
@@ -437,7 +440,7 @@ function nr_fo_uninstall(){
 	);
 	$url = 'http://api.nrelate.com/common_wp/'.NRELATE_FLYOUT_ADMIN_VERSION.'/wordpressnotify_activation.php';
 
-	$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false));
+	$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false, 'timeout'=>15));
 }
 
 ?>

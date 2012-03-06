@@ -359,7 +359,8 @@ function update_nrelate_admin_data(){
 	$result = wp_remote_post($url, array(
 		'method'=>'POST',
 		'body'=>$body,
-		'blocking'=>false
+		'blocking'=>false,
+		'timeout'=>15
     	)
 	);
 }

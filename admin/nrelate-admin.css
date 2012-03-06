@@ -291,8 +291,13 @@ padding: 4px 20px 6px;
 	width: 100px;
 	}
 #style-gallery .style-image{
-	float: left;
-	width: 380px;
+	display: block;
+    margin-left: auto;
+    margin-right: auto;
+	}
+#style-gallery a.nrelate_preview_button {
+    float: left;
+    width: 380px;
 	}
 #style-gallery a:hover img {
 	filter:alpha(opacity=50);

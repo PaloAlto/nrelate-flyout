@@ -18,7 +18,7 @@ define( 'NRELATE_COMMON_50_LOADED', true );
  */
 function get_nrelate_tos() {
 	
-	$args=array("timeout"=>0);
+	$args=array("timeout"=>2);
 	$response = wp_remote_post(NRELATE_CSS_URL.'terms-of-service.html',$args);
 
 	if (!is_wp_error($response) && $response['response']['code']==200 && $response['response']['message']=='OK') {
@@ -33,32 +33,6 @@ function get_nrelate_tos() {
 	die();
 }
 add_action('wp_ajax_get_nrelate_tos', 'get_nrelate_tos');
-
-
-/** nrelate server check
- *
- *	Since v0.50.0
- */
-function nrelate_api_check() {
-
-	function nrelate_ping_api() {
-		$result = wp_remote_get("http://api.nrelate.com/common_wp/".NRELATE_LATEST_ADMIN_VERSION."/servercheck.php");
-		
-		define( 'NRELATE_API_ONLINE', !is_wp_error($result) );
-			
-		if (!NRELATE_API_ONLINE){
-			echo '<div class="error"><p id="indexcheck" class="info">' 
-			. __('The nrelate servers are currently down. We\'re working to get it back up as soon as possible.','nrelate')
-			. '<a href="http://nrelate.com/about/contact/" target="_blank">'
-			. __('Contact us','nrelate')
-			. '</a>&nbsp;'
-			. __('for questions and comments.','nrelate')
-			. "</p></div>";
-		}
-	}
-	add_action ('admin_notices','nrelate_ping_api');
-}
-add_action('nrelate_admin_page','nrelate_api_check');
 
 /**
  * Product check

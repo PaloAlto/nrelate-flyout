@@ -134,7 +134,8 @@ function nrelate_main_section() { ?>
 						
 						$result = wp_remote_post($url, array(
 							'method'=>'POST',
-							'body'=>$body
+							'body'=>$body,
+							'timeout'=>2
 					    	)
 						);
 						

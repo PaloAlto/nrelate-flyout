@@ -10,13 +10,18 @@
 function options_init_nr_fo_ads(){
 	register_setting('nrelate_flyout_options_ads', 'nrelate_flyout_options_ads', 'flyout_adv_options_validate' );
 	
+	$options = get_option('nrelate_flyout_options_ads'); 
+	// Div style on initial load for showing ad_title 
+	$divstyle=($options['flyout_ad_placement']=="Separate")?'style="display:block;"':'style="display:none;"';
+	
 
 	// Ad Section
 	add_settings_section('ad_section',__('Advertising Settings','nrelate'), 'nrelate_text_advertising', __FILE__);
 	add_settings_field('flyout_display_ad_image','', 'flyout_display_ad_money', __FILE__, 'ad_section');
 	add_settings_field('flyout_display_ad',__('Would you like to display ads?','nrelate'), 'setting_adv_display_ad_fo', __FILE__, 'ad_section');
 	add_settings_field('flyout_ad_number',__('How many ad spaces do you wish to show?','nrelate'), 'setting_adv_ad_number_fo', __FILE__, 'ad_section');
-	add_settings_field('flyout_ad_placement',__('Where would you like to place the ads?','nrelate'), 'setting_adv_ad_placement_fo', __FILE__, 'ad_section');
+	add_settings_field('flyout_ad_placement',__('Where would you like to place the ads?','nrelate') . nrelate_tooltip('_adplacement'), 'setting_adv_ad_placement_fo', __FILE__, 'ad_section');
+	add_settings_field('flyout_ad_title', __('<div class="nr_separate_ad_opt" '.$divstyle.'>Please enter a title for advertising section</div>','nrelate'), 'setting_adv_ad_title_fo', __FILE__, 'ad_section');
 	add_settings_field('flyout_ad_animation',__('Would you like to show animated "sponsored" text in ads?','nrelate'), 'setting_adv_ad_animation_fo', __FILE__, 'ad_section');
 	add_settings_field('nrelate_save_preview','', 'nrelate_save_preview', __FILE__, 'ad_section');
 	
@@ -69,13 +74,25 @@ function setting_adv_ad_number_fo(){
 // DROPDOWN - ad placement
 function setting_adv_ad_placement_fo(){	
 	$options = get_option('nrelate_flyout_options_ads');
-	$items = array("Mixed","First","Last");
-	echo "<div id='adplacement'><select id='flyout_ad_placement' name='nrelate_flyout_options_ads[flyout_ad_placement]'>";
+	$items = array("Mixed","First","Last","Separate");
+	echo "<div id='adplacement'><select id='flyout_ad_placement' name='nrelate_flyout_options_ads[flyout_ad_placement]' onChange='if(this.value==\"Separate\"){jQuery(\".nr_separate_ad_opt\").show(\"slow\");}else{jQuery(\".nr_separate_ad_opt\").hide(\"slow\");}'>";
 	foreach($items as $item) {
 		$selected = ($options['flyout_ad_placement']==$item) ? 'selected="selected"' : '';
 		echo "<option value='$item' $selected>$item</option>";
 	}
 	echo "</select></div>";
+}
+
+// TEXTBOX - Name: nrelate_flyout_options_ads[flyout_ad_title]
+function setting_adv_ad_title_fo() {
+	$options = get_option('nrelate_flyout_options_ads');
+	
+	// Div style on initial load for showing ad_title 
+	$divstyle=($options['flyout_ad_placement']=="Separate")?'style="display:block;"':'style="display:none;"';
+ 
+	$fo_ad_title = stripslashes(stripslashes($options['flyout_ad_title']));
+	$fo_ad_title = htmlspecialchars($fo_ad_title);
+	 echo '<input id="flyout_ad_title" class="nr_separate_ad_opt" name="nrelate_flyout_options_ads[flyout_ad_title]" size="40" type="text" value="'.$fo_ad_title.'" '.$divstyle.'/>';
 }
 
 // CHECKBOX - Animated "sponsored" text in ads
@@ -124,7 +141,7 @@ function nrelate_flyout_ads_do_page() {
 		      <input type="hidden" id="flyout_max_age_num" value="<?php echo isset($options['flyout_max_age_num']) ? $options['flyout_max_age_num'] : ''; ?>" />
 		      <input type="hidden" id="flyout_max_age_frame" value="<?php echo isset($options['flyout_max_age_frame']) ? $options['flyout_max_age_frame'] : ''; ?>" />
 		      <input type="hidden" id="flyout_blogoption" value="<?php echo ( (isset($options['flyout_blogoption']) && is_array($options['flyout_blogoption']) && count($options['flyout_blogoption']) > 0) ) ? 1 : 0; ?>" />
-		      <input type="checkbox" class="nrelate-thumb-size" value="<?php echo isset($options['flyout_thumbnail_size']) ? $options['flyout_thumbnail_size'] : ''; ?>" checked="checked" />
+		      <input type="hidden" id="flyout_thumbnail_size" value="<?php echo isset($options['flyout_thumbnail_size']) ? $options['flyout_thumbnail_size'] : ''; ?>" />
 		      <input type="hidden" id="flyout_imagestyle" value="<?php echo isset($style_options['flyout_thumbnails_style']) ? $style_options['flyout_thumbnails_style'] : ''; ?>" />
 		      <input type="hidden" id="flyout_textstyle" value="<?php echo isset($style_options['flyout_text_style']) ? $style_options['flyout_text_style'] : ''; ?>" />
 			  <input type="hidden" id="flyout_blogoption" value="<?php echo ( (isset($options['flyout_blogoption']) && is_array($options['flyout_blogoption']) && count($options['flyout_blogoption']) > 0) ) ? 1 : 0; ?>" />
@@ -149,6 +166,7 @@ function update_nrelate_data_fo_adv(){
 	$r_display_ad = empty($ad_option['flyout_display_ad']) ? false : true;
 	$flyout_ad_num = $ad_option['flyout_number_of_ads'];
 	$flyout_ad_place = $ad_option['flyout_ad_placement'];
+	$flyout_ad_title = $ad_option['flyout_ad_title'];
 
 	$ad = ($r_display_ad) ? 1:0;
 
@@ -157,12 +175,13 @@ function update_nrelate_data_fo_adv(){
 		'ADOPT'=>$ad,
 		'ADNUM'=>$flyout_ad_num,
 		'ADPLACE'=>$flyout_ad_place,
+		'ADTITLE'=>$flyout_ad_title,
 		'VERSION'=>NRELATE_FLYOUT_PLUGIN_VERSION,
 		'KEY'=>get_option('nrelate_key')
 	);
 	$url = 'http://api.nrelate.com/fow_wp/'.NRELATE_FLYOUT_PLUGIN_VERSION.'/processWPflyout_ad.php';
 
-	$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false));
+	$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false, 'timeout'=>15));
 }
 
 

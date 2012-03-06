@@ -18,7 +18,7 @@ define( 'NRELATE_ADMIN_IMAGES', NRELATE_ADMIN_URL . '/images' );
 define( 'NRELATE_MIN_WP', '2.9' );
 define( 'NRELATE_MIN_PHP', '5.0' );
 
-define( 'NRELATE_ADMIN_VERSION', '0.04.0' );
+define( 'NRELATE_ADMIN_VERSION', '0.05.0' );
 
 
 // Pull the nrelate_products array

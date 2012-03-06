@@ -40,7 +40,18 @@ $nrelate_tooltips = array(
 
 	"_loc_bottom" => __("nrelate will automatically display <em>after</em> your post content. If you want to control where nrelate displays, you should uncheck this box, and <em>'Top of post (Automatic)'</em> and <a href='http://nrelate.com/theblog/2011/12/22/manually-adding-nrelate-code-to-your-wordpress-template/' target='_blank'>follow these instructions on manually adding our code.</a>.","nrelate"),
 
-	"_is_404" => __("Requires <a href='#loc_manual'>manual installation</a> in your theme's 404.php file. You may also use the <a href='widgets.php' target='_blank'>nrelate widget</a>, if your 404 page is widgetized.","nrelate")
+	"_is_404" => __("Requires <a href='#loc_manual'>manual installation</a> in your theme's 404.php file. You may also use the <a href='widgets.php' target='_blank'>nrelate widget</a>, if your 404 page is widgetized.","nrelate"),
+	
+	
+	// ADVERTISING
+	"_adplacement" => __("When choosing to display ads, you can decide where you want them to display:
+							<ul>
+								<li>MIXED: ads will be randomly distributed in nrelate content.
+								<li>FIRST: ads will show before nrelate content.
+								<li>LAST: ads will show after nrelate content.
+								<li>SEPARATE: ads will display in a totally separate area than nrelate content, and you will have different styles to choose from in the Style Gallery. 
+							</ul>"
+						,"nrelate"),
 
 	);
 					
