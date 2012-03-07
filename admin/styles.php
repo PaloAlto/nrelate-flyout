@@ -319,6 +319,7 @@ $nrelate_thumbnail_styles_separate = array(
 					"name"=>__('none'),
 					"stylesheet" => "",
 					"styleclass" => "none",
+					"layout" => "2row",
 					"features"=>__('<ul>
 										<li>Allows you to create your own css.</li>
 									</ul>','nrelate'),
@@ -422,6 +423,7 @@ $nrelate_text_styles_separate = array(
 					"name"=>__('none'),
 					"stylesheet" => "",
 					"styleclass" => "none",
+					"layout" => "2row",
 					"features"=>__('<ul>
 										<li>Allows you to create your own css.</li>
 									</ul>','nrelate'),

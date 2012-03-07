@@ -292,8 +292,8 @@ padding: 4px 20px 6px;
 	}
 #style-gallery .style-image{
 	display: block;
-    margin-left: auto;
-    margin-right: auto;
+	float: left;
+	width: 380px;
 	}
 #style-gallery a.nrelate_preview_button {
     float: left;

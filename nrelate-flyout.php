@@ -4,7 +4,7 @@ Plugin Name: nrelate Flyout
 Plugin URI: http://www.nrelate.com
 Description: Easily allow related posts to flyout from the sides of your website. Click on <a href="admin.php?page=nrelate-flyout">nrelate &rarr; Flyout</a> to configure your settings.
 Author: <a href="http://www.nrelate.com">nrelate</a> and <a href="http://www.slipfire.com">SlipFire</a>
-Version: 0.51.0
+Version: 0.51.1
 Author URI: http://nrelate.com/
 
 /*
@@ -35,13 +35,13 @@ Author URI: http://nrelate.com/
 /**
  * Define Plugin constants
  */
-define( 'NRELATE_FLYOUT_PLUGIN_VERSION', '0.51.0' );
+define( 'NRELATE_FLYOUT_PLUGIN_VERSION', '0.51.1' );
 define( 'NRELATE_FLYOUT_ADMIN_SETTINGS_PAGE', 'nrelate-flyout' );
-define( 'NRELATE_FLYOUT_ADMIN_VERSION', '0.05.0' );
+define( 'NRELATE_FLYOUT_ADMIN_VERSION', '0.05.1' );
 define( 'NRELATE_FLYOUT_NAME' , __('Flyout','nrelate'));
 define( 'NRELATE_FLYOUT_DESCRIPTION' , sprintf( __('Display related content in a cool flyout box... similarly to NYTimes.com.','nrelate')));
 
-if(!defined('NRELATE_CSS_URL')) { define( 'NRELATE_CSS_URL', 'http://api.nrelate.com/common_wp/' . NRELATE_FLYOUT_ADMIN_VERSION . '/' ); }
+if(!defined('NRELATE_CSS_URL')) { define( 'NRELATE_CSS_URL', 'http://static.nrelate.com/common_wp/' . NRELATE_FLYOUT_ADMIN_VERSION . '/' ); }
 if(!defined('NRELATE_BLOG_ROOT')) { define( 'NRELATE_BLOG_ROOT', urlencode(str_replace(array('http://','https://'), '', get_bloginfo( 'url' )))); }
 if(!defined('NRELATE_JS_DEBUG')) { define( 'NRELATE_JS_DEBUG', isset($_REQUEST['nrelate_debug']) ? true : false ); }
 
@@ -162,16 +162,9 @@ function nrelate_flyout_styles() {
 		// Thumbnails or Text?
 		if ($options['flyout_thumbnail']=='Thumbnails') {
 			$style_type = 'flyout_thumbnails_style' . $style_suffix;
-				// If we choose NONE as the style, then return.
-				if ('none'==$style_options[$style_type]) return;
 			$style_array = 'nrelate_thumbnail_styles' . $style_suffix;
-			
-			// Load IE6 thumbnail style
-			nrelate_ie6_thumbnail_style();
 		} else {
 			$style_type = 'flyout_text_style' . $style_suffix;
-				// If we choose NONE as the style, then return.
-				if ('none'==$style_options[$style_type]) return;
 			$style_array = 'nrelate_text_styles' . $style_suffix;
 		}
 			
@@ -209,9 +202,12 @@ function nrelate_flyout_styles() {
 		// For local development
 		//$fo_anim_css_url= NRELATE_FLYOUT_PLUGIN_URL . '/' . $anim_stylesheet;
 		
-		// Load content style
-		wp_register_style('nrelate-style-'. $style_name . "-" . str_replace(".","-",NRELATE_FLYOUT_ADMIN_VERSION), $fo_css_url, false, null );
-		wp_enqueue_style( 'nrelate-style-'. $style_name . "-" . str_replace(".","-",NRELATE_FLYOUT_ADMIN_VERSION) );
+		// Only load if style not set to NONE
+		if ('none'!=$style_options[$style_type]) {
+			nrelate_ie6_thumbnail_style();
+			wp_register_style('nrelate-style-'. $style_name . "-" . str_replace(".","-",NRELATE_FLYOUT_ADMIN_VERSION), $fo_css_url, false, null );
+			wp_enqueue_style( 'nrelate-style-'. $style_name . "-" . str_replace(".","-",NRELATE_FLYOUT_ADMIN_VERSION) );
+		}
 		
 		// Load animation style
 		wp_register_style('nrelate-style-'. $anim_style_type . "-" . str_replace(".","-",NRELATE_FLYOUT_ADMIN_VERSION), $fo_anim_css_url, false, null );
