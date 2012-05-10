@@ -191,17 +191,15 @@ function nrelate_flyout_styles() {
 				
 		// Get the style sheet and class from STYLES.PHP
 		$style_array_convert = ${$style_array};
-		$stylesheet = $style_array_convert[$style_name]['stylesheet'];
+		$stylesheet = $style_array_convert[$style_name]['stylesheet'] ? $style_array_convert[$style_name]['stylesheet'] : "nrelate-panels-default";
 		$fo_styleclass = $style_array_convert[$style_name]['styleclass'];
 		$fo_layout = $style_array_convert[$style_name]['layout'];
 
 		// Get full stylesheet url
 		$fo_css_url = NRELATE_CSS_URL . $stylesheet . '.min.css';
-    /* For local development */
-    //$fo_css_url = NRELATE_FLYOUT_PLUGIN_URL . '/' . $stylesheet . '.css';
 		
 		$fo_anim_css_url = NRELATE_CSS_URL . $anim_stylesheet;
-		/* For local development */
+		// For local development
 		//$fo_anim_css_url= NRELATE_FLYOUT_PLUGIN_URL . '/' . $anim_stylesheet;
 		
 		// Only load if style not set to NONE
@@ -346,8 +344,8 @@ function nrelate_flyout() {
 		$nr_fo_counter++;
 		$nrelate_flyout_options = get_option('nrelate_flyout_options');
 		$fo_style_options = get_option('nrelate_flyout_options_styles');
-		$fo_style_code = 'nrelate_' . $fo_styleclass;
-				
+		$fo_style_code = 'nrelate_' . ($fo_styleclass ? $fo_styleclass : "default");
+		$fo_layout_code = 'nr_' . ($fo_layout ? $fo_layout : "1col");
 		$fo_anim_style_options = get_option('nrelate_flyout_anim_options_styles');
 		//$fo_anim_style_code = 'nrelate_animate_style_' . (($nrelate_flyout_options['flyout_animation']=='Slideout') ? $fo_anim_style_options['flyout_anim_slideout_style'] : $fo_anim_style_options['flyout_anim_fade_style']); // use for two styles
 		$fo_anim_style_code = 'nrelate_animate_style_' . $fo_anim_style_options['flyout_anim_slideout_style'];
@@ -441,7 +439,7 @@ EOD;
 		$markup = <<<EOD
 $animation_fix
 $flyout_animation
-	<div id="nrelate_flyout_{$nr_fo_counter}" class="nrelate nrelate_flyout nr_$flyout_type_position nr_animate_type_$flyout_animation_type $fo_anim_style_code $fo_style_code nr_$fo_layout $nr_fo_width_class">$nr_fo_nonjsbody</div>
+	<div id="nrelate_flyout_{$nr_fo_counter}" class="nrelate nrelate_flyout nr_$flyout_type_position nr_animate_type_$flyout_animation_type $fo_anim_style_code $fo_style_code $fo_layout_code $nr_fo_width_class">$nr_fo_nonjsbody</div>
 	<!--[if IE 6]>
 		<script type="text/javascript">jQuery('.$fo_style_code').removeClass('$fo_style_code');</script>
 	<![endif]-->
