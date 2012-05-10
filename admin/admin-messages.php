@@ -39,8 +39,7 @@ function nr_service_status() {
 	endif;
 	?>
 
-	<?php if ($maxitems == 0) printf('%s This is embarassing. The "nrelate status" site is down.  We\'re hard at working getting it fixed. %s','<li><div class="warning">','</div></li>');
-			else
+	<?php if ($maxitems !== 0) {
 			// Loop through each feed item and display each item as a hyperlink.
 			foreach ( $rss_items as $item ) : ?>
 				<li>
@@ -52,6 +51,7 @@ function nr_service_status() {
 					</div>
 				</li>
 	<?php endforeach;
+	}
 
 	// Reset feed cache to default
 	remove_filter( 'wp_feed_cache_transient_lifetime' , 'nr_filter_handler' );
@@ -104,6 +104,10 @@ function nr_theme_compat() {
 
 		// Genesis
 		if (function_exists('genesis')) { $msg = $msg . '<li><div class="warning">' . sprintf('<strong>Genesis</strong> themes are supported, but may require %sconfiguration%s.', '<a href="http://nrelate.com/theblog/theme-compatibility/genesis/" target="_blank">', '</a>') . '</div></li>'; }
+
+		// Thesis
+		if (class_exists('thesis_comments')) { $msg = $msg . '<li><div class="warning">' . sprintf('<strong>Thesis</strong> themes are supported, but may require %sconfiguration%s.', '<a href="http://nrelate.com/theblog/theme-compatibility/thesis/" target="_blank">', '</a>') . '</div></li>'; }
+
 	}
 
 echo $msg;

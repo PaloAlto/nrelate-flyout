@@ -480,6 +480,26 @@ return $message;
 
 
 
+/**
+ * Permalink warning
+ *
+ * User must reindex if changing permalinks
+ * Since v0.60.0
+ */
+function nrelate_admin_notice_options_permalink(){
+	global $pagenow;
+    if ( $pagenow == 'options-permalink.php' ) {
+	$message .= "<li>".sprintf(__('You\'re running WordPress version %1$s. nrelate requires WordPress version %2$s.<br/>Please upgrade to WordPress version %2$s.', 'nrelate' ), get_bloginfo('version'), NRELATE_MIN_WP ) . "</li>";
+	
+         echo "<div class=\"error\"><p>"
+		 .sprintf(__('<strong>nRelate message:</strong> If you change your permalink settings, you must visit the <a href="%s">nRelate dashboard</a> and press the REINDEX WEBSITE button.', 'nrelate'), 'admin.php?page=nrelate-main')
+		 ."</div>";
+    }
+}
+add_action('admin_notices', 'nrelate_admin_notice_options_permalink');
+
+
+
 
 
 

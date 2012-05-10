@@ -384,6 +384,7 @@ function nrelate_custom_feed() {
 			'posts_per_page' => get_query_var( 'posts_per_page' ),
 			'p' => $p,
 			'paged' => $paged,
+			'post_status' => 'publish',
 			$ignore_sticky => 1,
 			'post_type' => isset($options['admin_include_post_types']) ? $options['admin_include_post_types'] : array()
 		);

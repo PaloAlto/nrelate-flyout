@@ -27,7 +27,7 @@ function options_admin_init_nr(){
 	add_settings_field('admin_custom_field', __('Enter your <b>Custom Field</b> for images, here:','nrelate'), 'setting_admin_custom_field',__FILE__,'customfield_section');
 	
 	// Exclude categories
-	add_settings_section('excludecat_section', __('Exclude Categories','nrelate'), 'section_text_nr_excludecat', __FILE__);
+	add_settings_section('excludecat_section', __('Exclude Categories','nrelate')  . nrelate_tooltip('_exclude_categories'), 'section_text_nr_excludecat', __FILE__);
 	add_settings_field('admin_exclude_categories', __('Categories:','nrelate'), 'setting_admin_exclude_categories',__FILE__,'excludecat_section');
 	
 	// Include custom post types
@@ -97,7 +97,7 @@ function setting_admin_custom_field() {
 
 // Section HTML: customfield
 function section_text_nr_excludecat() {
-	_e('<p id="exclude-cats">Select the categories you want to <b>exclude</b> from ALL nrelate products.</p>', 'nrelate');
+	_e('<p id="exclude-cats">Select the categories you want to <b>exclude</b> from ALL nrelate products. If a post is in multiple categories, and one of those categories is excluded, it will not show up.<p/>EXAMPLE: You published a Post in categories "A" and "B", and you only exclude category "B", the post will not show up, even though category "A" is to be included. Since the post is in an excluded category it will not show up.</p>', 'nrelate');
 }
 
 // CHECKBOX LIST - Name: nrelate_admin_options[admin_exclude_categories]

@@ -110,6 +110,17 @@ $nrelate_thumbnail_styles = array(
 					"info"=>__('Polaroid style images. Inspired by <a href="http://www.zurb.com/playground/css3-polaroids" target="_blank">this article</a> at Zurb.com.','nrelate'),
 				
 				),
+'loud' => array(
+					"stylesheet" => "nrelate-panels-loud",
+					"styleclass" => "loud",
+					"layout" => "1col",
+					"name"=>__('LoudFeed', 'nrelate'),
+					"features"=>__('<ul>
+										<li>Hover effects.</li>
+										<li>Rounded corners</li>
+									</ul>','nrelate'),
+					"info"=>__('** "Animated sponsored text in ads" are disable in this style, if you have ads turned on.<br/>This style was designed for nRelate by the team at <a href="http://LoudFeed.com" target="_blank">LoudFeed</a>.','nrelate'),
+				),
 'none' => array(
 					"name"=>__('none'),
 					"stylesheet" => "",
@@ -314,6 +325,28 @@ $nrelate_thumbnail_styles_separate = array(
 									</ul>', 'nrelate'),
 					"info"=>__('Polaroid style images. Inspired by <a href="http://www.zurb.com/playground/css3-polaroids" target="_blank">this article</a> at Zurb.com.','nrelate'),
 				
+				),
+'loud-2col' => array(
+					"stylesheet" => "nrelate-panels-loud",
+					"styleclass" => "loud",
+					"layout" => "2col",
+					"name"=>__('LoudFeed:<br/><em>2 Columns</em>', 'nrelate'),
+					"features"=>__('<ul>
+										<li>Hover effects.</li>
+										<li>Rounded corners</li>
+									</ul>','nrelate'),
+					"info"=>__('** "Animated sponsored text in ads" are disable in this style, if you have ads turned on.<br/>This style was designed for nRelate by the team at <a href="http://LoudFeed.com" target="_blank">LoudFeed</a>.','nrelate'),
+				),
+'loud-2row' => array(
+					"stylesheet" => "nrelate-panels-loud",
+					"styleclass" => "loud",
+					"layout" => "2row",
+					"name"=>__('LoudFeed:<br/><em>2 Rows</em>', 'nrelate'),
+					"features"=>__('<ul>
+										<li>Hover effects.</li>
+										<li>Rounded corners</li>
+									</ul>','nrelate'),
+					"info"=>__('** "Animated sponsored text in ads" are disable in this style, if you have ads turned on.<br/>This style was designed for nRelate by the team at <a href="http://LoudFeed.com" target="_blank">LoudFeed</a>.','nrelate'),
 				),
 'none' => array(
 					"name"=>__('none'),

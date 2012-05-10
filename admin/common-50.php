@@ -45,6 +45,8 @@ function nrelate_product_check(){
 	
 	$nrelate_products = get_option('nrelate_products');
 	
+	$nrelate_active_plugins_versions = array();
+	
 	foreach ($nrelate_products as $plugin ) {
 		// Only check active plugins
 		if ($plugin['status'] > 0) {

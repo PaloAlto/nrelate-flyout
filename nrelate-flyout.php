@@ -4,7 +4,7 @@ Plugin Name: nrelate Flyout
 Plugin URI: http://www.nrelate.com
 Description: Easily allow related posts to flyout from the sides of your website. Click on <a href="admin.php?page=nrelate-flyout">nrelate &rarr; Flyout</a> to configure your settings.
 Author: <a href="http://www.nrelate.com">nrelate</a> and <a href="http://www.slipfire.com">SlipFire</a>
-Version: 0.51.1
+Version: 0.51.2
 Author URI: http://nrelate.com/
 
 /*
@@ -35,7 +35,7 @@ Author URI: http://nrelate.com/
 /**
  * Define Plugin constants
  */
-define( 'NRELATE_FLYOUT_PLUGIN_VERSION', '0.51.1' );
+define( 'NRELATE_FLYOUT_PLUGIN_VERSION', '0.51.2' );
 define( 'NRELATE_FLYOUT_ADMIN_SETTINGS_PAGE', 'nrelate-flyout' );
 define( 'NRELATE_FLYOUT_ADMIN_VERSION', '0.05.1' );
 define( 'NRELATE_FLYOUT_NAME' , __('Flyout','nrelate'));
@@ -191,7 +191,7 @@ function nrelate_flyout_styles() {
 				
 		// Get the style sheet and class from STYLES.PHP
 		$style_array_convert = ${$style_array};
-		$stylesheet = $style_array_convert[$style_name]['stylesheet'];
+		$stylesheet = $style_array_convert[$style_name]['stylesheet'] ? $style_array_convert[$style_name]['stylesheet'] : "nrelate-panels-default";
 		$fo_styleclass = $style_array_convert[$style_name]['styleclass'];
 		$fo_layout = $style_array_convert[$style_name]['layout'];
 
@@ -344,8 +344,8 @@ function nrelate_flyout() {
 		$nr_fo_counter++;
 		$nrelate_flyout_options = get_option('nrelate_flyout_options');
 		$fo_style_options = get_option('nrelate_flyout_options_styles');
-		$fo_style_code = 'nrelate_' . $fo_styleclass;
-				
+		$fo_style_code = 'nrelate_' . ($fo_styleclass ? $fo_styleclass : "default");
+		$fo_layout_code = 'nr_' . ($fo_layout ? $fo_layout : "1col");
 		$fo_anim_style_options = get_option('nrelate_flyout_anim_options_styles');
 		//$fo_anim_style_code = 'nrelate_animate_style_' . (($nrelate_flyout_options['flyout_animation']=='Slideout') ? $fo_anim_style_options['flyout_anim_slideout_style'] : $fo_anim_style_options['flyout_anim_fade_style']); // use for two styles
 		$fo_anim_style_code = 'nrelate_animate_style_' . $fo_anim_style_options['flyout_anim_slideout_style'];
@@ -360,6 +360,9 @@ function nrelate_flyout() {
 		$nr_url = "http://api.nrelate.com/fow_wp/" . NRELATE_FLYOUT_PLUGIN_VERSION . "/?tag=nrelate_flyout";
 		$nr_url .= "&keywords=$nrelate_title_url[post_title]&domain=" . NRELATE_BLOG_ROOT . "&url=$nrelate_title_url[post_urlencoded]&nr_div_number=".$nr_fo_counter;
 		$nr_url .= is_home() ? '&source=hp' : '';
+		
+		$nr_url = apply_filters('nrelate_api_url', $nr_url, $post->ID);
+		
 		//is loaded only once per page
 		if (!defined('NRELATE_FLYOUT_HOME')) {
 			define('NRELATE_FLYOUT_HOME', true);
@@ -436,7 +439,7 @@ EOD;
 		$markup = <<<EOD
 $animation_fix
 $flyout_animation
-	<div id="nrelate_flyout_{$nr_fo_counter}" class="nrelate nrelate_flyout nr_$flyout_type_position nr_animate_type_$flyout_animation_type $fo_anim_style_code $fo_style_code nr_$fo_layout $nr_fo_width_class">$nr_fo_nonjsbody</div>
+	<div id="nrelate_flyout_{$nr_fo_counter}" class="nrelate nrelate_flyout nr_$flyout_type_position nr_animate_type_$flyout_animation_type $fo_anim_style_code $fo_style_code $fo_layout_code $nr_fo_width_class">$nr_fo_nonjsbody</div>
 	<!--[if IE 6]>
 		<script type="text/javascript">jQuery('.$fo_style_code').removeClass('$fo_style_code');</script>
 	<![endif]-->

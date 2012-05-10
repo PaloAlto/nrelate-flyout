@@ -16,7 +16,7 @@ if (typeof(nRelate)=='undefined') {
 		//array of functions to be called on DOMReady event
 		domready_list : [],
 		//var that determines if flyout stuff should show or not
-		flyout_show : true,
+		flyout_show : false,
 		//flag that indicates the current browser is IE
 		ie_browser : navigator.appName=='Microsoft Internet Explorer',
 		//redirects the page when click on a nrelate post (old function nr_loadframe)

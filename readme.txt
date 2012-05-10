@@ -108,6 +108,13 @@ Our plugin will work on websites in the following languages: Dutch, English, Fre
 
 == Changelog ==
 
+= 0.51.2 =
+* New Style: LoudFeed.
+* Thesis information message on dashboard.
+* Bug: issue with service status message in dashboard.
+* Bug: Only Published posts should show up in nrelate feed.
+* Flyout does not show if there's no content to show.
+
 = 0.51.1 =
 * Fixed CSS path
 * Bug fix: issue with NONE style
