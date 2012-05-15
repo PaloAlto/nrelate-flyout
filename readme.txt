@@ -24,7 +24,6 @@ Because all of the processing and analyzing runs on our servers and not yours, n
 
 <a href="http://www.nrelate.com" title="nrelate home page">Learn more about nrelate</a> or <a href="http://profiles.wordpress.org/users/nrelate/">View other nrelate plugins.</a>
 
-
 == Installation ==
 
 1. Activate the nrelate Flyout plugin
