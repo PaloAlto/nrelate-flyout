@@ -16,7 +16,8 @@ function options_admin_init_nr(){
 	
 	// Ad Section
 	add_settings_section('ad_section', __('Advertising','nrelate'), 'section_text_nr_ad', __FILE__);
-	add_settings_field('admin_validate_ad', __('Partner ID','nrelate').'<br>(<a href="' . NRELATE_WEBSITE_AD_SIGNUP .'" target="_blank">'.__('Sign up to earn money.','nrelate') . '</a>)', 'setting_admin_validate_ad', __FILE__, 'ad_section');	
+	add_settings_field('admin_validate_ad', __('Partner ID','nrelate').'<br>(<a href="' . NRELATE_WEBSITE_AD_SIGNUP .'" target="_blank">'.__('Sign up to earn money.','nrelate') . '</a>)', 'setting_admin_validate_ad', __FILE__, 'ad_section');
+	add_settings_field('admin_paypal_email', __('Paypal Email (so we can pay you)','nrelate'), 'setting_admin_paypal_email', __FILE__, 'ad_section');
 
 	// Communication Section
 	add_settings_section('comm_section', __('Communication','nrelate'), 'section_text_nr_comm', __FILE__);
@@ -48,14 +49,21 @@ add_action('admin_init', 'options_admin_init_nr' );
 
 // Section HTML: Advertising
 function section_text_nr_ad() {
-		_e('<p>Become a part of the nrelate advertising network and earn some extra money on your blog.</p>','nrelate');
+		_e('<p>Become a part of the nrelate advertising network and earn some extra money on your blog. Click on the ADVERTISING tab of a participating nRelate product settings page.</p>','nrelate');
 }
+
 
 // TEXTBOX - Validate ads
 function setting_admin_validate_ad() {
 	$options = get_option('nrelate_admin_options');
 	echo '<div id="getnrcode"></div>';
 	echo '<input id="admin_validate_ad" name="nrelate_admin_options[admin_validate_ad]" size="10" type="hidden" value="" />';
+}
+
+// TEXTBOX - paypal email address field
+function setting_admin_paypal_email(){
+	$options = get_option('nrelate_admin_options');
+	echo '<input id="admin_paypal_email" name="nrelate_admin_options[admin_paypal_email]" size="30" type="text" value="'.$options['admin_paypal_email'].'" />';
 }
 
 
@@ -252,7 +260,11 @@ function nrelate_admin_check_options_change($new_value) {
 	$old_value = (array) get_option('nrelate_admin_options');
 	$reindex = false;
 	
-	$ignore_fields = array( 'admin_email_address' ); // Fields from dashboard we DON'T want to trigger reindex
+  // Fields from dashboard we DON'T want to trigger reindex
+	$ignore_fields = array(
+    'admin_email_address'
+    ,'admin_paypal_email'
+    ); 
 	
 	$fields_to_check = array_merge( array_keys( (array)$old_value ), array_keys( (array)$new_value ) );
 	$fields_to_check = array_unique( $fields_to_check );
@@ -316,16 +328,14 @@ function update_nrelate_admin_data(){
 	
 	// Get nrelate_admin options from wordpress database
 	$option = get_option('nrelate_admin_options');
-	$nr_user_email = get_option('admin_email');
 	$send_email = isset($option['admin_email_address']) ? $option['admin_email_address'] : null;
 	$custom_field = $option['admin_custom_field'];
-
-	switch ($send_email){
-	case true:
+	$paypal_email = $option['admin_paypal_email'];
+	
+	if($send_email){
 		$send_email = 1;
-		$user_email = $nr_user_email;
-		break;
-	default:
+		$user_email = trim(get_option('admin_email'));
+	}else{
 		$send_email = 0;
 		$user_email = null;
 	}
@@ -347,12 +357,13 @@ function update_nrelate_admin_data(){
 	// Write the parameters to be sent
 	$body=array(
 		'DOMAIN'=>$wp_root_nr,
-		'EMAIL'=>$nr_user_email,
+		'EMAIL'=>$user_email,
 		'RSSMODE'=>$rss_mode,
 		'RSSURL'=>$rssurl,
 		'KEY'=>get_option('nrelate_key'),
 		'CUSTOM'=>$custom_field,
-		'EMAILOPT'=>$send_email
+		'EMAILOPT'=>$send_email,
+		'PPEMAIL'=>$paypal_email
 	);
 	$url = 'http://api.nrelate.com/common_wp/'.NRELATE_LATEST_ADMIN_VERSION.'/processWPadmin.php';
 	

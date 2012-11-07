@@ -1,9 +1,9 @@
 === nrelate Flyout ===
 Contributors: nrelate, slipfire, sbruner
 Tags: related posts, related content, related, pages, post, posts, fly-out, flyout, slider, fade, thumbnails, animated, animation, box, featured, jquery, new york times, NYTimes, nrelate
-Tested up to: 3.4.1
+Tested up to: 3.4.2
 Requires at least: 2.9
-Stable tag: 0.51.2
+Stable tag: 0.51.3
 
 
 Display related content in a cool flyout box... similarly to NYTimes.com.
@@ -23,6 +23,7 @@ Advertising is also possible with the plugin. Ads come with the same display opt
 Because all of the processing and analyzing runs on our servers and not yours, nrelate doesn't cause any additional load on your hosting account (especially if you're using shared hosting).
 
 <a href="http://www.nrelate.com" title="nrelate home page">Learn more about nrelate</a> or <a href="http://profiles.wordpress.org/users/nrelate/">View other nrelate plugins.</a>
+
 
 == Installation ==
 
@@ -106,6 +107,13 @@ Our plugin will work on websites in the following languages: Dutch, English, Fre
 
 
 == Changelog ==
+
+= 0.51.3 =
+* Allow users to enter their Paypal ID to receive Advertising payments.
+* Support for nSquared plugin.
+* Bug fix: control clicking a link now correctly opens in a new tab/window.
+* Bug fix: nrelate_product_check.
+* Bug fix: emailopt.
 
 = 0.51.2 =
 * New Style: LoudFeed.

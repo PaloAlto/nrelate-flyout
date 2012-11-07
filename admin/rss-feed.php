@@ -330,6 +330,14 @@ function nrelate_debug() {
 		$options .= print_r(get_option('nrelate_flyout_box_options_styles') ,true);
 		$options .= print_r(get_option('nrelate_flyout_options_ads'),true);
 	}
+
+	//Get nsquared options
+	if (function_exists('nrelate_nsquared')) {
+		$options .= print_r(get_option('nrelate_nsquared_options'),true);
+		$options .= print_r(get_option('nrelate_nsquared_options_styles'),true);
+		$options .= print_r(get_option('nrelate_nsquared_box_options_styles') ,true);
+		$options .= print_r(get_option('nrelate_nsquared_options_ads'),true);
+	}
 	
 	echo '<pre>';
 	print_r($options);
