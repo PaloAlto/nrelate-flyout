@@ -3,7 +3,7 @@ Contributors: nrelate, slipfire, sbruner
 Tags: related posts, related content, related, pages, post, posts, fly-out, flyout, slider, fade, thumbnails, animated, animation, box, featured, jquery, new york times, NYTimes, nrelate
 Tested up to: 3.4.2
 Requires at least: 2.9
-Stable tag: 0.51.3
+Stable tag: 0.51.2
 
 
 Display related content in a cool flyout box... similarly to NYTimes.com.
