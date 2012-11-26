@@ -277,6 +277,8 @@ function nrelate_reindex() {
 		'timeout'=>15
     	)
 	);
+	
+	delete_option("nrelate_reindex_required");
 }
 
 /**

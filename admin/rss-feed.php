@@ -142,6 +142,10 @@ function nrelate_post_count() {
 		if ($customfield != null) {
 			$customfieldvalue = get_post_meta($post->ID, $customfield, $single = true);
 			if ($customfieldvalue != null) {
+        $customfield_path = $options['admin_custom_field_path'];
+        if ($customfield_path != null) {
+          $customfieldvalue = $customfield_path . $customfieldvalue;
+        }
 				$content = '<p><img class="nrelate-image custom-field-image" src="' . $customfieldvalue . '" /></p>' . $content;
 				$thumb_found = true;
 			}
@@ -308,6 +312,11 @@ function nrelate_debug() {
 	}
 	
 	$options = print_r($admin_options,true);
+	
+	// Reindex required information
+	if ( $reindex = get_option("nrelate_reindex_required") ) {
+		$options .= print_r( array("nrelate_reindex_required" => $reindex), true );
+	}
 	
 	//Get related options
 	if (function_exists('nrelate_related')) {

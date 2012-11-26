@@ -25,7 +25,8 @@ function options_admin_init_nr(){
 	
 	// Custom Fields
 	add_settings_section('customfield_section', __('Custom Field for Images','nrelate'), 'section_text_nr_customfield', __FILE__);
-	add_settings_field('admin_custom_field', __('Enter your <b>Custom Field</b> for images, here:','nrelate'), 'setting_admin_custom_field',__FILE__,'customfield_section');
+	add_settings_field('admin_custom_field', __('Enter your <b>Custom Field</b> for images:','nrelate'), 'setting_admin_custom_field',__FILE__,'customfield_section');
+  add_settings_field('admin_custom_field_path', __('If your custom field does not include the path to your images, please enter the path here:','nrelate'), 'setting_admin_custom_field_path',__FILE__,'customfield_section');
 	
 	// Exclude categories
 	add_settings_section('excludecat_section', __('Exclude Categories','nrelate')  . nrelate_tooltip('_exclude_categories'), 'section_text_nr_excludecat', __FILE__);
@@ -99,6 +100,16 @@ function setting_admin_custom_field() {
 	echo '<div id="imagecustomfield"><input id="admin_custom_field" name="nrelate_admin_options[admin_custom_field]" size="40" type="text" value="'.$customfield.'" /></div>';
 }
 
+// TEXTBOX - Name: nrelate_admin_options[admin_custom_field_path]
+function setting_admin_custom_field_path() {
+  $options = get_option('nrelate_admin_options');
+  $customfield_path = $options['admin_custom_field_path'];
+  echo '<div id="imagecustomfield_path">
+          <input id="admin_custom_field_path" name="nrelate_admin_options[admin_custom_field_path]" size="40" type="text" value="'.$customfield_path.'" />
+          <p class="description">i.e. http://www.mysite.com/path-to-images/</p>
+          </div>';
+}
+
 ///////////////////////////
 //   Exclude Categories Settings
 //////////////////////////
@@ -132,7 +143,7 @@ jQuery(document).ready(function(){
 	jQuery('#nrelate-exclude-cats :checkbox').change(function(){
 		var me= jQuery(this);
 		if (!nrel_excluded_cats_changed) {
-			if (confirm("Any changes to this section will cause a site reindex. Are you sure you want to continue?\u000AIf Yes, press OK and then SAVE CHANGES."))
+			if (confirm("Any changes to this section will require a site reindex. Are you sure you want to continue?\u000AIf Yes, press OK, SAVE CHANGES and press the REINDEX button (Reindexing may take a while, please be patient)."))
 			{
 				nrel_excluded_cats_changed = true;
 			} 
@@ -236,7 +247,7 @@ jQuery(document).ready(function(){
 	jQuery('#nrelate-include-cpts :checkbox').change(function(){
 		var me= jQuery(this);
 		if (!nrel_include_cpts_changed) {
-			if (confirm("Any changes to this section will cause a site reindex. Are you sure you want to continue?\u000AIf Yes, press OK and then SAVE CHANGES."))
+			if (confirm("Any changes to this section will require a site reindex. Are you sure you want to continue?\u000AIf Yes, press OK, SAVE CHANGES and press the REINDEX button (Reindexing may take a while, please be patient)."))
 			{
 				nrel_include_cpts_changed = true;
 			} 
@@ -253,12 +264,12 @@ JAVA_SCRIPT;
 }
 
 /*
-*	Executes when nrelate_admin_options changes so it can call nrelate_reindex()
+*	Executes when nrelate_admin_options changes so it can ask the user to reindex
 *	if one of the changes requires complete site re-indexation
 */
 function nrelate_admin_check_options_change($new_value) {
 	$old_value = (array) get_option('nrelate_admin_options');
-	$reindex = false;
+	$reindex = array();
 	
   // Fields from dashboard we DON'T want to trigger reindex
 	$ignore_fields = array(
@@ -273,18 +284,18 @@ function nrelate_admin_check_options_change($new_value) {
 		if ( in_array($field, $ignore_fields) ) continue;
 		
 		if ( isset($new_value[$field]) != isset($old_value[$field]) ) {
-			$reindex = true;
+			$reindex[] = $field;
 			break;
 		}
 		
 		if ( isset($new_value[$field]) && $new_value[$field] !== $old_value[$field] ) {
-			$reindex = true;
+			$reindex[] = $field;
 			break;
 		}
 	}
 	
 	if ( $reindex ) {
-		nrelate_reindex();	
+		update_option("nrelate_reindex_required", $reindex );
 	}
 	
 	return $new_value;

@@ -57,7 +57,28 @@ function nr_service_status() {
 	remove_filter( 'wp_feed_cache_transient_lifetime' , 'nr_filter_handler' );
 }
 
- 
+
+ /**
+ * nrelate PRIORITY Dashboard Messages
+ *
+ * Load PRIORITY messages in Dashboard
+ * These messages load before others and are a larger typeface.
+ *
+ * Use selectively
+ */
+
+ function nr_admin_priority_message_set(){
+
+  // Ask to reindex
+  if ( $reindex = get_option("nrelate_reindex_required") ) {
+    $pr_msg = '<li><div class="priority-message">You need to Re-Index your website for the new settings to take effect. Please click on the <a href="#nrelate_reindex_button">Re-Index button</a> (NOTE: the re-index process may take a while)</div></li>';
+  }
+  
+  echo $pr_msg;
+};
+add_action ('nrelate_priority_admin_messages','nr_admin_priority_message_set');
+
+
  
  /**
  * nrelate Dashboard Messages
@@ -79,10 +100,12 @@ function nr_admin_message_set(){
 	// Communication
 	if ($admin_email == null) {
 		$msg = $msg . '<li><div class="red">It\'s a good idea to provide nrelate with your email address. Check the box under the <a href="#admin_email_address">Communication</a> area below.</div></li>';
-		}
+	}
+		
 	// AJAX call to nrelate server to bring back ad code status
 	$msg.='<script type="text/javascript"> checkad(\''.NRELATE_BLOG_ROOT.'\',\''.NRELATE_LATEST_ADMIN_VERSION.'\',\''.get_option('nrelate_key').'\'); </script>';
-	echo $msg;
+	
+  echo $msg;
 };
 add_action ('nrelate_admin_messages','nr_admin_message_set');
 
