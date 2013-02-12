@@ -1,7 +1,7 @@
 === nrelate Flyout ===
 Contributors: nrelate, slipfire, sbruner
 Tags: related posts, related content, related, pages, post, posts, fly-out, flyout, slider, fade, thumbnails, animated, animation, box, featured, jquery, new york times, NYTimes, nrelate
-Tested up to: 3.4.2
+Tested up to: 3.5
 Requires at least: 2.9
 Stable tag: 0.51.4
 
