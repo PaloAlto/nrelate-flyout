@@ -84,9 +84,6 @@ The nrelate specific RSS feed is very similar to your standard RSS feed if you s
 = How does nrelate know when new content is published? =
 When you activate an nrelate plugin, our Pinghost is automatically added to your list of Update Services, so we are automatically notified when you publish a new post. This allows us to index your new content quickly. You can learn more about the WordPress Update Services at the <a href="http://codex.wordpress.org/Update_Services">WordPress Codex</a>.
 
-= What is nRelate's relationship with comScore? =
-As of May 10, 2013, nRelate is working with <a href="http://www.comscore.com">comScore</a>, a leading web measurement firm, to collect and provide network statistics on nRelate's network of sites.  By using or continuing to use nRelate you authorize nRelate to make a call to comScore for measuring your site and traffic.  comScore is used by tens of thousands of publishers, ad networks, and widget providers for analysis and reporting.  It is very likely given their coverage your site already uses a service that partners with them in the same way nRelate is.  For any questions about this, please feel free to contact our support team (support@nrelate.com) and reference our <a href="http://nrelate.com/privacy-policy/">privacy policy</a> as well.
-
 = My website is not in English, will nrelate work? =
 Our plugin will work on websites in the following languages: Dutch, English, French, German, Indonesian, Italian, Polish, Portuguese, Russian, Spanish, Swedish and Turkish.  If you do not see your language on the list or you think that we could improve the relevancy of our plugin in your language, please <a href="http://nrelate.com/forum/">contact us</a> and we will work with you to configure the plugin accordingly.
 
