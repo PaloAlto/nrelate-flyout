@@ -146,7 +146,7 @@ function nrelate_post_count() {
         if ($customfield_path != null) {
           $customfieldvalue = $customfield_path . $customfieldvalue;
         }
-				$content = '<p><img class="nrelate-image custom-field-image" src="' . $customfieldvalue . '" /></p>' . $content;
+				$content = '<p><img class="nrelate-image custom-field-image" src="' . nrelate_canonicalize($customfieldvalue) . '" /></p>' . $content;
 				$thumb_found = true;
 			}
 		}
@@ -163,7 +163,7 @@ function nrelate_post_count() {
 			if (empty($p75image)) $imageurl = $p75default;
 			
 			if ($imageurl) {
-				$content = sprintf('<p><img class="nrelate-image p75-thumbnail" src="%s" /></p>%s', $imageurl, $content);
+				$content = sprintf('<p><img class="nrelate-image p75-thumbnail" src="%s" /></p>%s', nrelate_canonicalize($imageurl), $content);
 				$thumb_found = true;
 			}
 		}
@@ -175,7 +175,7 @@ function nrelate_post_count() {
 			preg_match('#<img[^>]+src=[\"\']{1}(http:\/\/(www\.)?(open\.thumbshots.org/image\.aspx|robothumb\.com/src)[^\"\']*)[\"\']{1}[^>]+>#i', $content, $images);
 			$imageurl = isset($images[1]) ? $images[1] : null;
 			if ( $imageurl ) {
-				$content = sprintf('<p><img class="nrelate-image thumbshot-image" src="%s" alt="post thumbnail" /></p>%s', $imageurl, $content);
+				$content = sprintf('<p><img class="nrelate-image thumbshot-image" src="%s" alt="post thumbnail" /></p>%s', nrelate_canonicalize($imageurl), $content);
 				$thumb_found = true;
 			}
 		}
@@ -202,7 +202,7 @@ function nrelate_post_count() {
 				foreach( (array)$meta as $key => $imageurl ) {
 
 					if ( $imageurl = nrelate_get_img_url($imageurl) ) {
-						$content = sprintf('<p><img class="nrelate-image auto-custom-field-image" src="%s" alt="post thumbnail" /></p>%s', $imageurl, $content);
+						$content = sprintf('<p><img class="nrelate-image auto-custom-field-image" src="%s" alt="post thumbnail" /></p>%s', nrelate_canonicalize($imageurl), $content);
 						$thumb_found = true;
 						break;
 					}
@@ -219,7 +219,7 @@ function nrelate_post_count() {
 			preg_match('#<img[^>]+src=[\"\']{1}(http:\/\/.*\.(gif|png|jpg|jpeg|tif|tiff|bmp){1})[\"\']{1}[^>]+>#i', $content, $images);
 			$imageurl = isset($images[1]) ? $images[1] : null;
 			if ( $imageurl = nrelate_get_img_url($imageurl) ) {
-				$content = sprintf('<p><img class="nrelate-image auto-content-image" src="%s" alt="post thumbnail" /></p>%s', $imageurl, $content);
+				$content = sprintf('<p><img class="nrelate-image auto-content-image" src="%s" alt="post thumbnail" /></p>%s', nrelate_canonicalize($imageurl), $content);
 				$thumb_found = true;
 			}
 		}
@@ -230,7 +230,7 @@ function nrelate_post_count() {
 			$attachments = get_posts( array('post_type' => 'attachment', 'numberposts' => -1, 'post_status' => null, 'post_parent' => $post->ID, 'order' => 'ASC', 'orderby' => 'menu_order ID') );
 			foreach ($attachments as $attach) {
 				if($img = wp_get_attachment_image_src($attach->ID) ) {
-					$content = sprintf('<p><img class="nrelate-image post-attachment" src="%s" alt="post thumbnail" /></p>%s', $img[0], $content);
+					$content = sprintf('<p><img class="nrelate-image post-attachment" src="%s" alt="post thumbnail" /></p>%s', nrelate_canonicalize($img[0]), $content);
 					$thumb_found = true;
 					break;
 				}
@@ -265,6 +265,22 @@ function nrelate_get_img_url( $url ) {
 	}
 	
 	return false;
+}
+
+function nrelate_canonicalize( $address )
+{
+    $address = explode('/', $address);
+    $keys = array_keys($address, '..');
+
+    foreach($keys AS $keypos => $key)
+    {
+        array_splice($address, $key - ($keypos * 2 + 1), 2);
+    }
+
+    $address = implode('/', $address);
+    $address = str_replace('./', '', $address);
+
+    return $address;
 }
 	
 /**
@@ -466,20 +482,20 @@ function nrelate_custom_feed() {
 		add_filter( 'the_author',         'ent2ncr',      	0 );
 
 		// Execute Shortcodes
-		add_filter('the_excerpt_rss', 'nrelate_execute_shortcode', 5);
-        add_filter('the_content_feed', 'nrelate_execute_shortcode', 5);
+    add_filter('the_excerpt_rss', 'nrelate_execute_shortcode', 5);
+    add_filter('the_content_feed', 'nrelate_execute_shortcode', 5);
 		
 		// Support oEmbed objects
-		add_filter('the_excerpt_rss', 'nrelate_parse_oembed', 7);
-        add_filter('the_content_feed', 'nrelate_parse_oembed', 7);
+    add_filter('the_excerpt_rss', 'nrelate_parse_oembed', 7);
+    add_filter('the_content_feed', 'nrelate_parse_oembed', 7);
 		
-        // Remove Javascript
-		add_filter('the_excerpt_rss', 'nrelate_remove_script', 10);
-        add_filter('the_content_feed', 'nrelate_remove_script', 10);
+    // Remove Javascript
+    add_filter('the_excerpt_rss', 'nrelate_remove_script', 10);
+    add_filter('the_content_feed', 'nrelate_remove_script', 10);
 		
 		// Get custom images
-        add_filter('the_excerpt_rss', 'nrelate_get_custom_images', 20);
-        add_filter('the_content_feed', 'nrelate_get_custom_images', 20);
+    add_filter('the_excerpt_rss', 'nrelate_get_custom_images', 20);
+    add_filter('the_content_feed', 'nrelate_get_custom_images', 20);
 		
 		
 		/**

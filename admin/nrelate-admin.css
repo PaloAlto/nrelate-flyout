@@ -17,6 +17,10 @@ h2.nrelate-title {
 	height: 60px;
 	}
 
+h2.nrelate-title a {
+  margin-left: 15px !important;
+  }
+
 
  /* = nRelate Dashboard
 ----------------------------------------------- */

@@ -212,7 +212,7 @@ add_action('nrelate_admin_page','nrelate_load_admin_scripts');
  * @since 0.47.3
  */
 function nrelate_load_admin_styles() {
-	wp_enqueue_style( 'nrelate-admin', NRELATE_ADMIN_URL . '/nrelate-admin.css', array(),NRELATE_LATEST_ADMIN_VERSION );
+	wp_enqueue_style( 'nrelate-admin', NRELATE_ADMIN_URL . '/nrelate-admin.css', array(),NRELATE_PLUGIN_VERSION );
 	wp_enqueue_style( 'qtip-style', NRELATE_ADMIN_URL . '/qtip/jquery.qtip.min.css');
 	wp_enqueue_style('thickbox');
 }

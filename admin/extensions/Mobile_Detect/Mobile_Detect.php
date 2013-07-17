@@ -1,5 +1,10 @@
 <?php
 /**
+ * This file has been depreciated as of 0.52.2.
+ * and will eventually be removed
+ *
+ *
+ *
  * MIT License
  * ===========
  *
