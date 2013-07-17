@@ -113,6 +113,7 @@ As of May 10, 2013, nRelate is working with <a href="http://www.comscore.com">co
 
 = 0.52.2 =
 * Stylesheets now load locally.
+* comScore added to Javascript.
 * Replaced WP_PLUGIN_DIR constant.
 * Replaced mobile_detect with wp_is_mobile function.
 
