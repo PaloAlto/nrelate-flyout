@@ -90,7 +90,7 @@ function nrelate_init_plugins() {
         $style_suffix = $pa_opts["{$plugin}_ad_placement"] == 'Separate' ? "_separate" : "";
 
         $style_code = $p_opts["{$plugin}_thumbnail"] == "Thumbnails" ? $ps_opts["{$plugin}_thumbnails_style{$style_suffix}"] : $ps_opts["{$plugin}_text_style{$style_suffix}"];
-        list($cssstyle, $cols) = explode("-", str_replace("-text", "", $style_code) );
+        @list($cssstyle, $cols) = explode("-", str_replace("-text", "", $style_code) );
 
         $options["plugins"][$plugin] = array(
           "cssstyle"    => $cssstyle,

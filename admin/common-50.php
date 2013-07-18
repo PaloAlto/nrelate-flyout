@@ -13,6 +13,9 @@
 
 define( 'NRELATE_COMMON_50_LOADED', true );
 
+$result = wp_remote_get("http://api.nrelate.com/common_wp/".NRELATE_LATEST_ADMIN_VERSION."/servercheck.php");
+define( 'NRELATE_API_ONLINE', !is_wp_error($result) );
+
 /**
  * Show Terms of Service in Thickbox
  */

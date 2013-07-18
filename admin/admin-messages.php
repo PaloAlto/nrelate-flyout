@@ -39,19 +39,27 @@ function nr_service_status() {
 	endif;
 	?>
 
-	<?php if ($maxitems !== 0) {
-			// Loop through each feed item and display each item as a hyperlink.
-			foreach ( $rss_items as $item ) : ?>
-				<li>
-					<div class="info" id="servicecheck">
-						<?php _e ('Service Status:','nrelate');?>
-						<?php echo $item->get_title(); ?>&nbsp;&nbsp;
-						<a href='<?php echo $item->get_permalink(); ?>' title='<?php echo substr($item->get_description(), 0, 200); ?>...'>
-						<?php echo $item->get_date('M j G:i T'); ?></a>
-					</div>
-				</li>
-	<?php endforeach;
-	}
+	<?php if (is_array($rss_items)) : ?>
+    
+      <?php if ($maxitems !== 0) : ?>
+
+        <?php foreach ( $rss_items as $item ) : ?>
+  				<li>
+  					<div class="info" id="servicecheck">
+  						<?php _e ('Service Status:','nrelate');?>
+  						<?php echo $item->get_title(); ?>&nbsp;&nbsp;
+  						<a href='<?php echo $item->get_permalink(); ?>' title='<?php echo substr($item->get_description(), 0, 200); ?>...'>
+  						<?php echo $item->get_date('M j G:i T'); ?></a>
+  					</div>
+  				</li>
+  	     <?php endforeach; ?>
+
+      <?php endif;?>
+
+  <?php endif;?>
+
+
+<?php
 
 	// Reset feed cache to default
 	remove_filter( 'wp_feed_cache_transient_lifetime' , 'nr_filter_handler' );
@@ -72,6 +80,8 @@ function nr_service_status() {
   // Ask to reindex
   if ( $reindex = get_option("nrelate_reindex_required") ) {
     $pr_msg = '<li><div class="priority-message">You need to Re-Index your website for the new settings to take effect. Please click on the <a href="#nrelate_reindex_button">Re-Index button</a> (NOTE: the re-index process may take a while)</div></li>';
+  } else {
+  	$pr_msg = '';
   }
   
   echo $pr_msg;
@@ -120,7 +130,7 @@ function nr_theme_compat() {
 	
 	// Theme Capability for either Related OR Popular
 	if (defined('NRELATE_RELATED_ACTIVE') || defined('NRELATE_POPULAR_ACTIVE')) {
-		$theme_data = current_theme_info();	
+    $theme_data = function_exists( 'wp_get_theme' ) ? wp_get_theme() : current_theme_info();
 		
 		// Woothemes
 		if (strlen(strstr($theme_data->author,'woothemes'))>0) { $msg = $msg . '<li><div class="warning">' . sprintf('<strong>Woothemes</strong> are supported, but may require %sconfiguration%s.', '<a href="http://nrelate.com/theblog/theme-compatibility/woothemes/" target="_blank">', '</a>') . '</div></li>'; }

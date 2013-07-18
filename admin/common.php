@@ -436,7 +436,7 @@ add_action('contextual_help', 'nrelate_dashboard_help', 10, 2);
  * @credits http://wordpress.org/extend/plugins/wphelpcenter/
  */
 function nrelate_site_inventory(){
-	$theme = get_theme(get_current_theme());
+	$theme = function_exists('wp_get_theme') ? wp_get_theme() : get_theme( get_current_theme() );
 	$themename = $theme['Name'];
 	$themeversion = $theme['Version'];
 	$themeauthor = strip_tags($theme['Author']);
