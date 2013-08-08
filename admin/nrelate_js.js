@@ -2245,13 +2245,13 @@ if ( typeof nRelate == 'undefined' ) {
        * @since 0.52.0
        */
       constants : {
-        version         : "0.52.3",
+        version         : "0.52.4",
         domain          : (typeof window['nr_domain'] != 'undefined' ? window['nr_domain'] : window.location.hostname ),
         cs_api_url        : "http://js.nrcdn.com/custom-script/1.0/",
         css_api_url       : "http://css.nrcdn.com/custom-style/",
         default_stylesheet_url  : "http://css.nrcdn.com/custom-style/default.min.css",
         tracking_url      : "http://t.nrelate.com/tracking/",
-        remove_url        : "http://api.nrelate.com/rcw_js/0.52.3/nr_removeID.php",
+        remove_url        : "http://api.nrelate.com/rcw_js/0.52.4/nr_removeID.php",
         views_url       : "http://api.nrelate.com/vt/",
         print_id        : false,
         extra_apip        : { }
