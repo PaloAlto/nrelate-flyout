@@ -1,9 +1,9 @@
 === nrelate Flyout ===
 Contributors: nrelate, slipfire, sbruner
 Tags: related posts, related content, related, pages, post, posts, fly-out, flyout, slider, fade, thumbnails, animated, animation, box, featured, jquery, new york times, NYTimes, nrelate
-Tested up to: 3.6
+Tested up to: 3.8
 Requires at least: 2.9
-Stable tag: 0.52.6
+Stable tag: 0.52.7
 
 
 Display related content in a cool flyout box... similarly to NYTimes.com.
@@ -110,6 +110,10 @@ As of May 10, 2013, nRelate is working with <a href="http://www.comscore.com">co
 
 
 == Changelog ==
+
+= 0.52.7 =
+* Slight layout fix for WP 3.8 admin pages.
+* BUG FIX: error reporting in WP 3.8.
 
 = 0.52.6 =
 * BUG FIX: Content is read normally.
