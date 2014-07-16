@@ -5,7 +5,7 @@
  * @package nrelate
  * @subpackage Functions
  */
- 
+
   /**
  * Retrieve Post ID, formatted for use in feeds.
  *
@@ -16,7 +16,7 @@
 function nrelate_get_the_post_ID() {
 	global $post;
 	$post_id = $post->ID;
-	
+
 	$the_post_id = "<postID><![CDATA[" . $post_id . "]]></postID>\n";
 
 	return $the_post_id;
@@ -32,7 +32,7 @@ function nrelate_get_the_post_ID() {
 function nrelate_get_the_post_type_rss() {
 	global $post;
 	$post_type = get_post_type( $post );
-	
+
 	$the_post_type = "\t\t<postType><![CDATA[" . @html_entity_decode( $post_type, ENT_COMPAT, get_option('blog_charset') ) . "]]></postType>\n";
 
 	return $the_post_type;
@@ -48,7 +48,7 @@ function nrelate_get_the_post_type_rss() {
  */
 function nrelate_get_the_category_rss() {
 	$categories = get_the_category();
-	
+
 	$filter = 'rss';
 
 	$cat_names = array();
@@ -59,7 +59,7 @@ function nrelate_get_the_category_rss() {
 	}
 
 	$cat_names = array_unique($cat_names);
-	
+
 	$the_cats = '';
 	foreach ( $cat_names as $cat_id => $cat_name ) {
 		$the_cats .= "\t\t<category><![CDATA[" . @html_entity_decode( $cat_name, ENT_COMPAT, get_option('blog_charset') ) . "]]></category><categoryID>" . $cat_id . "</categoryID>\n";
@@ -86,9 +86,9 @@ function nrelate_get_the_tags_rss() {
 			$tag_names[$tag->term_id] = sanitize_term_field('name', $tag->name, $tag->term_id, 'post_tag', $filter);
 		}
 	}
-	
+
 	$tag_names = array_unique($tag_names);
-	
+
 	$the_tags = '';
 	foreach ( $tag_names as $tag_id => $tag_name ) {
 		$the_tags .= "\t\t<tag><![CDATA[" . @html_entity_decode( $tag_name, ENT_COMPAT, get_option('blog_charset') ) . "]]></tag><tagID>" . $tag_id . "</tagID>\n";
@@ -108,6 +108,7 @@ function nrelate_get_the_tags_rss() {
 
 function nrelate_cdata() {
 	echo nrelate_get_the_post_ID();
+	echo nrelate_publish_date();
 	echo nrelate_get_the_post_type_rss();
 	echo nrelate_get_the_category_rss();
 	echo nrelate_get_the_tags_rss();
@@ -135,7 +136,7 @@ function nrelate_post_count() {
     function nrelate_get_custom_images($content) {
         global $post;
 		$thumb_found = false;
-		
+
 		// Get custom field images if user set a custom field
 		$options = get_option('nrelate_admin_options');
         $customfield = $options['admin_custom_field'];
@@ -161,13 +162,13 @@ function nrelate_post_count() {
 			$imageurl = get_bloginfo('wpurl') . $p75image;
 
 			if (empty($p75image)) $imageurl = $p75default;
-			
+
 			if ($imageurl) {
 				$content = sprintf('<p><img class="nrelate-image p75-thumbnail" src="%s" /></p>%s', nrelate_canonicalize($imageurl), $content);
 				$thumb_found = true;
 			}
 		}
-		
+
 		// Thumbshots
 		// http://wordpress.org/extend/plugins/thumbshots/
 		// Since 0.49.3
@@ -186,19 +187,19 @@ function nrelate_post_count() {
 			$content = '<p>' . get_the_post_thumbnail( $post->ID, 'large', $default_attr ) . '</p>' . $content;
 			$thumb_found = true;
 		}
-		
+
 		// Last resort for custom images, search through all custom fields for image URL and grab the first
 		// url must start with http and file must be a gif, png or jpg.
 		// Since 0.45.0
 		if (!$thumb_found) {
 			foreach ( get_post_custom($post->ID) as $key => $values ) {
 				$meta = get_post_meta($post->ID, $key);
-				
+
 				// Extract metadata
 				if (is_array($meta)) {
 					$meta = current($meta);
 				}
-				
+
 				foreach( (array)$meta as $key => $imageurl ) {
 
 					if ( $imageurl = nrelate_get_img_url($imageurl) ) {
@@ -207,13 +208,13 @@ function nrelate_post_count() {
 						break;
 					}
 				}
-				
+
 				if ($thumb_found) {
 					break;
 				}
 			}
 		}
-		
+
 		// If no images are found yet, grab the first image in the post.
 		if (!$thumb_found) {
 			preg_match('#<img[^>]+src=[\"\']{1}(http:\/\/.*\.(gif|png|jpg|jpeg|tif|tiff|bmp){1})[\"\']{1}[^>]+>#i', $content, $images);
@@ -223,8 +224,8 @@ function nrelate_post_count() {
 				$thumb_found = true;
 			}
 		}
-		
-		
+
+
 		// Last resort.  If no images in post, let's check post attachments.
 		if (!$thumb_found) {
 			$attachments = get_posts( array('post_type' => 'attachment', 'numberposts' => -1, 'post_status' => null, 'post_parent' => $post->ID, 'order' => 'ASC', 'orderby' => 'menu_order ID') );
@@ -236,7 +237,7 @@ function nrelate_post_count() {
 				}
 			}
 		}
-		
+
 		return $content;
 	}
 
@@ -247,7 +248,7 @@ function nrelate_post_count() {
 function nrelate_get_img_url( $url ) {
 	if ( !is_string( $url ) || (!$url = trim( (string) $url) ) ) return false;
 	$parsed = parse_url( html_entity_decode($url) );
-	
+
 	if( isset($parsed['query']) ) {
 		$params = explode( '&', $parsed['query']);
 		foreach ($params as $pair) {
@@ -259,11 +260,11 @@ function nrelate_get_img_url( $url ) {
 			}
 		}
 	}
-	
+
 	if ( preg_match('#^http:\/\/(.*)\.(gif|png|jpg|jpeg|tif|tiff|bmp)$#i', $url) ) {
 		return $url;
 	}
-	
+
 	return false;
 }
 
@@ -282,7 +283,7 @@ function nrelate_canonicalize( $address )
 
     return $address;
 }
-	
+
 /**
  * Remove Javascript from our feed
  *
@@ -301,6 +302,38 @@ function nrelate_parse_oembed($content) {
 	return $wp_embed->autoembed( $content );
 }
 
+function nrelate_publish_date()
+{
+	global $post;
+
+	$publish_date = "\t\t<publishDate>" . mysql2date('D, d M Y H:i:s +0000', $post->post_date, false) . "</publishDate>\n";
+
+	return $publish_date;
+}
+
+
+
+/**
+ * Use Excerpt if present
+ *
+ * Since 1.00.0
+ */
+function nrelate_get_excerpt($content)
+{
+	global $post;
+
+	if(has_excerpt())
+	{
+		$content = $post->post_excerpt;
+	}
+	else
+	{
+		$content = $content;
+	}
+
+	return $content;
+}
+
 
  /**
  * Execute Shortcodes in our feed
@@ -315,9 +348,9 @@ function nrelate_execute_shortcode($content) {
  * Since v45.1
  */
 function nrelate_debug() {
-	
+
 	$admin_options = get_option('nrelate_admin_options');
-	
+
 	// Make category exclusion human-readable
 	if ( isset( $admin_options['admin_exclude_categories'] ) ) {
 		$readable_cats = array();
@@ -326,14 +359,14 @@ function nrelate_debug() {
 		}
 		$admin_options['admin_exclude_categories'] = $readable_cats;
 	}
-	
+
 	$options = print_r($admin_options,true);
-	
+
 	// Reindex required information
 	if ( $reindex = get_option("nrelate_reindex_required") ) {
 		$options .= print_r( array("nrelate_reindex_required" => $reindex), true );
 	}
-	
+
 	//Get related options
 	if (function_exists('nrelate_related')) {
 		$options .= print_r(get_option('nrelate_related_options'),true);
@@ -347,7 +380,7 @@ function nrelate_debug() {
 		$options .= print_r(get_option('nrelate_popular_options_styles'), true);
 		$options .= print_r(get_option('nrelate_popular_options_ads'), true);
 	}
-	
+
 	//Get flyout options
 	if (function_exists('nrelate_flyout')) {
 		$options .= print_r(get_option('nrelate_flyout_options'),true);
@@ -363,7 +396,7 @@ function nrelate_debug() {
 		$options .= print_r(get_option('nrelate_nsquared_box_options_styles') ,true);
 		$options .= print_r(get_option('nrelate_nsquared_options_ads'),true);
 	}
-	
+
 	echo '<pre>';
 	print_r($options);
 	echo '</pre>';
@@ -386,12 +419,12 @@ function nrelate_custom_feed() {
 			exit();
 		}
 
-		// Posts per page		
+		// Posts per page
 		if ( isset( $_GET['posts_per_page'] ) )
 			set_query_var( 'posts_per_page', $_GET['posts_per_page'] );
 		else
 			set_query_var( 'posts_per_page', 50 );
-			
+
 		// Specific Posts
 		if(isset($_GET['p'])){
 			$p = $_GET['p'];
@@ -412,7 +445,7 @@ function nrelate_custom_feed() {
 		// Sticky post backwards compatibility
 		global $wp_version;
 		$ignore_sticky = ($wp_version >= '3.1' ? 'ignore_sticky_posts' : 'caller_get_posts');
-		
+
 		$query_posts_args = array(
 			'posts_per_page' => get_query_var( 'posts_per_page' ),
 			'p' => $p,
@@ -421,14 +454,14 @@ function nrelate_custom_feed() {
 			$ignore_sticky => 1,
 			'post_type' => isset($options['admin_include_post_types']) ? $options['admin_include_post_types'] : array()
 		);
-		
+
 		if ( isset($options['admin_exclude_categories']) ) {
 			foreach( $options['admin_exclude_categories'] as &$cat ) {
 				$cat *= -1;
 			}
 			$query_posts_args['cat'] = implode(',', $options['admin_exclude_categories']);
 		}
-		
+
 		query_posts($query_posts_args);
 
 		// WP Super Cache: disable
@@ -484,31 +517,36 @@ function nrelate_custom_feed() {
 		// Execute Shortcodes
     add_filter('the_excerpt_rss', 'nrelate_execute_shortcode', 5);
     add_filter('the_content_feed', 'nrelate_execute_shortcode', 5);
-		
+
+
+		add_filter('the_content_feed', 'nrelate_get_excerpt');
+
+
+
 		// Support oEmbed objects
     add_filter('the_excerpt_rss', 'nrelate_parse_oembed', 7);
     add_filter('the_content_feed', 'nrelate_parse_oembed', 7);
-		
+
     // Remove Javascript
     add_filter('the_excerpt_rss', 'nrelate_remove_script', 10);
     add_filter('the_content_feed', 'nrelate_remove_script', 10);
-		
+
 		// Get custom images
     add_filter('the_excerpt_rss', 'nrelate_get_custom_images', 20);
     add_filter('the_content_feed', 'nrelate_get_custom_images', 20);
-		
-		
+
+
 		/**
 		 * Support for other plugins
 		 */
-		
+
 		// Smart YouTube
 		if ( class_exists('SmartYouTube') ) {
 			$smrtYtb = new SmartYouTube();
 			add_filter('the_content_feed', array($smrtYtb, 'check'), 30);
 		}
-		
-		
+
+
 		// Add post count
 		add_action ('rss2_head', 'nrelate_post_count');
 
@@ -518,7 +556,7 @@ function nrelate_custom_feed() {
 		// Prevent search engine indexing
 		header("X-Robots-Tag: noindex", true);
 		add_action('rss2_head', 'nrelate_noindex');
-		
+
 		// Use WP's feed template
 		do_feed_rss2( false );
 		exit();

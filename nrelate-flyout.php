@@ -4,7 +4,7 @@ Plugin Name: nrelate Flyout
 Plugin URI: http://www.nrelate.com
 Description: Easily allow related posts to flyout from the sides of your website. Click on <a href="admin.php?page=nrelate-flyout">nrelate &rarr; Flyout</a> to configure your settings.
 Author: <a href="http://www.nrelate.com">nrelate</a> and <a href="http://www.slipfire.com">SlipFire</a>
-Version: 1.1.1
+Version: 1.2.0
 Author URI: http://nrelate.com/
 
 /*
@@ -35,8 +35,8 @@ Author URI: http://nrelate.com/
 /**
  * Define Plugin constants
  */
-define( 'NRELATE_FLYOUT_PLUGIN_VERSION', '1.1.1' );
-defined('NRELATE_PLUGIN_VERSION') or define( 'NRELATE_PLUGIN_VERSION', '1.1.1' );
+define( 'NRELATE_FLYOUT_PLUGIN_VERSION', '1.2.0' );
+defined('NRELATE_PLUGIN_VERSION') or define( 'NRELATE_PLUGIN_VERSION', '1.2.0' );
 define( 'NRELATE_FLYOUT_ADMIN_SETTINGS_PAGE', 'nrelate-flyout' );
 define( 'NRELATE_FLYOUT_ADMIN_VERSION', '0.05.3' );
 define( 'NRELATE_FLYOUT_API_VERSION', '0.52.7' );
@@ -206,7 +206,12 @@ function nrelate_flyout_styles() {
 
 		// Only load if style not set to NONE
 		if ('none'!=$style_options[$style_type]) {
+			// Load Common CSS
+			wp_register_style('nrelate-style-common-' . str_replace(".","-",NRELATE_PLUGIN_VERSION), NRELATE_CSS_URL . 'nrelate-panels-common.min.css', array(), NRELATE_PLUGIN_VERSION );
+			wp_enqueue_style( 'nrelate-style-common-' . str_replace(".","-",NRELATE_PLUGIN_VERSION) );
+			// IE6 fix
 			nrelate_ie6_thumbnail_style();
+			// User selected style
 			wp_register_style('nrelate-style-'. $style_name . "-" . str_replace(".","-",NRELATE_PLUGIN_VERSION), $fo_css_url, array(), NRELATE_PLUGIN_VERSION );
 			wp_enqueue_style( 'nrelate-style-'. $style_name . "-" . str_replace(".","-",NRELATE_PLUGIN_VERSION) );
 		}

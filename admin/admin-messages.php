@@ -203,16 +203,6 @@ function nr_paypal_message() {
     
     $flyout_ad_options = get_option('nrelate_flyout_options_ads');
     $ad_show_flyout = isset($flyout_ad_options['flyout_display_ad']) ? $flyout_ad_options['flyout_display_ad'] : null;
-
-    // Combine them so we can check if any are on
-    $ad_show_nrelate = $ad_show_related . $ad_show_popular . $ad_show_flyout;
-
-      // If Ads are turned on, we ask user for Paypal email
-      if ($ad_show_nrelate != null) {
-        $msg = $msg . '<li><div class="red">' . sprintf('You are showing Advertising, but have not provided your Paypal email address. If you want to <strong>get paid quickly</strong>, please enter your Paypal email address, below.', 'nrelate') . '</div></li>';
-      
-        echo $msg;
-      }
   }
 }
 add_action ('nrelate_admin_messages','nr_paypal_message');

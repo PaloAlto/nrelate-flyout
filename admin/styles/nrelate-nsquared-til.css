@@ -146,6 +146,15 @@ created by Jane Kim for nRelate 2012
 }
 
 /* settings for each thumbnail size supported in plugin */
+.nrelate_til.nr_80 .nr_inner a{ height: 80px !important; }
+.nrelate_til.nr_80 .nr_panel{ width: 80px; }
+.nrelate_til.nr_80 .nr_panel .nr_sponsored_wrap{ top:62px; width: 80px; }
+.nrelate_til.nr_80 .nr_panel .nr_sponsored{ left: 62px; }
+.nrelate_til.nr_80 .nr_text{ height: 72px; width: 72px; top: 0px;}
+.nrelate_til.nr_80 .nr_panel:hover .nr_text{ height:72px; width:72px;}
+.nrelate_til.nr_80 .nr_panel:hover .nr_post_title{ font-size: 12px; line-height: 4px; }
+
+
 .nrelate_til.nr_150 .nr_inner a{ height: 150px !important; }
 .nrelate_til.nr_150 .nr_panel{ width: 150px; }
 .nrelate_til.nr_150 .nr_panel .nr_sponsored_wrap{ top:132px; width: 150px; }

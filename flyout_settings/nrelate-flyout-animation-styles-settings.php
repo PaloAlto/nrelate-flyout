@@ -88,7 +88,7 @@ function flyout_anim_slideout_styles() {
 				<input id="nrelate_style_<?php echo $style_code; ?>" <?php echo $checked; ?> type="radio" name="nrelate_flyout_anim_options_styles[flyout_anim_slideout_style]" value="<?php echo $style_code; ?>" /><br />
 				<?php echo $style_name; ?><br />
 			</label>
-				<img class="style-image" src="<?php echo NRELATE_FLYOUT_IMAGE_DIR; ?>/anim_style_<?php echo $style_code; ?>.png"  alt="<?php echo $style_code; ?>" />
+				<img class="style-image" src="<?php echo NRELATE_FLYOUT_IMAGE_DIR; ?>/anim_style_<?php echo $style_code; ?>.png"  alt="<?php echo $style_code; ?>" style="width:380px; height:auto; float:left;" />
 			<div id="info-style-<?php echo $style_code;?>" class="style-features-info">
 				<div class="style-features"><?php echo $nrelate_slideout_anim_style['features']; ?></div>
 				<div class="style-info">
@@ -147,7 +147,7 @@ function nrelate_flyout_anim_styles_do_page() { ?>
 		//<![CDATA[
 		var nr_fo_anim_plugin_settings_url = '<?php echo NRELATE_FLYOUT_SETTINGS_URL; ?>';
 		var nr_plugin_domain = '<?php echo NRELATE_BLOG_ROOT; ?>';
-		var nr_fo_anim_plugin_version = '<?php echo NRELATE_FLYOUT_PLUGIN_VERSION ?>';
+		var nr_fo_anim_plugin_version = '<?php echo NRELATE_FLYOUT_API_VERSION ?>';
 		//]]>
     </script>
 		<form name="settings" action="options.php" method="post" enctype="multipart/form-action">
@@ -182,7 +182,7 @@ function nrelate_flyout_anim_styles_do_page() { ?>
 		<?php do_settings_sections(__FILE__);?>
     <!--
 		<br>
-    <button type="button" class="nrelate_fo_preview_button button-primary" onClick="return nrelate_flyout_anim_popup_preview('<?php echo NRELATE_FLYOUT_SETTINGS_URL; ?>','<?php echo NRELATE_BLOG_ROOT; ?>','<?php echo NRELATE_FLYOUT_PLUGIN_VERSION; ?>');"> <?php _e('Preview','nrelate'); ?> </button>
+    <button type="button" class="nrelate_fo_preview_button button-primary" onClick="return nrelate_flyout_anim_popup_preview('<?php echo NRELATE_FLYOUT_SETTINGS_URL; ?>','<?php echo NRELATE_BLOG_ROOT; ?>','<?php echo NRELATE_FLYOUT_API_VERSION; ?>');"> <?php _e('Preview','nrelate'); ?> </button>
     -->
 		<p class="submit">
 			<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes','nrelate'); ?>" />

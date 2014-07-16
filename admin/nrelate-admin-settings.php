@@ -17,7 +17,6 @@ function options_admin_init_nr(){
 	// Ad Section
 	add_settings_section('ad_section', __('Advertising','nrelate'), 'section_text_nr_ad', __FILE__);
 	add_settings_field('admin_validate_ad', __('Partner ID','nrelate').'<br>(<a href="' . NRELATE_WEBSITE_AD_SIGNUP .'" target="_blank">'.__('Sign up to earn money.','nrelate') . '</a>)', 'setting_admin_validate_ad', __FILE__, 'ad_section');
-	add_settings_field('admin_paypal_email', __('Paypal Email (so we can pay you)','nrelate'), 'setting_admin_paypal_email', __FILE__, 'ad_section');
 
 	// Communication Section
 	add_settings_section('comm_section', __('Communication','nrelate'), 'section_text_nr_comm', __FILE__);
@@ -61,11 +60,6 @@ function setting_admin_validate_ad() {
 	echo '<input id="admin_validate_ad" name="nrelate_admin_options[admin_validate_ad]" size="10" type="hidden" value="" />';
 }
 
-// TEXTBOX - paypal email address field
-function setting_admin_paypal_email(){
-	$options = get_option('nrelate_admin_options');
-	echo '<input id="admin_paypal_email" name="nrelate_admin_options[admin_paypal_email]" size="30" type="text" value="'.$options['admin_paypal_email'].'" />';
-}
 
 
 ///////////////////////////
@@ -172,21 +166,21 @@ class nrelate_Walker_Category_Checklist extends Walker {
 	var $tree_type = 'category';
 	var $db_fields = array ('parent' => 'parent', 'id' => 'term_id');
 
-	function start_lvl(&$output, $depth, $args) {
+	function start_lvl(&$output, $depth = 0, $args = array() ) {
 		$indent = str_repeat("\t", $depth);
 		$output .= "$indent<ul class='children' style='margin-left:18px;'>\n";
 	}
 
-	function end_lvl(&$output, $depth, $args) {
+	function end_lvl(&$output, $depth = 0, $args = array() ) {
 		$indent = str_repeat("\t", $depth);
 		$output .= "$indent</ul>\n";
 	}
 
-	function end_el(&$output, $category, $depth, $args) {
+	function end_el(&$output, $category, $depth = 0, $args = array() ) {
 		$output .= "</li>\n";
 	}
 	
-	function start_el(&$output, $category, $depth, $args) {
+	function start_el(&$output, $category, $depth = 0, $args = array(), $current_object_id = 0 ) {
 		extract($args);
 		if ( empty($taxonomy) )
 			$taxonomy = 'category';

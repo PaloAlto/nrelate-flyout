@@ -6,7 +6,7 @@
  * @subpackage Functions
  */
 if (!defined('NRELATE_FLYOUT_STYLE_THUMBNAILS_URL'))
-	define('NRELATE_FLYOUT_STYLE_THUMBNAILS_URL', 'http://imgcdn.nrelate.com/fow_wp/'. NRELATE_FLYOUT_PLUGIN_VERSION . '/images');
+	define('NRELATE_FLYOUT_STYLE_THUMBNAILS_URL', 'http://imgcdn.nrelate.com/fow_wp/'. NRELATE_FLYOUT_API_VERSION . '/images');
 
 function options_init_nr_fo_styles(){
 
@@ -60,7 +60,7 @@ function setting_flyout_style_type(){
 	//Common header for both styles
 	echo '<div id="style-gallery">
 			<h4 class="style-select"></h4>
-			<h4 class="style-image">Screenshot (click on image for live preview)</h4>
+			<h4 class="style-image">Screenshot</h4>
 			<div class="style-features-info">
 				<h4 class="style-features">Features</h4>
 				<h4 class="style-info">Information</h4>
@@ -103,9 +103,7 @@ function flyout_thumbnail_styles() {
 				<input id="nrelate_style_<?php echo $style_code; ?>" <?php echo $checked; ?> type="radio" name="nrelate_flyout_options_styles[flyout_thumbnails_style]" value="<?php echo $style_code; ?>" /><br />
 				<?php echo $style_name; ?><br />
 			</label>
-			<a href="#" class="nrelate_preview_button nrelate-thumbnail-style-prev" title="Preview this style">
-				<img class="style-image" src="<?php echo NRELATE_ADMIN_IMAGES; ?>/thumbnail_style_<?php echo $style_code; ?>.png"  alt="<?php echo $style_code; ?>" />
-			</a>
+			<img class="style-image" src="<?php echo NRELATE_ADMIN_IMAGES; ?>/thumbnail_style_<?php echo $style_code; ?>.png"  alt="<?php echo $style_code; ?>" />
 			<div id="info-style-<?php echo $style_code;?>" class="style-features-info">
 				<div class="style-features"><?php echo $nrelate_thumbnail_style['features']; ?></div>
 				<div class="style-info">
@@ -148,9 +146,7 @@ function flyout_thumbnail_styles_separate() {
 				<input id="nrelate_style_<?php echo $style_code; ?>" <?php echo $checked; ?> type="radio" name="nrelate_flyout_options_styles[flyout_thumbnails_style_separate]" value="<?php echo $style_code; ?>" /><br />
 				<?php echo $style_name; ?><br />
 			</label>
-			<a href="#" class="nrelate_preview_button nrelate-thumbnail-style-prev" title="Preview this style">
 				<img class="style-image" src="<?php echo NRELATE_ADMIN_IMAGES; ?>/thumbnail_style_<?php echo $style_code; ?>.png"  alt="<?php echo $style_code; ?>" />
-			</a>
 			<div id="info-style-<?php echo $style_code;?>" class="style-features-info">
 				<div class="style-features"><?php echo $nrelate_thumbnail_style_separate['features']; ?></div>
 				<div class="style-info">
@@ -196,9 +192,7 @@ function flyout_text_styles() {
 				<input id="nrelate_style_<?php echo $style_code; ?>" <?php echo $checked; ?> type="radio" name="nrelate_flyout_options_styles[flyout_text_style]" value="<?php echo $style_code; ?>" /><br />
 				<?php echo $style_name; ?><br />
 			</label>
-			<a href="#" class="nrelate_preview_button nrelate-text-style-prev" title="Preview this style">
 				<img class="style-image" src="<?php echo NRELATE_ADMIN_IMAGES; ?>/text_style_<?php echo $style_code; ?>.png"  alt="<?php echo $style_code; ?>" />
-			</a>
 			<div id="info-style-<?php echo $style_code;?>" class="style-features-info">
 				<div class="style-features"><?php echo $nrelate_text_style['features']; ?></div>
 				<div class="style-info">
@@ -242,9 +236,7 @@ function flyout_text_styles_separate() {
 				<input id="nrelate_style_<?php echo $style_code; ?>" <?php echo $checked; ?> type="radio" name="nrelate_flyout_options_styles[flyout_text_style_separate]" value="<?php echo $style_code; ?>" /><br />
 				<?php echo $style_name; ?><br />
 			</label>
-			<a href="#" class="nrelate_preview_button nrelate-text-style-prev" title="Preview this style">
 				<img class="style-image" src="<?php echo NRELATE_ADMIN_IMAGES; ?>/text_style_<?php echo $style_code; ?>.png"  alt="<?php echo $style_code; ?>" />
-			</a>
 			<div id="info-style-<?php echo $style_code;?>" class="style-features-info">
 				<div class="style-features"><?php echo $nrelate_text_style_separate['features']; ?></div>
 				<div class="style-info">
@@ -278,7 +270,7 @@ function nrelate_flyout_styles_do_page() { ?>
 		//<![CDATA[
 		var nr_fo_plugin_settings_url = '<?php echo NRELATE_FLYOUT_SETTINGS_URL; ?>';
 		var nr_plugin_domain = '<?php echo NRELATE_BLOG_ROOT; ?>';
-		var nr_fo_plugin_version = '<?php echo NRELATE_FLYOUT_PLUGIN_VERSION ?>';
+		var nr_fo_plugin_version = '<?php echo NRELATE_FLYOUT_API_VERSION ?>';
 		//]]>
     </script>
 		<form name="settings" action="options.php" method="post" enctype="multipart/form-action">

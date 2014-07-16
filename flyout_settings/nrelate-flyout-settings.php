@@ -43,7 +43,7 @@ function options_init_nr_fo(){
 	add_settings_field('flyout_custom_field', __('<div class="nr_image_option" '.$divstyle.'>If you use <b>Custom Fields</b> for your images, nrelate can show them.</div>','nrelate'), 'setting_flyout_custom_field',__FILE__,'main_section');
 	add_settings_field('flyout_title', __('Please enter a title for the flyout content box','nrelate') . nrelate_tooltip('_title'), 'setting_string_nr_fo', __FILE__, 'main_section');
 	add_settings_field('flyout_number_of_posts', __('<b>Maximum</b> number of posts to display from this site</br><em>To display multiple rows of thumbnails, choose more than will fit in one row.</em>','nrelate') . nrelate_tooltip('_number_of_posts'), 'setting_flyout_number_of_posts_nr_fo', __FILE__, 'main_section');
-	add_settings_field('flyout_bar', __('How relevant do you want the results to be?<br/><i>Based on the amount/type of content on your website, higher relevancy settings may return little or no posts.</i>','nrelate'), 'setting_flyout_bar_nr_fo', __FILE__, 'main_section');
+	add_settings_field('flyout_bar', __('How relevant do you want the results to be?<br/><i>Based on the amount/type of content on your website, medium and high relevancy settings may return little or no posts.</i>','nrelate'), 'setting_flyout_bar_nr_fo', __FILE__, 'main_section');
 	add_settings_field('flyout_max_age', __('How deep into your archive would you like to go for flyout posts?','nrelate') . nrelate_tooltip('_max_age'), 'setting_flyout_max_age', __FILE__, 'main_section');
 	add_settings_field('flyout_exclude_cats', __('Exclude Categories from your flyout content.','nrelate') . nrelate_tooltip('_exclude_cats'), 'nrelate_text_exclude_categories',__FILE__,'main_section');
 	add_settings_field('flyout_show_post_title', '<a name="nrelate_show_post_title"></a>'.__('Show Post Title?','nrelate') . nrelate_tooltip('_show_post_title'), 'setting_flyout_show_post_title', __FILE__, 'main_section');
@@ -108,7 +108,7 @@ function setting_flyout_number_of_posts_nr_fo() {
 function  setting_flyout_bar_nr_fo() {
 	$options = get_option('nrelate_flyout_options');
 	$items = array ("Low", "Medium", "High");
-	$itemval = array ("Low" => __("Low: least relevant",'nrelate'), "Medium" => __("Med: more relevant",'nrelate'), "High" => __("High: most relevant",'nrelate'));
+	$itemval = array ("Low" => __("Low (recommended)",'nrelate'), "Medium" => __("Medium",'nrelate'), "High" => __("High",'nrelate'));
 	echo "<select id='flyout_bar' name='nrelate_flyout_options[flyout_bar]'>";
 	foreach($items as $item) {
 		$selected = ($options['flyout_bar']==$item) ? 'selected="selected"' : '';
@@ -225,7 +225,7 @@ function setting_flyout_loc(){
 	
 	foreach($directions as $direction){ 
 			$checked = ($options['flyout_loc']==$direction) ? ' checked="checked" ' : '';
-			echo "<label for='flyout_loc_".$direction."'><input ".$checked." id='flyout_loc_".$direction."' value='$direction' name='nrelate_flyout_options[flyout_loc]' type='radio' />$direction</label><br/>";
+			echo "<label for='flyout_loc_".$direction."'><input ".$checked." id='flyout_loc_".$direction."' value='$direction' name='nrelate_flyout_options[flyout_loc]' type='radio' /> $direction</label><br/>";
 	}
 }
 
@@ -236,7 +236,7 @@ function setting_flyout_animation(){
 	
 	foreach($methods as $method){ 
 			$checked = ($options['flyout_animation']==$method) ? ' checked="checked" ' : '';
-			echo "<label for='flyout_animation_".$method."'><input ".$checked." id='flyout_animation_".$method."' value='$method' name='nrelate_flyout_options[flyout_animation]' type='radio' />$method</label><br/>";
+			echo "<label for='flyout_animation_".$method."'><input ".$checked." id='flyout_animation_".$method."' value='$method' name='nrelate_flyout_options[flyout_animation]' type='radio' /> $method</label><br/>";
 	}
 }
 
@@ -246,7 +246,7 @@ function setting_flyout_offset() {
 	$methods = array(1=>"Middle of Article",2=>"End of Article",3=>"Bottom of Page",4=>"Custom");
 	foreach($methods as $key=>$value){
 			$checked = ($options['flyout_offset']==$key) ? ' checked="checked" ' : '';
-			echo "<label for='flyout_offset_".$key."'><input ".$checked." id='flyout_offset_".$key."' value='$key' name='nrelate_flyout_options[flyout_offset]' type='radio' onClick='show_custom_element(this);' />$value</label><br/>";
+			echo "<label for='flyout_offset_".$key."'><input ".$checked." id='flyout_offset_".$key."' value='$key' name='nrelate_flyout_options[flyout_offset]' type='radio' onClick='show_custom_element(this);' /> $value</label><br/>";
 	}
 	$javascript = <<< JAVA_SCRIPT
 	function show_custom_element(current){
@@ -379,7 +379,7 @@ function setting_flyout_default_image(){
 	
 	// Check if $imageurl is an empty string
 	if($imageurl==""){
-		_e("No default image chosen, until you provide your default image, nrelate will use <a class=\"thickbox\" href='http://img.nrelate.com/fow_wp/".NRELATE_FLYOUT_PLUGIN_VERSION."/defaultImages.html?KeepThis=true&TB_iframe=true&height=400&width=600' target='_blank'>these images</a>.<BR>","nrelate");
+		_e("No default image chosen, until you provide your default image, nrelate will use <a class=\"thickbox\" href='http://img.nrelate.com/common_wp/defaultImages.html?KeepThis=true&TB_iframe=true&height=400&width=600' target='_blank'>these images</a>.<BR>","nrelate");
 	}
 	else{
 		
@@ -428,7 +428,7 @@ function setting_flyout_custom_field() {
 function setting_flyout_nonjs(){
 	$options = get_option('nrelate_flyout_options');
 	$values=array("js","nonjs");
-	$valuedescription = array ("js" => __("<strong>Javascript:</strong> Stable and fast",'nrelate'), "nonjs" => __("<strong>No Javascript:</strong> BETA VERSION: Allows search engines to index our plugin and may help your SEO.",'nrelate')); 
+	$valuedescription = array ("js" => __("<strong>Javascript:</strong> Stable and fast",'nrelate'), "nonjs" => __("<strong>BETA VERSION:</strong> Detects search engines and allows them to index our plugin to help your SEO.",'nrelate')); 
 	$i=0;
 	foreach($values as $value){
 		$checked = (isset($options['flyout_nonjs']) && $options['flyout_nonjs']==$i) ? ' checked="checked" ' : '';
@@ -454,7 +454,7 @@ function nrelate_flyout_do_page() {
 		//<![CDATA[
 		var nr_fo_plugin_settings_url = '<?php echo NRELATE_FLYOUT_SETTINGS_URL; ?>';
 		var nr_plugin_domain = '<?php echo NRELATE_BLOG_ROOT ?>';
-		var nr_fo_plugin_version = '<?php echo NRELATE_FLYOUT_PLUGIN_VERSION ?>';
+		var nr_fo_plugin_version = '<?php echo NRELATE_FLYOUT_API_VERSION ?>';
 		//]]>
     </script>
 		<form name="settings" action="options.php" method="post" enctype="multipart/form-action">
@@ -599,7 +599,8 @@ function update_nrelate_data_fo(){
 
 	$body=array(
 		'DOMAIN'=>NRELATE_BLOG_ROOT,
-		'VERSION'=>NRELATE_FLYOUT_PLUGIN_VERSION,
+		'PLUGIN_VERSION'=>NRELATE_FLYOUT_PLUGIN_VERSION,
+		'API_VERSION'=>NRELATE_FLYOUT_API_VERSION,
 		'KEY'=>	get_option('nrelate_key'),
 		'NUM'=>$number,
 		'NUMEXT'=>$number_ext,
@@ -628,7 +629,7 @@ function update_nrelate_data_fo(){
 		'WIDTH'=>$r_box_width,
 		'WIDTHTYPE'=>urlencode($r_box_width_type)
 	);
-	$url = 'http://api.nrelate.com/fow_wp/'.NRELATE_FLYOUT_PLUGIN_VERSION.'/processWPflyout.php';
+	$url = 'http://api.nrelate.com/fow_wp/'.NRELATE_FLYOUT_API_VERSION.'/processWPflyout.php';
 	
 	$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false, 'timeout'=>15));
 }

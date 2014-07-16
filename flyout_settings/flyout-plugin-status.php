@@ -117,7 +117,8 @@ function nr_fo_upgrade() {
 			// Ping nrelate servers about the upgrade
 			$body=array(
 				'DOMAIN'=>NRELATE_BLOG_ROOT,
-				'VERSION'=>NRELATE_FLYOUT_PLUGIN_VERSION,
+				'PLUGIN_VERSION'=>NRELATE_FLYOUT_PLUGIN_VERSION,
+				'API_VERSION'=>NRELATE_FLYOUT_API_VERSION,
 				'KEY'=>get_option('nrelate_key'),
 				'PLUGIN'=>"flyout"
 			);
@@ -264,7 +265,8 @@ function nr_fo_add_defaults() {
 		
 		$body=array(
 			'DOMAIN'=>NRELATE_BLOG_ROOT,
-			'VERSION'=>NRELATE_FLYOUT_PLUGIN_VERSION,
+			'PLUGIN_VERSION'=>NRELATE_FLYOUT_PLUGIN_VERSION,
+			'API_VERSION'=>NRELATE_FLYOUT_API_VERSION,
 			'KEY'=>get_option('nrelate_key'),
 			'NUM'=>$noflyoutposts,
 			'R_BAR'=>$r_bar,
@@ -291,7 +293,7 @@ function nr_fo_add_defaults() {
 			'WIDTH'=>$r_anim_width,
 			'WIDTHTYPE'=>urlencode($r_anim_width_type)
 		);
-		$url = 'http://api.nrelate.com/fow_wp/'.NRELATE_FLYOUT_PLUGIN_VERSION.'/processWPflyoutAll.php';
+		$url = 'http://api.nrelate.com/fow_wp/'.NRELATE_FLYOUT_API_VERSION.'/processWPflyoutAll.php';
 		
 		$result=wp_remote_post($url,array('body'=>$body,'blocking'=>false, 'timeout'=>15));
 	}
@@ -334,7 +336,8 @@ EOD;
 		'DOMAIN'=>NRELATE_BLOG_ROOT,
 		'ACTION'=>$action,
 		'RSSMODE'=>$rss_mode,
-		'VERSION'=>NRELATE_FLYOUT_PLUGIN_VERSION,
+		'PLUGIN_VERSION'=>NRELATE_FLYOUT_PLUGIN_VERSION,
+		'API_VERSION'=>NRELATE_FLYOUT_API_VERSION,
 		'KEY'=>get_option('nrelate_key'),
 		'ADMINVERSION'=>NRELATE_FLYOUT_ADMIN_VERSION,
 		'PLUGIN'=>'flyout',
@@ -376,7 +379,8 @@ function nr_fo_deactivate(){
 		'DOMAIN'=>NRELATE_BLOG_ROOT,
 		'ACTION'=>$action,
 		'RSSMODE'=>$rss_mode,
-		'VERSION'=>NRELATE_FLYOUT_PLUGIN_VERSION,
+		'PLUGIN_VERSION'=>NRELATE_FLYOUT_PLUGIN_VERSION,
+		'API_VERSION'=>NRELATE_FLYOUT_API_VERSION,
 		'KEY'=>get_option('nrelate_key'),
 		'ADMINVERSION'=>NRELATE_FLYOUT_ADMIN_VERSION,
 		'PLUGIN'=>'flyout',
@@ -432,7 +436,8 @@ function nr_fo_uninstall(){
 		'DOMAIN'=>NRELATE_BLOG_ROOT,
 		'ACTION'=>$action,
 		'RSSMODE'=>$rss_mode,
-		'VERSION'=>NRELATE_FLYOUT_PLUGIN_VERSION,
+		'PLUGIN_VERSION'=>NRELATE_FLYOUT_PLUGIN_VERSION,
+		'API_VERSION'=>NRELATE_FLYOUT_API_VERSION,
 		'KEY'=>get_option('nrelate_key'),
 		'ADMINVERSION'=>NRELATE_FLYOUT_ADMIN_VERSION,
 		'PLUGIN'=>'flyout',
