@@ -1,4 +1,4 @@
-/*v.134*/
+/*v.138*/
 if ( typeof nRelate == 'undefined' ) {
 	var nr_load_time = new Date().getTime();
 	nRelate = function() {		
@@ -337,18 +337,6 @@ if ( typeof nRelate == 'undefined' ) {
 					return pls;
 				}
 				
-				if ( (phs = this.xgebcn('post')).length > 0 ) {
-					for( i=0, l=phs.length; i < l; i++ ) {
-						if ( (candidates = this.xgebtn('a', phs[i])).length > 0 ) {
-							pls[ pls.length ] = candidates[0];
-						}
-					}
-					if ( pls.length > 0 ) {
-						this.debug("Found first links inside div.post %o", pls);
-						return pls;
-					}
-				}
-				
 				if ( (phs = this.options.plugins[p].phs).length > 0 ) {
 					for( i=0, l=phs.length; i < l; i++ ) {
 						if ( (candidates = this.xgebtn('a', phs[i])).length > 0 ) {
@@ -356,7 +344,7 @@ if ( typeof nRelate == 'undefined' ) {
 						}
 					}
 					if ( pls.length > 0 ) {
-						this.debug("Found first links inside div.post %o", pls);
+						this.debug("Found first links inside placeholders %o", pls);
 						return pls;
 					}
 				}
@@ -376,9 +364,13 @@ if ( typeof nRelate == 'undefined' ) {
 					this.debug("Found canonical link tag");
 					return pls;
 				}
-				
-				this.debug("No permalinks found");
-				return [];
+
+				for( i=0, l=this.options.plugins[ p ].phs.length; i < l; i++ ) {
+					pls[ pls.length ] = { href : window.location.href };
+				}
+
+				this.debug("use window.location.href");
+				return pls;
 			},
 			
 			/**
@@ -387,7 +379,7 @@ if ( typeof nRelate == 'undefined' ) {
 			 * @since 0.52.0
 			 */
 			dfkw : function( p ) {
-				var i, l, j, m, titles, txt,
+				var i, l, j, m, titles, txt, candidates,
 					title = document.title, 
 					kws = [],
 					class_selectors = ['entry-title', 'post-title', 'entry-header'],
@@ -429,12 +421,20 @@ if ( typeof nRelate == 'undefined' ) {
 						}
 					}
 				}
+
+				if ( ( candidates = this.xgeba("meta", "property", "og:title") ).length > 0 ) {
+					for( i=0, l=this.options.plugins[ p ].phs.length; i < l; i++ ) {
+						kws[ kws.length ] = candidates[0].content;
+					}
+					this.debug("Found og:title meta tag");
+					return kws;
+				}
 				
 				if ( !this.is_home_page ) {
 					for ( i=0, l=this.options.plugins[ p ].pls.length; i < l; i++ ) {
 						kws[ i ] = title;
 					}
-					this.debug("Single post page. Using document.title as keyword");
+					this.debug("Using document.title as keyword");
 					return kws;
 				}
 				
@@ -461,9 +461,10 @@ if ( typeof nRelate == 'undefined' ) {
 				this.xac( ct, "nr_clear");
 				
 				// Init container object
-				ct.nr_api_called = false;
-				ct.nr_plugin = p;
-				ct.nr_viewed = false;
+				ct.settings = {};
+				ct.settings.api_called = false;
+				ct.settings.plugin = p;
+				ct.settings.viewed = false;
 				
 				this.options.plugins[ p ].phs[i].appendChild( ct );
 				this.options.plugins[ p ].cts[i] = ct;
@@ -475,7 +476,7 @@ if ( typeof nRelate == 'undefined' ) {
 			 * @since 0.52.0
 			 */
 			mac : function() {
-				var p, i, l, ct, url, fallback_keywords, inline_options, ab_override;
+				var p, i, l, ct, url, fallback_keywords, inline_options, ab_override, count_page = {};
 				
 				for( p in this.options.plugins ) {
 					if ( this.is_function( this.options.plugins[ p ].should_load ) ) {
@@ -484,6 +485,8 @@ if ( typeof nRelate == 'undefined' ) {
 							continue;
 						}
 					}
+
+					count_page[ p ] = true;
 					
 					this.debug("Making API calls for %s", p);
 					
@@ -494,14 +497,6 @@ if ( typeof nRelate == 'undefined' ) {
 							continue;
 						}
 						
-						if ( !this.is_defined( this.options.plugins[ p ].pls[i] ) ) {
-							if ( l == 1 ) {
-								this.options.plugins[ p ].pls[i] = {href:window.location.href};
-							} else {
-								continue;
-							}
-						}
-						
 						fallback_keywords = this.options.plugins[ p ].phs.length == 1 ? document.title : '';
 						
 						url = this.aurlp(this.options.plugins[ p ].api_url, {
@@ -509,14 +504,13 @@ if ( typeof nRelate == 'undefined' ) {
 							tag				: "nrelate_" + p,
 							domain			: this.options.domain,
 							keywords		: this.options.plugins[ p ].kws[i] || fallback_keywords,
-							url				: this.options.plugins[ p ].pls[i].href,
+							url				: this.surl( this.options.plugins[ p ].pls[i].href ),
 							nr_div_number 	: i,
 							pr_id			: this.get_print_id()
 						});
 
-						// For WP plugins, send installed plugin version
-						if ( this.options.plugins[ p ].pl_ver ) {
-							url = this.aurlp( url, { pl_ver : this.options.plugins[ p ].pl_ver } );
+						if ( count_page[ p ] ) {
+							url = this.aurlp( url, { count_page: Number(count_page[ p ]) } );
 						}
 						
 						// Add the HTTP_REFERRER if supported
@@ -526,7 +520,7 @@ if ( typeof nRelate == 'undefined' ) {
 
 						// Store URL in the container if single post page
 						if ( !this.is_home_page ) {
-							ct.nr_src_url = this.options.plugins[ p ].pls[i].href;
+							ct.settings.src_url = this.options.plugins[ p ].pls[i].href;
 						}
 						
 						// Add style parameters
@@ -551,12 +545,14 @@ if ( typeof nRelate == 'undefined' ) {
 							url = this.aurlp( url, inline_options );
 						}
 
-						ct.nr_api_call_time = new Date().getTime();
+						ct.settings.api_call_time = new Date().getTime();
 						this.debug("Making API call for #%s: %o", ct.id, url);
-						this.lr( url, ct.id + "-api_call");
+						if ( this.lr( url, ct.id + "-api_call") ) {
+							count_page[ p ] = false;
+						}
 						
-						ct.nr_api_called = true;
-						ct.nr_api_url = url;
+						ct.settings.api_called = true;
+						ct.settings.api_url = url;
 					}
 				}
 			},
@@ -614,17 +610,18 @@ if ( typeof nRelate == 'undefined' ) {
 				if ( ct = this.xgebi( ct_id ) ) {
 					this.debug("Injecting content into #%s container", ct_id);
 					
-					ct.nr_count_views = args.count_views || this.options.plugins[ ct.nr_plugin ].count_views;
+					ct.settings.count_views = args.count_views || this.options.plugins[ ct.settings.plugin ].count_views; // TODO: make sure it can be overridden
+					ct.settings.src_did = args.did;
 
-					this.sctc( this.options.plugins[ ct.nr_plugin ], ct, args );
+					this.sctc( this.options.plugins[ ct.settings.plugin ], ct, args );
 					ct.innerHTML = content;
-					this.sct( this.options.plugins[ ct.nr_plugin ], ct, args );
+					this.sct( this.options.plugins[ ct.settings.plugin ], ct, args );
 					
 					if ( this.xgebcn('nr_link', 'a', ct).length == 0 ) {
 						ct.style.display = 'none';
 					}
 
-					ct.nr_widget_initialized_time = new Date().getTime();
+					ct.settings.widget_initialized_time = new Date().getTime();
 				} else {
 					this.debug("#%s container not found", ct_id);
 				}
@@ -639,24 +636,24 @@ if ( typeof nRelate == 'undefined' ) {
 			 */
 			sctc : function( plugin, ct, args ) {
 					
-				plugin.cssstyle = args.cssstyle || args.style || plugin.cssstyle || plugin.supported_cssstyles[1];
-				plugin.cssversion = args.cssversion || 0;
-				plugin.thumbsize = args.thumbsize || args.thumb_size || plugin.thumbsize || plugin.supported_thumbsizes[1];
-				plugin.ad_place = args.ad_place || plugin.ad_place || plugin.supported_ad_places[1];
-				plugin.widgetstyle = args.widgetstyle || plugin.widgetstyle || plugin.supported_widgetstyles[1];
-				plugin.whats_this_link = args.whats_this_link || plugin.whats_this_link || false;
-				plugin.widget_id = args.widget_id || plugin.widget_id || "0";
-				plugin.page_type_id = args.page_type_id || plugin.page_type_id || "0";
-				plugin.page_type = args.page_type || plugin.page_type || "0";
-				plugin.geo = args.geo || plugin.geo || "0";
-				plugin.article_id = args.article_id || plugin.article_id || "0";
+				ct.settings.cssstyle = args.cssstyle || args.style || plugin.cssstyle || plugin.supported_cssstyles[1];
+				ct.settings.cssversion = args.cssversion || 0;
+				ct.settings.thumbsize = args.thumbsize || args.thumb_size || plugin.thumbsize || plugin.supported_thumbsizes[1];
+				ct.settings.ad_place = args.ad_place || plugin.ad_place || plugin.supported_ad_places[1];
+				ct.settings.widgetstyle = args.widgetstyle || plugin.widgetstyle || plugin.supported_widgetstyles[1];
+				ct.settings.whats_this_link = args.whats_this_link || plugin.whats_this_link || false;
+				ct.settings.widget_id = plugin.widget_id = args.widget_id || "0";
+				ct.settings.page_type_id = args.page_type_id || plugin.page_type_id || "0";
+				ct.settings.page_type = args.page_type || plugin.page_type || "0";
+				ct.settings.geo = args.geo || plugin.geo || "0";
+				ct.settings.article_id = args.article_id || plugin.article_id || "0";
 				
 				// TODO: load only required stylesheets, or unify all plugin stylesheets
-				if ( plugin.cssstyle ) {
-					if ( plugin.cssstyle == 'custom' ) {
+				if ( ct.settings.cssstyle ) {
+					if ( ct.settings.cssstyle == 'custom' ) {
 						var slug = this.to_slug( this.options.domain );
 						var url = ( this.options.debug_mode ? this.options.debug_css_api_url : this.options.css_api_url ) + slug + ".css";
-						url = this.aurlp( url, { v: plugin.cssversion } );
+						url = this.aurlp( url, { v: ct.settings.cssversion } );
 						this.debug("Loading custom style from %o",url);						
 						this.lr( url, 'nrelate-' + slug + 'custom-style', { type: 'css', callback: this.fah } );
 					}
@@ -664,17 +661,21 @@ if ( typeof nRelate == 'undefined' ) {
 
 				this.bind( window, "load", function(){ nRelate.fah(); } );
 
-				this.xac( ct, "nrelate_" + plugin.cssstyle );
+				this.xac( ct, "nrelate_" + ct.settings.cssstyle );
 				
 				// Text style
-				if ( plugin.widgetstyle === 0 ) {
+				if ( ct.settings.widgetstyle === 0 ) {
 					this.xac( ct, "nr_text" );
 				} else {
-					this.xac( ct, "nr_" + plugin.thumbsize );
+					this.xac( ct, "nr_" + ct.settings.thumbsize );
 				}
 				
-				if ( plugin.ad_place == 'Separate' ) {
-					this.xac( ct, "nr_2col" );
+				if ( ct.settings.ad_place == 'Separate' ) {
+					if ( plugin.cols_layout ) {
+						this.xac( ct, "nr_" + plugin.cols_layout );
+					} else {
+						this.xac( ct, "nr_2col" );
+					}
 				} else {
 					this.xac( ct, "nr_1row" );
 				}
@@ -692,20 +693,18 @@ if ( typeof nRelate == 'undefined' ) {
 
 				this.xac( ct, "nr_initializing" );
 				
-				if ( args.widget_id || plugin.widget_id ) {
-					this.xac( ct, "widget_id_" + ( args.widget_id || plugin.widget_id ) );
-					ct.nr_widget_id = ( args.widget_id || plugin.widget_id );
+				if ( args.widget_id || ct.settings.widget_id ) {
+					this.xac( ct, "widget_id_" + ( args.widget_id || ct.settings.widget_id ) );
 				}
-
 				
-				ct.nr_cols_num = args.cols_num || 0;
+				ct.settings.cols_num = args.cols_num || 0;
 
 				this.fh( ct );
 				this.ctr( ct );
 				this.aa( ct );
 				this.pr( ct );
 				
-				if ( plugin.whats_this_link ) {
+				if ( ct.settings.whats_this_link ) {
 					this.wtl( ct, plugin, args );
 				}
 
@@ -736,7 +735,7 @@ if ( typeof nRelate == 'undefined' ) {
 			fh : function( ct ) {
 				if ( !(ct = this.xgebi(ct)) ) return;
 				
-				if ( ct.nr_fixing_height == true ) return;
+				if ( ct.settings.fixing_height == true ) return;
 				
 				var links;
 				
@@ -744,14 +743,13 @@ if ( typeof nRelate == 'undefined' ) {
 					if ( (links = this.xgebcn('nr_link', 'a', ct)).length > 0 ) {
 						for( i=0; i < links.length; i++ ) {
 							this.xac( links[i].parentNode, 'nr_li_' + ( i + 1 ) );
-							this.xac( links[i], 'nr_row_' + ( i + 1 ) );
 						}
 					}
 					// Is text style, don't try to fix height
 					return;
 				}
 				
-				ct.nr_fixing_height = true;
+				ct.settings.fixing_height = true;
 				
 				var i, j, l, m, widget_top, link, images,
 					row_y 		= 0
@@ -786,10 +784,10 @@ if ( typeof nRelate == 'undefined' ) {
 					link = links[i];
 					link_height = Math.max ( this.xHeight( link ), img_height );
 
-					if ( ct.nr_cols_num ) {
+					if ( ct.settings.cols_num ) {
 						row_links[ row_links.length ] = link;
 						tallest = ( tallest < link_height ) ? link_height : tallest;
-						num_cols = ct.nr_cols_num;
+						num_cols = ct.settings.cols_num;
 					} else {
 						link_y = this.xPageY( link );
 						
@@ -860,12 +858,12 @@ if ( typeof nRelate == 'undefined' ) {
 					this.xac( ct, 'rotate' );
 				}
 				
-				ct.nr_fixing_height = false;
+				ct.settings.fixing_height = false;
 
 				if ( !this.is_dom_ready ) {
 					var self = this;
-					clearInterval( ct.nr_fixheight_interval );
-					ct.nr_fixheight_interval = setTimeout(function(){
+					clearInterval( ct.settings.fixheight_interval );
+					ct.settings.fixheight_interval = setTimeout(function(){
 						self.fh( ct );
 					}, 100);
 				}
@@ -897,7 +895,7 @@ if ( typeof nRelate == 'undefined' ) {
 				if ( (links = this.xgebcn('nr_link', 'a', ct)).length == 0 ) return;
 				
 				for ( i=0, l=links.length; i < l; i++ ) {
-					p = ct.nr_plugin;
+					p = ct.settings.plugin;
 					this.bind( links[i], "click", function( evt ) { self.hclk( evt, p, ct ); } );
 				}
 			},
@@ -931,16 +929,17 @@ if ( typeof nRelate == 'undefined' ) {
 				this.cwv( ct, this.options.plugins[ p ] );
 				
 				url = this.aurlp( this.options.tracking_url, {
+					src_did			: ct.settings.src_did,
 					plugin			: this.options.plugins[ p ].shortname,
 					type			: nr_type,
 					domain			: this.options.domain,
-					src_url			: ct.nr_src_url || window.location.href,
+					src_url			: this.surl( ct.settings.src_url || window.location.href ),
 					dest_url		: this.clicked_link = e.href,
-					widget_id		: ct.nr_widget_id || this.options.plugins[ p ].widget_id,
-					page_type_id	: this.options.plugins[ p ].page_type_id,
-					page_type		: this.options.plugins[ p ].page_type,
-					geo				: this.options.plugins[ p ].geo,
-					article_id		: this.options.plugins[ p ].article_id,
+					widget_id		: ct.settings.widget_id,
+					page_type_id	: ct.settings.page_type_id,
+					page_type		: ct.settings.page_type,
+					geo				: ct.settings.geo,
+					article_id		: ct.settings.article_id,
 					pr_id			: this.get_print_id()
 				});
 
@@ -1023,11 +1022,11 @@ if ( typeof nRelate == 'undefined' ) {
 						for ( i=0,l=this.options.plugins[ p ].cts.length; i<l; i++ ) {
 							ct = this.options.plugins[ p ].cts[ i ];
 							
-							if ( ct.nr_count_views && !ct.nr_viewed ) {
-								ct.nr_top_distance 	= this.xPageY( ct ) + ( this.xHeight( ct ) * 0.90 );
-								ct.nr_left_distance = this.xPageX( ct ) + ( this.xWidth( ct ) * 0.90 );
+							if ( ct.settings.count_views && !ct.settings.viewed ) {
+								ct.settings.top_distance 	= this.xPageY( ct ) + ( this.xHeight( ct ) * 0.90 );
+								ct.settings.left_distance = this.xPageX( ct ) + ( this.xWidth( ct ) * 0.90 );
 								
-								if( scrolled_y >= ct.nr_top_distance && scrolled_x >= ct.nr_left_distance ) {
+								if( scrolled_y >= ct.settings.top_distance && scrolled_x >= ct.settings.left_distance ) {
 									this.cwv( ct, this.options.plugins[ p ] );
 								}
 							}
@@ -1042,28 +1041,29 @@ if ( typeof nRelate == 'undefined' ) {
 			cwv : function( ct, plugin ) {
 				var url;
 				
-				if ( ct.nr_count_views && !ct.nr_viewed ) {
-					ct.nr_viewed = true;
+				if ( ct.settings.count_views && !ct.settings.viewed ) {
+					ct.settings.viewed = true;
 					this.xac( ct, "nr_viewed" );
 					
 					url = this.aurlp( this.options.views_url, {
 						plugin		: plugin.shortname,
 						domain		: this.options.domain,
-						url			: ct.nr_src_url || window.location.href,
-						widget_id	: plugin.widget_id,
-						page_type_id: plugin.page_type_id,
-						page_type	: plugin.page_type,
-						geo			: plugin.geo,
+						src_did		: ct.settings.src_did,
+						url			: this.surl( ct.settings.src_url || window.location.href ),
+						widget_id	: ct.settings.widget_id,
+						page_type_id: ct.settings.page_type_id,
+						page_type	: ct.settings.page_type,
+						geo			: ct.settings.geo,
 						pr_id		: this.get_print_id(),
-						top			: ct.nr_top_distance,
-						left		: ct.nr_left_distance,
-						api_time 	: ct.nr_widget_initialized_time - ct.nr_api_call_time,
+						top			: ct.settings.top_distance,
+						left		: ct.settings.left_distance,
+						api_time 	: ct.settings.widget_initialized_time - ct.settings.api_call_time,
 						page_size	: this.xDocSize()
 					});
 
-					if ( ct.nr_all_units_blocked ) {
+					if ( ct.settings.all_units_blocked ) {
 						url = this.aurlp( url, { all_units_blocked: 1 } );
-					} else if ( ct.nr_all_partners_blocked ) {
+					} else if ( ct.settings.all_partners_blocked ) {
 						url = this.aurlp( url, { all_partners_blocked: 1 } );
 					}
 					
@@ -1144,6 +1144,7 @@ if ( typeof nRelate == 'undefined' ) {
 							}
 							
 							url = self.aurlp( self.options.remove_url, {
+								src_did : ct.settings.src_did,
 								nrid	: u_id,
 								domain	: self.options.domain,
 								ct_id	: ct.id,
@@ -1188,8 +1189,8 @@ if ( typeof nRelate == 'undefined' ) {
 					old_api_parent.removeChild( old_api );
 				}
 				
-				ct.nr_api_called = false;
-				this.lr( this.aurlp( ct.nr_api_url, { reload_uc: 1 } ) , ct.id + "-api_call");
+				ct.settings.api_called = false;
+				this.lr( this.aurlp( ct.settings.api_url, { reload_uc: 1 } ) , ct.id + "-api_call");
 			},
 			
 			/**
@@ -1208,7 +1209,7 @@ if ( typeof nRelate == 'undefined' ) {
 				container.style.clear = "both";
 				
 				link = document.createElement("span");
-				link.innerHTML = args.whats_this_content || this.options.whats_this_content || plugin.whats_this_content;
+				link.innerHTML = ct.settings.whats_this_content = args.whats_this_content || this.options.whats_this_content || plugin.whats_this_content;
 				link.title = "about these links";
 				link.style.cursor = "pointer";
 				this.xac( link, "nr_about" );
@@ -1223,9 +1224,10 @@ if ( typeof nRelate == 'undefined' ) {
 					if ( !self.xgebi( id ) ) {
 						content = document.createElement( 'iframe' );
 						content.id = id;
-						content.src = args.whats_this_url || plugin.whats_this_url;
+						content.src = ct.settings.whats_this_url = args.whats_this_url || plugin.whats_this_url;
 						content.style.width  = "100%";
 						content.style.height = "150%";
+						
 						content.style.border = "0px";
 						content.setAttribute("border", "0");
 						document.body.appendChild( content );
@@ -1315,8 +1317,8 @@ if ( typeof nRelate == 'undefined' ) {
 
 							if( r_id ) {
 								var url = self.aurlp( self.options.uc_url, {
+									src_did	: ct.settings.src_did,
 									nrid	: u_id,
-									did		: args.did,
 									ct_id	: ct.id,
 									r_id	: r_id
 								});
@@ -1382,10 +1384,10 @@ if ( typeof nRelate == 'undefined' ) {
 				}
 
 				if ( arguments[3] ) {
-					ct.nr_uc_enabled = !ct.nr_uc_enabled;
+					ct.settings.uc_enabled = !ct.settings.uc_enabled;
 				}
 
-				if ( ct.nr_uc_enabled ) {
+				if ( ct.settings.uc_enabled ) {
 					this.xac( ct, "nr_uc_enabled" );
 					this.xrc( ct, "nr_uc_disabled" );
 				} else {
@@ -1430,29 +1432,49 @@ if ( typeof nRelate == 'undefined' ) {
 					}
 				}
 
-				ct.nr_all_partners_blocked = false;
-				ct.nr_all_units_blocked = false;
+				// if hasn't been made and there are ads visible (not blocked)
+				if ( !this.pi_ads_reported[ct.settings.plugin] && this.xgebcn( "nr_partner", "*", ct ).length > blocked.partner ) {
+					if ( !this.is_object( this.pi_ads_reported ) ) {
+						this.pi_ads_reported = {};
+					}
+					this.pi_ads_reported[ct.settings.plugin] = true;
+
+					this.lr( 
+						this.aurlp( this.options.pp_url, { 
+								domain		: this.options.domain,
+								src_did		: ct.settings.src_did,
+								url			: this.surl( ct.settings.src_url || window.location.href ),
+								pr_id		: this.get_print_id(),
+								plugin 		: this.options.plugins[ ct.settings.plugin ].shortname
+							} 
+						) 
+					);
+				}
+
+				ct.settings.all_partners_blocked = false;
+				ct.settings.all_units_blocked = false;
 
 				if ( is_blocked ) {
 					url = this.aurlp( this.options.report_blocked_url, {
+						src_did	: ct.settings.src_did,
 						pr_id: this.get_print_id(),
-						widget_id: ct.nr_widget_id,
-						url: ct.nr_src_url,
+						widget_id: ct.settings.widget_id,
+						url: ct.settings.src_url,
 						domain: this.options.domain,
-						plugin: this.options.plugins[ ct.nr_plugin ].shortname
+						plugin: this.options.plugins[ ct.settings.plugin ].shortname
 					});
 
 					url = this.aurlp( url, blocked );
 
-					ct.nr_all_partners_blocked = ( this.xgebcn( "nr_partner", "*", ct ).length == blocked.partner ? 1 : 0 );
-					ct.nr_all_units_blocked = ( this.xgebcn( "nr_link", "*", ct ).length == ( blocked.partner + blocked.internal + blocked.external ) ? 1 : 0 );
+					ct.settings.all_partners_blocked = ( this.xgebcn( "nr_partner", "*", ct ).length == blocked.partner ? 1 : 0 );
+					ct.settings.all_units_blocked = ( this.xgebcn( "nr_link", "*", ct ).length == ( blocked.partner + blocked.internal + blocked.external ) ? 1 : 0 );
 
-					url = this.aurlp( url, { all_partners_blocked: ct.nr_all_partners_blocked, all_units_blocked: ct.nr_all_units_blocked } );
+					url = this.aurlp( url, { all_partners_blocked: ct.settings.all_partners_blocked, all_units_blocked: ct.settings.all_units_blocked } );
 
 					this.lr( url );
 				}
 
-				if ( ct.nr_all_units_blocked ) {
+				if ( ct.settings.all_units_blocked ) {
 					// Apply this class so Ad Blocker hides the entire container
 					this.xac( ct, 'nr_partners' );
 				}
@@ -1841,11 +1863,19 @@ if ( typeof nRelate == 'undefined' ) {
 			 * @since 0.52.0
 			 */
 			rurlp : function( url, param ) {
-				var regex = new RegExp( "\\?" + param + "=[^&]*&?", "gi");
-				url = url.replace(regex,'?');
-				regex = new RegExp( "\\&" + param + "=[^&]*&?", "gi");
-				url = url.replace(regex,'&');
-				url = url.replace(/(\?|&)$/,'');
+				var regex = new RegExp( "\\?" + param + "=[^&]*&?", "gi"),
+					pos;
+
+				if ( param == '*' ) {
+					if ( ( pos = this.in_array( '?', url ) ) >= 0 ) {
+						url = url.substring( 0, pos );
+					}
+				} else {
+					url = url.replace(regex,'?');
+					regex = new RegExp( "\\&" + param + "=[^&]*&?", "gi");
+					url = url.replace(regex,'&');
+					url = url.replace(/(\?|&)$/,'');
+				}
 
 				return url;
 			},
@@ -1860,6 +1890,149 @@ if ( typeof nRelate == 'undefined' ) {
 				var regex = new RegExp( "\\&" + param + "=([^&]*)&?");
 				var matches = tgt.match( regex );
 				return ( matches && matches.length > 0 ) ? matches[ 1 ] : null;
+			},
+
+			/**
+			 * Sanitizes a URL removing common tracking parameters
+			 */
+			surl : function( url ) {
+				var i, bl = [
+					'utm_source',
+					'utm_medium',
+					'utm_campaign',
+					'utm_term',
+					'utm_content',
+					'utm_keyword',
+					'utm_reader',
+					'utm_domain',
+					'utm_channel',
+					'utm_account',
+					'__utmc',
+					'__utmb',
+					'__utmx',
+					'__utma',
+					'__utmv',
+					'__utmz',
+					'__utmk',
+					'utm_',
+					'ignoreCache',
+					'success',
+					'refresh',
+					'cache',
+					'nocache',
+					'referrer',
+					'fb_pid',
+					'fb_aggregation_id',
+					'fb_comment_id',
+					'fb_ref',
+					'fb_source',
+					'fb_action_ids',
+					'fb_action_types',
+					'sandbox',
+					'nrelate_debug',
+					'referer',
+					'spi_campaign',
+					'spi_medium',
+					'spi_source',
+					'relatedposts_hit',
+					'relatedposts_origin',
+					'relatedposts_position',
+					'Affiliate',
+					'Bill_Phone',
+					'Bill_Email',
+					'Bill_Country_ISO',
+					'Ship_Last',
+					'Ship_Country_ISO',
+					'Ship_Phone',
+					'Tax_Amount',
+					'Total_Product_Taxable_Amount',
+					'Ship_Country',
+					'Ship_Zip',
+					'Ship_Address1',
+					'Ship_Address2',
+					'Ship_City',
+					'Ship_State',
+					'Ship_First',
+					'Bill_Address1',
+					'order_id',
+					'e_mail',
+					'Bill_First',
+					'ControlID',
+					'Bill_Address2',
+					'Bill_City',
+					'Bill_State',
+					'Total_Product_Non_Taxable_Amount',
+					'DeviceModel',
+					'AdPlacement',
+					'Bill_Last',
+					'Bill_Zip',
+					'Bill_Country',
+					'Gateway_Customer_Service',
+					'Sales_Tax_Percent',
+					'Gateway_Descriptor',
+					'Gateway_Id',
+					'ShippingPrice',
+					'ShippingId',
+					'ShippingMethod',
+					'SubTotal',
+					'Product_Id_CSV',
+					'Subscription_Id_CSV',
+					'ipAddress',
+					'timestamp',
+					'address',
+					'last_name',
+					'btr_invite_code',
+					'buyerId',
+					'buyer_name',
+					'country',
+					'sale_url',
+					'buyer_email',
+					'buyer_phone',
+					'error_code',
+					'city',
+					'zip',
+					'code',
+					'receipt',
+					'phone',
+					'buyer_url',
+					'pass',
+					'buyer_logo',
+					'buyer_description',
+					'first_name',
+					'state',
+					'trans_id',
+					'sub_id',
+					'source',
+					'org',
+					'gender',
+					'widget_id',
+					'pr_id',
+					'pr_time',
+					'src_url',
+					'src_did',
+					'dest_url',
+					'plugin',
+					'domain',
+					'nrid',
+					'gid',
+					'kw',
+					'costs',
+					'shipping',
+					'tax',
+					'coupon',
+					'total',
+					'cart',
+					'AD_PUBLISHER_SESSION_ID',
+					'SOIP_ORIGINAL_TIMESTAMP'
+				];
+
+				if ( url ) {
+					for( i = 0; i < bl.length; i++ ) {
+						url = this.rurlp( url, bl[i] );
+					}
+				}
+
+				return url;
 			},
 			
 			/**
@@ -2061,7 +2234,7 @@ if ( typeof nRelate == 'undefined' ) {
 			 * @since 0.52.0 
 			 */
 			 lr : function( url, id, args) {
-				if ( id && this.xgebi( id ) ) return;
+				if ( id && this.xgebi( id ) ) return null;
 				
 				var head,
 					e = false;
@@ -2668,6 +2841,7 @@ if ( typeof nRelate == 'undefined' ) {
                 views_url               : "http://vt-1.nrelate.com/vt/",
                 on_load_track_url       : "http://ol-1.nrelate.com/ol/",
 				uc_url					: "http://api.nrelate.com/rcw_wp/nr_uc_update.php",
+				pp_url					: "http://pp.nrelate.com/common/pp/",
 				print_id				: false,
 				extra_apip				: { }
 			},
@@ -2688,6 +2862,7 @@ if ( typeof nRelate == 'undefined' ) {
 			views_handler_bound		: false,
 			middle_click			: false,
 			clicked_link			: false,
+			pi_ads_reported 		: { },
 			
 			// domReady event control properties
 			is_dom_ready 		: false,
@@ -2837,11 +3012,12 @@ if ( typeof nRelate == 'undefined' ) {
 					}
 
 					on_load_url = this.aurlp( this.options.on_load_track_url, {
+						src_did: ct.settings.src_did,
 						pr_id: this.get_print_id(),
-						widget_id: ct.nr_widget_id,
-						url: ct.nr_src_url,
+						widget_id: ct.settings.widget_id,
+						url: ct.settings.src_url,
 						domain: this.options.domain,
-						plugin: this.options.plugins[ ct.nr_plugin ].shortname
+						plugin: this.options.plugins[ ct.settings.plugin ].shortname
 					}); 
 					this.lr( on_load_url );
 				}
@@ -2960,29 +3136,33 @@ if ( typeof nRelate == 'undefined' ) {
 						self = this;
 					
 					// Extra CSS classes
-					plugin.animstyle = args.animstyle || plugin.animstyle || plugin.supported_animstyles[1];
-					plugin.animation = (args.animation || plugin.animation || plugin.supported_animations[1]).toLowerCase();
-					plugin.location = (args.location || plugin.location || plugin.supported_locations[1]).toLowerCase();
+					ct.settings.animstyle = args.animstyle || plugin.animstyle || plugin.supported_animstyles[1];
+					ct.settings.animation = (args.animation || plugin.animation || plugin.supported_animations[1]).toLowerCase();
+					ct.settings.location = (args.location || plugin.location || plugin.supported_locations[1]).toLowerCase();
 					
-					this.xac( ct, "nrelate_animate_style_" + plugin.animstyle );
-					this.xac( ct, "nr_animate_type_" + plugin.animation );
-					this.xac( ct, "nr_" + plugin.animation + "_" + plugin.location );
+					this.xac( ct, "nrelate_animate_style_" + ct.settings.animstyle );
+					this.xac( ct, "nr_animate_type_" + ct.settings.animation );
+					this.xac( ct, "nr_" + ct.settings.animation + "_" + ct.settings.location );
+					
+					// TODO: update to load the proper stylesheet (if required)
+					ct.settings.default_stylesheet_url = "http://css.nrcdn.com/common_js/0.52.0/nrelate-flyout-"+ ct.settings.animstyle +".min.css";	
+					this.lr( ct.settings.default_stylesheet_url, 'nrelate-fo-'+ct.settings.animstyle, "css" );
 					
 					// Width and distance from bottom
-					plugin.width = args.width || plugin.width || 360;
-					plugin.widthtype = args.widthtype || plugin.widthtype || 'px';
-					plugin.frombot = args.frombot || plugin.frombot || 0;
-					plugin.frombottype = args.frombottype || plugin.frombottype || 'px';
+					ct.settings.width = args.width || plugin.width || 360;
+					ct.settings.widthtype = args.widthtype || plugin.widthtype || 'px';
+					ct.settings.frombot = args.frombot || plugin.frombot || 0;
+					ct.settings.frombottype = args.frombottype || plugin.frombottype || 'px';
 					
-					ct.style.width = plugin.width + plugin.widthtype;
-					ct.style.bottom = plugin.frombot + plugin.frombottype;
+					ct.style.width = ct.settings.width + ct.settings.widthtype;
+					ct.style.bottom = ct.settings.frombot + ct.settings.frombottype;
 					
 					// Create and setup open handle
 					if ( !(fo_open = this.xgebi( "nrelate_flyout_open" )) ) {
 						fo_open = document.createElement('div');
 						fo_open.id = "nrelate_flyout_open";
-						this.xac( fo_open, "nrelate_animate_style_" + plugin.animstyle );
-						this.xac( fo_open, "nr_" + plugin.animation + "_" + plugin.location );
+						this.xac( fo_open, "nrelate_animate_style_" + ct.settings.animstyle );
+						this.xac( fo_open, "nr_" + ct.settings.animation + "_" + ct.settings.location );
 						document.body.insertBefore( fo_open, ct.nextSibling );
 						this.bind( fo_open, "click", function(){
 							plugin.fo_animate_open.call( self, plugin, ct );
@@ -2993,11 +3173,11 @@ if ( typeof nRelate == 'undefined' ) {
 					
 					// Hide elements by default
 					ct.style.display = "none";
-					ct.style[ plugin.location ] = '0px';
+					ct.style[ ct.settings.location ] = '0px';
 					fo_open.style.display = "none";
-					fo_open.style[ plugin.location ] = '0px';
+					fo_open.style[ ct.settings.location ] = '0px';
 					
-					fo_open.style.bottom = plugin.frombot + plugin.frombottype;
+					fo_open.style.bottom = ct.settings.frombot + ct.settings.frombottype;
 					
 					// Setup close button
 					if ( fo_close = this.xgebi('nrelate_flyout_close') ) {
@@ -3012,8 +3192,8 @@ if ( typeof nRelate == 'undefined' ) {
 						});
 					}
 					
-					plugin.offset = args.offset || plugin.offset || 1;
-					plugin.element = args.element || plugin.element || null;
+					ct.settings.offset = args.offset || plugin.offset || 1;
+					ct.settings.element = args.element || plugin.element || null;
 					
 					// Setup scroll handling
 					plugin.hscroll.call( self, null, plugin, ct );
@@ -3031,7 +3211,7 @@ if ( typeof nRelate == 'undefined' ) {
 						return false;
 					}
 					
-					open_flyout = plugin.should_open.call( this, plugin );
+					open_flyout = plugin.should_open.call( this, plugin, ct );
 					
 					// closed with cookie
 					if ( xCookie.get('nr_fo_closed') == 'true' ) {
@@ -3070,13 +3250,13 @@ if ( typeof nRelate == 'undefined' ) {
 					
 					target.style.display = "block";
 					
-					if ( plugin.animation == 'slideout' ) {
+					if ( ct.settings.animation == 'slideout' ) {
 						
-						target.style[ plugin.location ] = '-'+ (this.xWidth(target) + 40) +'px';
+						target.style[ ct.settings.location ] = '-'+ (this.xWidth(target) + 40) +'px';
 						
 						xa.css(
 							target, //object
-							plugin.location, //css propery
+							ct.settings.location, //css propery
 							0, //target value
 							400, //time for animation
 							5, //acceleration type
@@ -3086,7 +3266,7 @@ if ( typeof nRelate == 'undefined' ) {
 								self.xac( this.e, "nr_fo_opened");
 							}
 						);
-					} else if ( plugin.animation == 'fade' ) {
+					} else if ( ct.settings.animation == 'fade' ) {
 						xa.opacity(
 							target, //object
 							1, //target value
@@ -3114,10 +3294,10 @@ if ( typeof nRelate == 'undefined' ) {
 					this.xac( target, "nr_animating" );
 					this.xrc( target, "nr_fo_opened|nr_fo_closed" );
 					
-					if ( plugin.animation == 'slideout' ) {
+					if ( ct.settings.animation == 'slideout' ) {
 						xa.css(
 							target, //object
-							plugin.location, //css propery
+							ct.settings.location, //css propery
 							-1 * ( this.xWidth(target) + 40 ), //target value
 							400, //time for animation
 							5, //acceleration type
@@ -3128,7 +3308,7 @@ if ( typeof nRelate == 'undefined' ) {
 								this.e.style.display = "none";
 							}
 						);
-					} else if ( plugin.animation == 'fade' ) {
+					} else if ( ct.settings.animation == 'fade' ) {
 						xa.opacity(
 							target, //object
 							0, //target value
@@ -3145,45 +3325,45 @@ if ( typeof nRelate == 'undefined' ) {
 				},
 				
 				// Determine if should open or not
-				should_open : function( plugin ) {
+				should_open : function( plugin, ct ) {
 					var open_flyout = false,
 						scrolled = this.xScrollTop( window, true ),
 						viewport_height = this.xClientHeight(),
 						doc_size = this.xDocSize();
 					
-					if ( !plugin.offset_node ) {
-						if ( plugin.offset == 4 ) {
-							if ( plugin.element[0] == '.' ) {
-								plugin.offset_node = this.xgebcn( plugin.element.replace('.', '') )[0];
+					if ( !ct.settings.offset_node ) {
+						if ( ct.settings.offset == 4 ) {
+							if ( ct.settings.element[0] == '.' ) {
+								ct.settings.offset_node = this.xgebcn( ct.settings.element.replace('.', '') )[0];
 							} else {
-								plugin.offset_node = this.xgebi( plugin.element.replace('#', '') );
+								ct.settings.offset_node = this.xgebi( ct.settings.element.replace('#', '') );
 							}
 							
-							if ( !plugin.offset_node ) plugin.offset = 1;
-						} else if ( plugin.offset == 3 ) {
+							if ( !ct.settings.offset_node ) ct.settings.offset = 1;
+						} else if ( ct.settings.offset == 3 ) {
 							// no need to have a node, it'll use document scrollHeight
-							plugin.offset_node = true;
+							ct.settings.offset_node = true;
 						}
 						
 						// Probably using offset 1 or 2... or 4 failed finding the node
-						if ( !plugin.offset_node ) {
-							plugin.offset_node = plugin.fo_faph.call( this, plugin );
+						if ( !ct.settings.offset_node ) {
+							ct.settings.offset_node = plugin.fo_faph.call( this, plugin );
 						}
 						
 						// Last resort, use the 50% page scroll
-						if ( !plugin.offset_node ) {
-							plugin.offset = 0;
-							plugin.offset_node = true;
+						if ( !ct.settings.offset_node ) {
+							ct.settings.offset = 0;
+							ct.settings.offset_node = true;
 						}
 					}
 					
-					switch( plugin.offset ) {
+					switch( ct.settings.offset ) {
 						case 1:
-							open_flyout = scrolled + viewport_height >= this.xPageY( plugin.offset_node ) + ( this.xHeight( plugin.offset_node ) / 2 );
+							open_flyout = scrolled + viewport_height >= this.xPageY( ct.settings.offset_node ) + ( this.xHeight( ct.settings.offset_node ) / 2 );
 						break;
 						
 						case 2:
-							open_flyout = scrolled + viewport_height >= this.xPageY( plugin.offset_node ) + this.xHeight( plugin.offset_node );
+							open_flyout = scrolled + viewport_height >= this.xPageY( ct.settings.offset_node ) + this.xHeight( ct.settings.offset_node );
 						break;
 						
 						case 3:
@@ -3191,7 +3371,7 @@ if ( typeof nRelate == 'undefined' ) {
 						break;
 						
 						case 4:
-							open_flyout = scrolled + viewport_height >= this.xPageY( plugin.offset_node );
+							open_flyout = scrolled + viewport_height >= this.xPageY( ct.settings.offset_node );
 						break;
 						
 						default:
@@ -3399,6 +3579,7 @@ if ( typeof nRelate == 'undefined' ) {
 			var args = _nrelate.extend( {}, { type:'alert', callback:null }, arguments[1] );
 
 			this.dialog = _nrelate.xgebi( sDialogId );
+
 			if ( !this.dialog ) {
 				// Getting the HTML content instead of the id
 				if ( sDialogId ) {

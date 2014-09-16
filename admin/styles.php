@@ -164,30 +164,6 @@ $nrelate_thumbnail_styles = array(
 -----------------------------------------------
  */ 
 $nrelate_thumbnail_styles_separate = array(
-'til-2col' => array(
-					"stylesheet" => "nrelate-panels-til",
-					"styleclass" => "til",
-					"layout" => "2col",
-					"name"=>__('Default:<br/><em>2 Columns</em>','nrelate'),
-					"features"=>__('<ul>
-										<li>Hover effects.</li>
-										<li>No border.</li>
-										<li>Left aligned text.</li>
-									</ul>','nrelate'),
-					"info"=>__('Child of nSquared Classic. More static and ','nrelate'),
-				),
-'til-2row' => array(
-					"stylesheet" => "nrelate-panels-til",
-					"styleclass" => "til",
-					"layout" => "2row",
-					"name"=>__('Default:<br/><em>2 Columns</em>','nrelate'),
-					"features"=>__('<ul>
-										<li>Hover effects.</li>
-										<li>No border.</li>
-										<li>Left aligned text.</li>
-									</ul>','nrelate'),
-					"info"=>__('Child of nSquared Classic. More static and ','nrelate'),
-				),
 'default-2col' => array(
 					"stylesheet" => "nrelate-panels-default",
 					"styleclass" => "default",

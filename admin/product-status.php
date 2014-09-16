@@ -12,7 +12,7 @@ define( 'NRELATE_PRODUCT_STATUS', true );
 
 // Define Admin constants
 define( 'NRELATE_WEBSITE_FORUM_URL', 'http://nrelate.com/forum/' );
-define( 'NRELATE_WEBSITE_AD_SIGNUP', 'https://partners.nrelate.com/register/');
+define( 'NRELATE_WEBSITE_AD_SIGNUP', 'https://partners.nrelate.com/Account/register');
 define( 'NRELATE_ADMIN_IMAGES', NRELATE_ADMIN_URL . '/images' );
 
 define( 'NRELATE_MIN_WP', '2.9' );
