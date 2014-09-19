@@ -1,4 +1,4 @@
-/*v.138*/
+/*v.139*/
 if ( typeof nRelate == 'undefined' ) {
 	var nr_load_time = new Date().getTime();
 	nRelate = function() {		
@@ -743,6 +743,7 @@ if ( typeof nRelate == 'undefined' ) {
 					if ( (links = this.xgebcn('nr_link', 'a', ct)).length > 0 ) {
 						for( i=0; i < links.length; i++ ) {
 							this.xac( links[i].parentNode, 'nr_li_' + ( i + 1 ) );
+							this.xac( links[i], 'nr_row_' + ( i + 1 ) );
 						}
 					}
 					// Is text style, don't try to fix height
