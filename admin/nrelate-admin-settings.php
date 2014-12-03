@@ -314,7 +314,7 @@ function nrelate_admin_do_page() { ?>
 						<?php settings_fields('nrelate_admin_options'); ?>
 						<?php do_settings_sections(__FILE__);?>
 						<p class="submit">
-							<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes','nrelate'); ?>" <?php echo NRELATE_API_ONLINE ? '' : 'disabled="disabled" title="Sorry nrelate\'s api server is not available. Please try again later"'; ?> />
+							<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes','nrelate'); ?>" />
 						</p>
 					</form>
 				</ul><!-- .inside -->

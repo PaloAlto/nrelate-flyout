@@ -13,8 +13,6 @@
 
 define( 'NRELATE_COMMON_50_LOADED', true );
 
-//$result = wp_remote_get("http://api.nrelate.com/common_wp/".NRELATE_LATEST_ADMIN_VERSION."/servercheck.php");
-//define( 'NRELATE_API_ONLINE', !is_wp_error($result) );
 
 /**
  * Show Terms of Service in Thickbox
@@ -371,7 +369,7 @@ function nrelate_save_preview() { ?>
 		<span class="nrelate-hidden text-warning-message nr_error"><p><?php echo __('When selecting TEXT mode you must show either <a href="#nrelate_show_post_title">Post Title</a> or <a href="#nrelate_show_post_excerpt">Post Excerpt</a>.'); ?></p></span>
 	</span>
 	<span class="nrelate-submit-preview">
-		<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes','nrelate'); ?>" <?php echo NRELATE_API_ONLINE ? '' : 'disabled="disabled" title="Sorry nrelate\'s api server is not available. Please try again later"'; ?> />
+		<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes','nrelate'); ?>" />
 	</span>
 <?php
 }
@@ -383,7 +381,7 @@ function nrelate_save_preview() { ?>
  */
 function nrelate_save() { ?>
 	<p class="submit">
-		<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes','nrelate'); ?>" <?php echo NRELATE_API_ONLINE ? '' : 'disabled="disabled" title="Sorry nrelate\'s api server is not available. Please try again later"'; ?> />
+		<input name="Submit" type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes','nrelate'); ?>" />
 	</p>
 <?php
 }
