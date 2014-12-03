@@ -100,7 +100,7 @@ echo '</h2>';
 						<p><?php _e('Use the button below to have nrelate reindex your website.')?></p>
 						<?php if(isset($_POST['reindex'])) { nrelate_reindex(); } ?>
 						<form action="" method="post">
-							<input id="nrelate_reindex_button" type="submit" class="reindex <?php echo NRELATE_API_ONLINE ? '' : 'disabled'; ?>" name="reindex" value="Re-Index Website" <?php echo NRELATE_API_ONLINE ? '' : 'disabled="disabled" title="Sorry nrelate\'s api server is not available. Please try again later"'; ?>/>
+							<input id="nrelate_reindex_button" type="submit" class="reindex" name="reindex" value="Re-Index Website"  />
 							<script type="text/javascript">
 							//<![CDATA[
 							jQuery(function($){

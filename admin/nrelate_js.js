@@ -1,4 +1,4 @@
-/*v.139*/
+/*v.140*/
 if ( typeof nRelate == 'undefined' ) {
 	var nr_load_time = new Date().getTime();
 	nRelate = function() {		
@@ -464,6 +464,7 @@ if ( typeof nRelate == 'undefined' ) {
 				ct.settings = {};
 				ct.settings.api_called = false;
 				ct.settings.plugin = p;
+				ct.settings.plugin_shortname = this.options.plugins[ p ].shortname;
 				ct.settings.viewed = false;
 				
 				this.options.plugins[ p ].phs[i].appendChild( ct );
@@ -492,7 +493,7 @@ if ( typeof nRelate == 'undefined' ) {
 					
 					// Loop through containers
 					for ( i = 0, l = this.options.plugins[ p ].cts.length; i < l; i++ ) {
-						if ( (ct = this.options.plugins[ p ].cts[i]).nr_api_called ) {
+						if ( (ct = this.options.plugins[ p ].cts[i]).settings.api_called ) {
 							// Ignore if API call was made
 							continue;
 						}
@@ -500,7 +501,7 @@ if ( typeof nRelate == 'undefined' ) {
 						fallback_keywords = this.options.plugins[ p ].phs.length == 1 ? document.title : '';
 						
 						url = this.aurlp(this.options.plugins[ p ].api_url, {
-							plugin			: this.options.plugins[ p ].shortname,
+							plugin			: ct.settings.plugin_shortname,
 							tag				: "nrelate_" + p,
 							domain			: this.options.domain,
 							keywords		: this.options.plugins[ p ].kws[i] || fallback_keywords,
@@ -612,6 +613,10 @@ if ( typeof nRelate == 'undefined' ) {
 					
 					ct.settings.count_views = args.count_views || this.options.plugins[ ct.settings.plugin ].count_views; // TODO: make sure it can be overridden
 					ct.settings.src_did = args.did;
+
+					if ( args.plugin_shortname ) {
+						ct.settings.plugin_shortname = args.plugin_shortname;
+					}
 
 					this.sctc( this.options.plugins[ ct.settings.plugin ], ct, args );
 					ct.innerHTML = content;
@@ -931,7 +936,7 @@ if ( typeof nRelate == 'undefined' ) {
 				
 				url = this.aurlp( this.options.tracking_url, {
 					src_did			: ct.settings.src_did,
-					plugin			: this.options.plugins[ p ].shortname,
+					plugin			: ct.settings.plugin_shortname,
 					type			: nr_type,
 					domain			: this.options.domain,
 					src_url			: this.surl( ct.settings.src_url || window.location.href ),
@@ -1047,7 +1052,7 @@ if ( typeof nRelate == 'undefined' ) {
 					this.xac( ct, "nr_viewed" );
 					
 					url = this.aurlp( this.options.views_url, {
-						plugin		: plugin.shortname,
+						plugin		: ct.settings.plugin_shortname,
 						domain		: this.options.domain,
 						src_did		: ct.settings.src_did,
 						url			: this.surl( ct.settings.src_url || window.location.href ),
@@ -1446,7 +1451,7 @@ if ( typeof nRelate == 'undefined' ) {
 								src_did		: ct.settings.src_did,
 								url			: this.surl( ct.settings.src_url || window.location.href ),
 								pr_id		: this.get_print_id(),
-								plugin 		: this.options.plugins[ ct.settings.plugin ].shortname
+								plugin 		: ct.settings.plugin_shortname
 							} 
 						) 
 					);
@@ -1462,7 +1467,7 @@ if ( typeof nRelate == 'undefined' ) {
 						widget_id: ct.settings.widget_id,
 						url: ct.settings.src_url,
 						domain: this.options.domain,
-						plugin: this.options.plugins[ ct.settings.plugin ].shortname
+						plugin: ct.settings.plugin_shortname
 					});
 
 					url = this.aurlp( url, blocked );
@@ -2952,6 +2957,15 @@ if ( typeof nRelate == 'undefined' ) {
 			/**
 			 * nRelate related search
 			 */
+			dynamic : _nrelate.extend(true, {}, _plugin_base, {
+				api_url		: "http://api.nrelate.com/rcw_wp/" + _nrelate.constants.version + "/",
+				shortname 	: "dy",
+				fullname 	: "dynamic"
+			}),
+
+			/**
+			 * nRelate related search
+			 */
 			mapps : _nrelate.extend(true, {}, _plugin_base, {
 				api_url 	: "https://api.offercastmobile.com/nativead/[api_ver].jsonp",
 				shortname 	: "ma",
@@ -3018,7 +3032,7 @@ if ( typeof nRelate == 'undefined' ) {
 						widget_id: ct.settings.widget_id,
 						url: ct.settings.src_url,
 						domain: this.options.domain,
-						plugin: this.options.plugins[ ct.settings.plugin ].shortname
+						plugin: ct.settings.plugin_shortname
 					}); 
 					this.lr( on_load_url );
 				}
@@ -3743,7 +3757,7 @@ if ( typeof nRelate == 'undefined' ) {
 			
 			if ( width > 660 ) { this.dialog.style.height = 540 + 'px'; }
 			else if ( width > 400 ) { this.dialog.style.height = 590 + 'px'; }
-			else if ( width > 300 ) { this.dialog.style.height = 690 + 'px'; }
+			else if ( width > 300 ) { this.dialog.style.height = 360 + 'px'; }
 
 			this.dialog.style.left   = Math.max( 0, ( (width-this.dialog.offsetWidth)/2 ) ) + "px";
 			this.dialog.style.top    = Math.max( 0, ( _nrelate.xScrollTop()+(height-this.dialog.offsetHeight)/2) ) + "px";

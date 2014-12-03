@@ -12,6 +12,28 @@
 
 define( 'NRELATE_COMMON_LOADED', true );
 
+
+
+/**
+ * Admin notice announcing shutdown
+ */
+function nrelate_admin_notice_farewell() { ?>
+	
+	<?php ob_start(); ?>
+	<div class="update-nag">
+			<h3>Farewell from nRelate</h3>
+			<p>Dear nRelate User --<br>As they say, all good things must come to an end. As of Wednesday December 31, 2014, the nRelate service will officially be switched off - forever. Please deactivate, and delete all nRelate plugins from your site before then, as they will no longer work. Thanks for the memories, the great content, and coming along for the ride. We hope you enjoyed it as much as we did. For more details, please <a href="http://nrelate.com/content/2014/12/01/farewell/" target="_blank">visit our blog</a>.</p>
+			<p>The nRelate Team</p>
+	</div>
+	<?php echo ob_get_clean();
+}
+add_action('admin_notices', 'nrelate_admin_notice_farewell');
+add_action('network_admin_notices', 'nrelate_admin_notice_farewell');
+
+
+
+
+
 /**
  * nrelate admin menu hook
  *
